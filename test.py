@@ -28,3 +28,25 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+
+from libxmp import *
+
+def tests_xmp_files():
+	XMPFiles.initialize()
+	xmpfile = XMPFiles()
+	xmpfile.open_file( 'tests/sig05-002a.tif', files.XMP_OPEN_FORUPDATE )
+	#xmpfile.open_file( 'tests/sig05-002a.tif', files.XMP_OPEN_READ )
+	xmp = xmpfile.get_xmp()
+	if xmpfile.can_put_xmp( xmp ):
+		print "Putting XMP"
+		xmpfile.put_xmp( xmp )
+	else:
+		print "Cannot put XMP"
+	xmpfile.close_file()
+	XMPFiles.terminate()
+
+def main():
+	tests_xmp_files()
+
+if __name__ == "__main__":
+	main()

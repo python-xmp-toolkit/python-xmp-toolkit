@@ -29,8 +29,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-from ctypes import *
-exempi = CDLL("libexempi.dylib", RTLD_GLOBAL)
+
 assert(exempi.xmp_init())
 assert(exempi.xmp_get_error() == 0)
 
