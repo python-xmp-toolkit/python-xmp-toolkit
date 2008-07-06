@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, European Space Agency & European Southern Observatory
+# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -18,19 +18,22 @@
 #       promote products derived from this software without specific prior 
 #       written permission.
 # 
-# THIS SOFTWARE IS PROVIDED BY <copyright holder> ``AS IS'' AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL <copyright holder> BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+# THIS SOFTWARE IS PROVIDED BY ESA/ESO ``AS IS'' AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL ESA/ESO BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE
 
 import ctypes
+import ctypes.util
 import os
+
+__all__ = ['XMPMeta','XMPFiles','XMPError','ExempiLoadError','files','core']
 
 _XMP_ERROR_CODES = {
 	# More or less generic error codes. 
@@ -78,23 +81,24 @@ _XMP_ERROR_CODES = {
 }
 
 #
-# This Python package require that libexempi shared library has been installed.
+#  Load C library - Exempi must be installed on the system
 #
 try:
-	if os.name == 'posix':
-		try: 
-			_exempi = ctypes.CDLL( "libexempi.so" )
-		except OSError, e:
-			_exempi = ctypes.CDLL( "libexempi.dylib" )
-	elif os.name == 'nt':
-		raise NotImplementedError(u'Windows is currently not supported.')
+	lib = ctypes.util.find_library('exempi')
+	if lib:
+		if os.name != 'nt':
+			_exempi = ctypes.CDLL( lib )
+		else:
+			_exempi = ctypes.WinDLL( lib )
 	else:
-		raise NotImplementedError(u'The platform (' + os.name + ') is currently not supported.')
+		raise ExempiLoadError('Could not load shared library exempi.')
 except OSError, e:
-	raise LibraryLoadingError('Could not load shared library exempi.')
-	
+	raise ExempiLoadError('Could not load shared library exempi.')
 
-class LibraryLoadingError(StandardError):
+#
+# Exceptions
+#
+class ExempiLoadError(StandardError):
 	""" Error signaling that the Exempi library cannot be loaded. """
 	pass
 	
@@ -102,7 +106,19 @@ class XMPError(Exception):
 	""" General XMP Error. """
 	pass
 	
+#
+# General private utility functions
+#
+def _check_for_error():
+	"""
+	Check if an error occured when executing last operation. Raise an
+	exception in case of an error.
+	"""
+	err = _exempi.xmp_get_error()
+	if err != 0:
+		raise XMPError( _XMP_ERROR_CODES[err] )
+	
 # Import classes into global namespace
-from core import XMPMeta
+from core import XMPMeta, XMPIterator, XMPUtils
 from files import XMPFiles
 

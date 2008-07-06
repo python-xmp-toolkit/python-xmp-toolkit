@@ -1,0 +1,3 @@
+include AUTHORS CHANGELOG INSTALL README VERSION
+recursive-include test *.py *.tif *.xmp
+recursive-include docs *

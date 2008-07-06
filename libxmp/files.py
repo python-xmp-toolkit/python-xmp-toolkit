@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, European Space Agency & European Southern Observatory
+# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -18,21 +18,46 @@
 #       promote products derived from this software without specific prior 
 #       written permission.
 # 
-# THIS SOFTWARE IS PROVIDED BY <copyright holder> ``AS IS'' AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL <copyright holder> BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+# THIS SOFTWARE IS PROVIDED BY ESA/ESO ``AS IS'' AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL ESA/ESO BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE 
 
-from libxmp import XMPError
-from libxmp import XMPMeta
-from libxmp import _exempi, _XMP_ERROR_CODES
+"""
+The Files pacakage provides support for locating the XMP in a file, adding XMP to a file, 
+or updating the XMP in a file. It returns the entire XMP packet, the core pacakage can 
+then be used to manipulate the individual XMP properties. :class:`XMPFiles` contains a number of 
+"smart" file handlers that know how to efficiently access the XMP in specific file formats. It also 
+includes a fallback packet scanner that can be used for unknown file formats. 
+
+**Open Options:**
+ * :attr:`XMP_OPEN_NOOPTION`
+ * :attr:`XMP_OPEN_READ`
+ * :attr:`XMP_OPEN_FORUPDATE`
+ * :attr:`XMP_OPEN_ONLYXMP`
+ * :attr:`XMP_OPEN_CACHETNAIL`
+ * :attr:`XMP_OPEN_STRICTLY`
+ * :attr:`XMP_OPEN_USESMARTHANDLER`
+ * :attr:`XMP_OPEN_USEPACKETSCANNING`
+ * :attr:`XMP_OPEN_LIMITSCANNING`
+ * :attr:`XMP_OPEN_INBACKGROUND`
+
+**Close Options:**
+ * :attr:`XMP_CLOSE_NOOPTION`
+ * :attr:`XMP_CLOSE_SAFEUPDATE`
+"""
+
+from libxmp import XMPError, XMPMeta
+from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
 import os
+
+__all__ = ['XMPFiles']
 
 #
 # Open options
@@ -107,15 +132,17 @@ class XMPFiles:
 	and access options. The file may be opened for read-only or read-write access,
 	with typical exclusion for both modes.
 
-	Errors result in the throw of an XMPError exception.
+	Errors result in raising of an :exc:`libxmp.XMPError` exception.
 	
-	Note not all methods are implemented and also some options of methods.
+	.. warning::
+	   Note not all methods are implemented and also some options of methods.
+	
+	:keyword file_path: 	Path to file to open.
+	:keyword format:		Not implemented - *file_path* must be given to have effect.
+	:keyword open_flags: 	*file_path* must be given to have effect.
     """
-
 	def __init__(self, **kwargs ):
-		"""
-		@param file_path Path to file to open.
-		"""
+		self._file_path = None
 		self.xmpfileptr = _exempi.xmp_files_new()
 			
 		if kwargs.has_key( 'file_path' ):
@@ -128,7 +155,7 @@ class XMPFiles:
 			if kwargs.has_key('open_flags'):
 				open_flags = kwargs['open_flags']
 			
-			self.open( file_path, format, open_flags )
+			self.open_file( file_path, open_flags )
 			
 			
 	def __del__(self):
@@ -140,48 +167,68 @@ class XMPFiles:
 		
 	def open_file(self, file_path, open_flags = XMP_OPEN_NOOPTION, format = XMP_FT_UNKNOWN ):
 		"""
-		@param open_flags One of the open flags.
-		@param format Not implemented. Put for forward compatiblilty with TXMPFiles C++ class
+		Open a given file and read XMP from file. File must be closed again with
+		:func:`close_file`
+		
+		:param file_path: Path to file to open.
+		:param open_flags: One of the open flags - can be left out.
+		:param format: Not implemented. Put here for forward compatiblilty with TXMPFiles C++ class.
+		:raises XMPError: in case of errors.
 		"""
+		if self._file_path != None:
+			raise XMPError('A file is already open - close it first.')
+		
 		if not os.path.exists(file_path):
 			raise XMPError('File does not exists.')
 			
 		if _exempi.xmp_files_open( self.xmpfileptr, file_path, open_flags ):
-			self.file_path = file_path
+			self._file_path = file_path
 		else:
-			self._check_for_error()
+			_check_for_error()
 	
 	def close_file( self, close_flags = XMP_CLOSE_NOOPTION ):
 		"""
-		@param close_flags One of the close flags
+		Close file after use. XMP will not be written to file until
+		this method has been called.
+		
+		:param close_flags: One of the close flags
+		:raises XMPError: in case of errors.
 		"""
 		if not _exempi.xmp_files_close( self.xmpfileptr, close_flags ):
-			self._check_for_error()
-		
+			_check_for_error()
+		else:
+			self._file_path = None
 		
 	def get_xmp( self ):
 		""" 
-		Get metadata from file.
+		Get XMP from file.
 		
-		@return A new XMPMeta instance.
+		:return: A new :class:`libxmp.core.XMPMeta` instance.
+		:raises XMPError: in case of errors.
 		"""
 		xmpptr = _exempi.xmp_files_get_new_xmp( self.xmpfileptr )
-		self._check_for_error()
-		return XMPMeta( xmp_internal_ref = xmpptr )
+		_check_for_error()
+		return XMPMeta( _xmp_internal_ref = xmpptr )
 		
 	def put_xmp( self, xmp_obj ):
 		"""
-		@param xmp_obj An XMPMeta object
+		Write XMPMeta object to file. See also :func:`can_put_xmp`.
+		
+		:param xmp_obj: An :class:`libxmp.core.XMPMeta` object
 		"""
 		xmpptr = xmp_obj._get_internal_ref()
 		
 		if xmpptr != None:
 			if not _exempi.xmp_files_put_xmp( self.xmpfileptr, xmpptr ):
-				self._check_for_error()
+				_check_for_error()
 		
 	def can_put_xmp( self, xmp_obj ):
 		"""
-		@param xmp_obj An XMPMeta object
+		Determines if a given :class:`libxmp.core.XMPMeta` objet can be written in the file.
+		
+		:param xmp_obj: An :class:`libxmp.core.XMPMeta` object
+		:return:  true if :class:`libxmp.core.XMPMeta` object can be written in file.
+		:rtype: bool
 		"""
 		xmpptr = xmp_obj._get_internal_ref()
 		
@@ -189,52 +236,47 @@ class XMPFiles:
 			return _exempi.xmp_files_can_put_xmp(self.xmpfileptr, xmpptr )
 		else:
 			return False
-		
-	def _check_for_error(self):
-		"""
-		Check if an error occured when executing last operation. Raise an
-		exception in case of an error.
-		"""
-		err = _exempi.xmp_get_error()
-		if err != 0:
-			raise XMPError( _XMP_ERROR_CODES[err] )
-			
+					
 	def get_thumbnail( self ):
 		""" 
-		Not Implemented - Exempi does not implement this function yet
+		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError()
 
 	def get_file_info( self ):
 		""" 
-		Not Implemented - Exempi does not implement this function yet
+		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError()
 		
 	@staticmethod
 	def initialize( options = None ):
 		"""
 		Initialize library. Must be called before anything else.
 		
-		@param options Not implemented - provided for future implementations.
+		:param options: .. warninig: Not implemented - provided for future implementations.
+		:raises XMPError: in case of errors.
 		"""
 		if not _exempi.xmp_init():
-			self._check_for_error()
+			_check_for_error()
 	
 	@staticmethod
 	def terminate():
+		"""
+		Terminate use of library. Must be called when finished using library.
+		"""
 		_exempi.xmp_terminate()
 	
 	@staticmethod
 	def get_version_info():
 		""" 
-		Not Implemented - Exempi does not implement this function yet
+		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError()
 	
 	@staticmethod
 	def get_format_info( format ):
 		""" 
-		Not Implemented - Exempi does not implement this function yet
+		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError()
