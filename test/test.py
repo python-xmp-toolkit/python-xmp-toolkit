@@ -29,16 +29,26 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
+import sys
+sys.path.append('../')
+
 from libxmp import *
+from libxmp import _exempi
+
 
 def tests_xmp_files():
 	XMPFiles.initialize()
+	assert(_exempi.xmp_get_error() == 0)
 	xmpfile = XMPFiles()
+	assert(_exempi.xmp_get_error() == 0)
 	xmpfile.open_file( 'sig05-002a.tif', files.XMP_OPEN_READ )
-	#xmpfile = XMPFiles( file_path='tests/sig05-003a.xmp', open_flags=files.XMP_OPEN_READ )
-	#xmpfile_image = XMPFiles( file_path='tests/sig05-002a.tif', open_flags=files.XMP_OPEN_FORUPDATE )
-	
+	assert(_exempi.xmp_get_error() == 0)
 	xmp = xmpfile.get_xmp()
+	assert(_exempi.xmp_get_error() == 0)
+
+	assert( xmp.get_property( "http://www.communicatingastronomy.org/avm/1.0/", "Publisher" ) == "Spitzer Science Center" )
+	
+	#
 	#if xmpfile_image.can_put_xmp( xmp ):
 	#	print "Putting XMP"
 	#	xmpfile_image.put_xmp( xmp )
@@ -48,6 +58,7 @@ def tests_xmp_files():
 	xmpfile.close_file()
 	#xmpfile_image.close_file()
 	XMPFiles.terminate()
+	
 
 def main():
 	tests_xmp_files()

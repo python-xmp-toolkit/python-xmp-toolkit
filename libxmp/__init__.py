@@ -105,7 +105,12 @@ class ExempiLoadError(StandardError):
 class XMPError(Exception):
 	""" General XMP Error. """
 	pass
-	
+
+#
+# Define return types for exempi functions.
+#
+_exempi.xmp_string_cstr.restype = ctypes.c_char_p
+
 #
 # General private utility functions
 #

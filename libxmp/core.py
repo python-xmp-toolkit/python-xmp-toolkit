@@ -35,6 +35,8 @@ no knowledge of files. The core API is provided by the :class:`XMPMeta`, :class:
 :class:`XMPUtils` classes.
 """
 
+from ctypes import *
+
 from libxmp import XMPError
 from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
 
@@ -63,13 +65,13 @@ class XMPMeta:
 		@param xmp_str Optional.
 		@param xmp_internal_ref Optional - used for internal purposes.
 		"""
-		if kwargs.has_key('xmp_internal_ref'):
+		if '_xmp_internal_ref' in kwargs:
 			self.xmpptr = kwargs['_xmp_internal_ref']
 		else:
 			self.xmpptr = _exempi.xmp_new_empty()
 			_check_for_error()
 		
-			if kwargs.has_key('xmp_str'):
+			if 'xmp_str' in kwargs:
 				self.parse_from_str( kwargs['xmp_str'] )
 		
 	def __del__(self):
@@ -86,6 +88,7 @@ class XMPMeta:
 		representation of the XMPMeta instance.
 		"""
 		return  self.xmpptr
+	internal_ref = property( _get_internal_ref )
 
 	# -------------------------------------
 	# Initialization and termination
@@ -146,8 +149,15 @@ class XMPMeta:
 		#bool xmp_get_property(XmpPtr xmp, const char *schema, 
 		#					  const char *name, XmpStringPtr property,
 		#					  uint32_t *propsBits);
+		value = None
+		the_prop = _exempi.xmp_string_new();
 
-		raise NotImplementedError
+ 		if _exempi.xmp_get_property( self.xmpptr, schema_ns, prop_name, the_prop, 0 ):
+			value = _exempi.xmp_string_cstr(the_prop)
+
+		_exempi.xmp_string_free(the_prop);
+		return value
+		
 		
 	def get_array_item( self, schema_ns, array_name, item_index ):
 		"""  """
@@ -244,7 +254,10 @@ class XMPMeta:
 		#bool xmp_get_property_int32(XmpPtr xmp, const char *schema, 
 		#							const char *name, int32_t * property,
 		#							uint32_t *propsBits);
-		raise NotImplementedError
+
+		prop_value =  c_int()
+		_exempi.xmp_get_property_int32(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
+		return prop_value.value
 		
 	def get_property_long(self, schema_ns, prop_name ):
 		"""  """
