@@ -36,7 +36,7 @@ from libxmp import *
 def tests_xmp_core():
 	XMPFiles.initialize()
 	xmpfile = XMPFiles()
-	xmpfile.open_file( 'samples/sig05-002a.bak.tif', files.XMP_OPEN_READ )
+	xmpfile.open_file( 'samples/sig05-002a.tif', files.XMP_OPEN_READ )
 	xmp = xmpfile.get_xmp()
 
 	print xmp.set_property("http://www.communicatingastronomy.org/avm/1.0/", "Publisher", "Eric Idle")
