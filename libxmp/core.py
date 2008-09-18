@@ -36,6 +36,7 @@ no knowledge of files. The core API is provided by the :class:`XMPMeta`, :class:
 """
 
 from ctypes import *
+import datetime
 
 from libxmp import XMPError
 from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
@@ -55,6 +56,22 @@ def _xmp_string_to_str(xmpstr):
 	# in C++
 	# TODO: check
 	return _exempi.xmp_string_cstr(xmpstr)
+
+
+class _XmpDateTime(Structure):
+	
+	_fields_ = [
+					('year', c_int32),
+					('month', c_int32),
+					('day', c_int32),
+					('hour', c_int32),
+					('minute', c_int32),
+					('second', c_int32),
+					('tzSign', c_int32),
+					('tzHour', c_int32),
+					('tzMinute', c_int32),
+					('nanoSecond', c_int32),
+				]			
 
 
 class XMPMeta:
@@ -138,7 +155,7 @@ class XMPMeta:
 	# -------------------------------------
 	def get_property(self, schema_ns, prop_name ):
 		"""  """
-		#/** Get an XMP property and it option bits from the XMP packet
+		#/** Get an XMP property and its option bits from the XMP packet
 		# * @param xmp the XMP packet
 		# * @param schema
 		# * @param name
@@ -161,7 +178,7 @@ class XMPMeta:
 		
 	def get_array_item( self, schema_ns, array_name, item_index ):
 		"""  """
-		#/** Get an item frpm an array property
+		#/** Get an item from an array property
 		# * @param xmp the xmp meta
 		# * @param schema the schema
 		# * @param name the property name
@@ -179,13 +196,13 @@ class XMPMeta:
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	def get_qualifier( self, schema_ns, prop_name, qual_ns, qual_name ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	# -------------------------------------
 	# Functions for setting property values
@@ -203,7 +220,8 @@ class XMPMeta:
 		#bool xmp_set_property(XmpPtr xmp, const char *schema, 
 		#					  const char *name, const char *value,
 		#					  uint32_t optionBits);
-		raise NotImplementedError
+		
+		return bool(_exempi.xmp_set_property(self.xmpptr, schema_ns, prop_name, prop_value, 0))
 		
 	def set_array_item( self, schema_ns, array_name, item_index, item_value, options = 0 ):
 		"""  """
@@ -231,13 +249,13 @@ class XMPMeta:
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	def set_qualifier( self, schema_ns, prop_name, qual_ns, qual_name, qual_value, options = 0 ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	# -----------------------------------------------
 	# Functions accessing properties as binary values
@@ -247,7 +265,9 @@ class XMPMeta:
 		#bool xmp_get_property_bool(XmpPtr xmp, const char *schema, 
 		#							const char *name, bool * property,
 		#							uint32_t *propsBits);
-		raise NotImplementedError
+		prop_value = c_int()
+		_exempi.xmp_get_property_bool(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
+		return bool(prop_value.value)
 		
 	def get_property_int(self, schema_ns, prop_name ):
 		"""  """
@@ -255,7 +275,7 @@ class XMPMeta:
 		#							const char *name, int32_t * property,
 		#							uint32_t *propsBits);
 
-		prop_value =  c_int()
+		prop_value =  c_int32()
 		_exempi.xmp_get_property_int32(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
 		return prop_value.value
 		
@@ -264,42 +284,52 @@ class XMPMeta:
 		#bool xmp_get_property_int64(XmpPtr xmp, const char *schema, 
 		#							const char *name, int64_t * property,
 		#							uint32_t *propsBits);
-		raise NotImplementedError
+		
+		prop_value =  c_int64()
+		_exempi.xmp_get_property_int64(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
+		return prop_value.value
 		
 	def get_property_float(self, schema_ns, prop_name ):
 		"""  """
 		#bool xmp_get_property_float(XmpPtr xmp, const char *schema, 
 		#							const char *name, double * property,
 		#							uint32_t *propsBits);
-		raise NotImplementedError
+
+		prop_value =  c_float()
+		_exempi.xmp_get_property_float(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
+		return prop_value.value
 		
 	def get_property_datetime(self, schema_ns, prop_name ):
 		"""  """
 		#bool xmp_get_property_date(XmpPtr xmp, const char *schema, 
 		#						   const char *name, XmpDateTime * property,
 		#						   uint32_t *propsBits);
-		raise NotImplementedError
+		
+		d = _XmpDateTime()
+		_exempi.xmp_get_property_date(self.xmpptr, schema_ns, prop_name, byref(d), 0 )
+		return datetime.datetime(d.year,d.month,d.day,d.hour,d.minute,d.second) #TODO: add the tzInfo stuff
 		
 	def set_property_bool(self, schema_ns, prop_name, prop_value, options = 0 ):
 		"""  """
 		#bool xmp_set_property_bool(XmpPtr xmp, const char *schema, 
 		#							const char *name, bool value,
 		#							uint32_t optionBits);
-		raise NotImplementedError
+		prop_value = int(prop_value)
+		return bool(_exempi.xmp_set_property_bool(self.xmpptr, schema_ns, prop_name, prop_value,0))
 
 	def set_property_int(self, schema_ns, prop_name, prop_value, options = 0 ):
 		"""  """
 		#bool xmp_set_property_int32(XmpPtr xmp, const char *schema, 
 		#							const char *name, int32_t value,
 		#							uint32_t optionBits);
-		raise NotImplementedError
+		return bool(_exempi.xmp_set_property_int32(self.xmpptr, schema_ns, prop_name, prop_value,0))
 	
 	def set_property_long(self, schema_ns, prop_name, prop_value, options = 0 ):
 		"""  """
 		#bool xmp_set_property_int64(XmpPtr xmp, const char *schema, 
 		#							const char *name, int64_t value,
 		#							uint32_t optionBits);
-		raise NotImplementedError
+		return bool(_exempi.xmp_set_property_int64(self.xmpptr, schema_ns, prop_name, prop_value,0))
 	
 	def set_property_float(self, schema_ns, prop_name, prop_value, options = 0 ):
 		"""  """
@@ -314,7 +344,8 @@ class XMPMeta:
 		#bool xmp_set_property_float(XmpPtr xmp, const char *schema, 
 		#							const char *name, double value,
 		#							uint32_t optionBits);
-		raise NotImplementedError
+		prop_value = c_float(prop_value)
+		return bool(_exempi.xmp_set_property_float(self.xmpptr, schema_ns, prop_name, prop_value,0))
 		
 	
 	def set_property_date(self, schema_ns, prop_name, prop_value, options = 0 ):
@@ -330,7 +361,11 @@ class XMPMeta:
 		#bool xmp_set_property_date(XmpPtr xmp, const char *schema, 
 		#						   const char *name, const XmpDateTime *value,
 		#						   uint32_t optionBits);
-		raise NotImplementedError
+		
+		#TODO: add the tzInfo stuff on the object below
+		
+		d = _XmpDateTime(prop_value.year, prop_value.month, prop_value.day, prop_value.hour, prop_value.minute, prop_value.second,0,0,0)
+		return bool(_exempi.xmp_set_property_bool(self.xmpptr, prop_name, byref(d), 0))
 		
 	# ------------------------------------------------------------
 	# Functions for accessing localized text (alt-text) properties
@@ -418,25 +453,25 @@ class XMPMeta:
 		# * @return true is the property exists
 		# */
 		#bool xmp_has_property(XmpPtr xmp, const char *schema, const char *name);
-		raise NotImplementedError
+		return bool(_exempi.xmp_has_property(xmp.xmpptr, schema_ns, prop_name))
 		
 	def does_array_item_exist(self, schema_ns, array_name, item_index ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	def does_struct_field_exist(self, schema_ns, struct_name, field_ns, field_name ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	def does_qualifier_exist(self, schema_ns, prop_name, qual_ns, qual_name ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	# -------------------------------------
 	# Functions for parsing and serializing
@@ -501,7 +536,7 @@ class XMPMeta:
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 			
 	# -------------------------------------
 	# Namespace Functions
@@ -526,21 +561,21 @@ class XMPMeta:
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	@staticmethod
 	def get_namespaec_uri( namespace_prefix ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	@staticmethod
 	def delete_namespace( namespace_uri):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	# -------------------------------------
 	# Alias Functions
@@ -550,32 +585,32 @@ class XMPMeta:
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	@staticmethod
 	def resolve_alias( alias_ns, alias_prop ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	@staticmethod
 	def delete_alias( alias_ns, alias_prop ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	@staticmethod
 	def register_standard_alias( schema_ns ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 class XMPIterator:
 	def __init__( self, xmp_obj, schema_ns, prop_name, options = 0 ):
-		#todo: check default value for options param
+		#TODO: check default value for options param
 		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmpptr, schema, prop_name, options )
 		_check_for_errors()
 		self.schema = schema
@@ -595,14 +630,14 @@ class XMPIterator:
 		return self
 		
 	def next():
-		# Todo: define options			
+		# TODO: define options			
 		# TODO: pointers neeed to be passed in...hmm
 		#return _exempi.xmp_iterator_next( xmpiteratorptr, self.schema, self.prop_name, XmpStringPtr propValue,
 		#					   uint32_t *options);
 		raise NotImplementedError
 		
 	def skip( options ):
-		# Todo: define options
+		# TODO: define options
 		_exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
 		_check_for_error()
 
