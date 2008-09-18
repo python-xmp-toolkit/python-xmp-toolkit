@@ -43,7 +43,7 @@ Definitions of test files
 """
 samplefiles = {
 	'sig05-002a.tif' : libxmp.files.XMP_FT_TIFF,
-	#'sig05-002a.xmp' : libxmp.files.XMP_FT_TEXT,
+	'sig05-002a.xmp' : libxmp.files.XMP_FT_TEXT,
 	'BlueSquare.ai' : libxmp.files.XMP_FT_ILLUSTRATOR,
 	'BlueSquare.avi' : libxmp.files.XMP_FT_AVI,
 	'BlueSquare.eps' : libxmp.files.XMP_FT_EPS,

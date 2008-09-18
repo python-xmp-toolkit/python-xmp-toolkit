@@ -136,8 +136,8 @@ class XMPFilesTestCase(unittest.TestCase):
 		
 	def flg_fmt_combi( self, flg, fmt ):
 		""" See test_exempi_bad_combinations """
-		return (((fmt == files.XMP_FT_PDF or fmt == files.XMP_FT_MOV or fmt == files.XMP_FT_ILLUSTRATOR) and flg == files.XMP_OPEN_USESMARTHANDLER) or 
-				((fmt == files.XMP_FT_PDF or fmt == files.XMP_FT_MOV) and flg == files.XMP_OPEN_LIMITSCANNING)
+		return (((fmt == files.XMP_FT_TEXT or fmt == files.XMP_FT_PDF or fmt == files.XMP_FT_MOV or fmt == files.XMP_FT_ILLUSTRATOR) and flg == files.XMP_OPEN_USESMARTHANDLER) or 
+				((fmt == files.XMP_FT_TEXT or fmt == files.XMP_FT_PDF or fmt == files.XMP_FT_MOV) and flg == files.XMP_OPEN_LIMITSCANNING)
 				)
 				
 	def test_exempi_bad_combinations(self):
