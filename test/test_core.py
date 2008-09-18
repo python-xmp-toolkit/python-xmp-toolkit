@@ -41,10 +41,12 @@ def tests_xmp_core():
 
 	print xmp.set_property("http://www.communicatingastronomy.org/avm/1.0/", "Publisher", "Eric Idle")
 	print xmp.get_property("http://www.communicatingastronomy.org/avm/1.0/", "Publisher")
+
 	import datetime
-	print xmp.set_property_date("http://ns.adobe.com/xap/1.0/","ModifyDate", datetime.datetime.now())
+	print xmp.set_property_datetime("http://ns.adobe.com/xap/1.0/","ModifyDate", datetime.datetime.now())
 	
 	print xmp.get_property_datetime("http://ns.adobe.com/xap/1.0/","ModifyDate")
+	
 	print xmp.set_property_bool("http://ns.adobe.com/camera-raw-settings/1.0/","AlreadyApplied", False)
 	print xmp.get_property_bool("http://ns.adobe.com/camera-raw-settings/1.0/", "AlreadyApplied")
 

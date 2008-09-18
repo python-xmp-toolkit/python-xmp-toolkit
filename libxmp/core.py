@@ -348,7 +348,7 @@ class XMPMeta:
 		return bool(_exempi.xmp_set_property_float(self.xmpptr, schema_ns, prop_name, prop_value,0))
 		
 	
-	def set_property_date(self, schema_ns, prop_name, prop_value, options = 0 ):
+	def set_property_datetime(self, schema_ns, prop_name, prop_value, options = 0 ):
 		"""  """
 		#/** Set a date XMP property in the XMP packet
 		# * @param xmp the XMP packet
@@ -365,7 +365,7 @@ class XMPMeta:
 		#TODO: add the tzInfo stuff on the object below
 		
 		d = _XmpDateTime(prop_value.year, prop_value.month, prop_value.day, prop_value.hour, prop_value.minute, prop_value.second,0,0,0)
-		return bool(_exempi.xmp_set_property_bool(self.xmpptr, prop_name, byref(d), 0))
+		return bool(_exempi.xmp_set_property_date(self.xmpptr, schema_ns, prop_name, byref(d), 0))
 		
 	# ------------------------------------------------------------
 	# Functions for accessing localized text (alt-text) properties
