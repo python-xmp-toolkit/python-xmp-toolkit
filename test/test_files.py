@@ -122,7 +122,7 @@ class XMPFilesTestCase(unittest.TestCase):
 		for flg in self.open_flags:
 			for f,fmt in samplefiles.iteritems():
 				# See test_exempi_error()
-				if not self.flg_fmt_combi(flg,fmt) and not self.exempi_problem():
+				if not self.flg_fmt_combi(flg,fmt) and not self.exempi_problem(flg, fmt):
 					xmpfile = XMPFiles()
 					xmpfile.open_file( f, open_flags=flg, format=fmt )
 					xmp = xmpfile.get_xmp()
@@ -155,7 +155,7 @@ class XMPFilesTestCase(unittest.TestCase):
 					xmpfile.open_file( f, open_flags=flg, format=fmt )
 					self.assertRaises( XMPError, xmpfile.get_xmp )
 
-	def exempi_problem( flg, fmt ):
+	def exempi_problem( self, flg, fmt ):
 		""" 
 		Special case hazardous for Python because of an exempi bug.
 		
@@ -191,5 +191,5 @@ def test( verbose=2 ):
 	return result, runner
 
 if __name__ == "__main__":
-	test()
-	#unittest.main()
+	#test()
+	unittest.main()
