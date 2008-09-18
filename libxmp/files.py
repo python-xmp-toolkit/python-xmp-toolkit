@@ -163,7 +163,7 @@ class XMPFiles:
 		Free up the memory associated with the XMP file instance.
 		"""
 		if not _exempi.xmp_files_free( self.xmpfileptr ):
-			raise XMPError('Could not free memory for XMPFiles.')
+			raise XMPError( 'Could not free memory for XMPFiles.' )
 		
 	def open_file(self, file_path, open_flags = XMP_OPEN_NOOPTION, format = XMP_FT_UNKNOWN ):
 		"""
@@ -180,7 +180,7 @@ class XMPFiles:
 		
 		if not os.path.exists(file_path):
 			raise XMPError('File does not exists.')
-			
+						
 		if _exempi.xmp_files_open( self.xmpfileptr, file_path, open_flags ):
 			self._file_path = file_path
 		else:
@@ -230,6 +230,9 @@ class XMPFiles:
 		:return:  true if :class:`libxmp.core.XMPMeta` object can be written in file.
 		:rtype: bool
 		"""
+		if not isinstance( xmp_obj, XMPMeta ):
+			raise XMPError('Not a XMPMeta object')
+			
 		xmpptr = xmp_obj._get_internal_ref()
 		
 		if xmpptr != None:

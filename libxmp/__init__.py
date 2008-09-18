@@ -124,6 +124,5 @@ def _check_for_error():
 		raise XMPError( _XMP_ERROR_CODES[err] )
 	
 # Import classes into global namespace
-from core import XMPMeta, XMPIterator, XMPUtils
-from files import XMPFiles
-
+from core import *
+from files import *
