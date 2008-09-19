@@ -118,7 +118,9 @@ def encode_as_utf8( obj, input_encoding=None ):
 		return unicode( obj ).encode('utf-8')
 
 class _XmpDateTime(Structure):
-	
+	"""
+	Helper class (not intended to be exposed) to help managed datetimes in Exempi
+	"""	
 	_fields_ = [
 					('year', c_int32),
 					('month', c_int32),
@@ -150,6 +152,8 @@ class XMPMeta(object):
 			if 'xmp_str' in kwargs:
 				self.parse_from_str( kwargs['xmp_str'] )
 		
+		self.iterator = None
+		
 	def __del__(self):
 		"""
 		Ensure memory is deallocated when destroying object.
@@ -157,6 +161,16 @@ class XMPMeta(object):
 		if self.xmpptr != None:
 			if not _exempi.xmp_free(self.xmpptr):
 				_check_for_error()
+		
+		if self.iterator is not None:
+			del self.iterator
+	
+	#CHANGES: XMPMeta is now directly iterable		
+	def __iter__(self):
+		if self.iterator is None:
+			self.iterator = XMPIterator(self)
+		
+		return self.iterator
 		
 	def _get_internal_ref(self):
 		"""
@@ -725,12 +739,7 @@ class XMPMeta(object):
 	
 class XMPIterator:
 	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, options = 0 ):
-		#TODO: check default value for options param
-		#mask = 0x0002L
-
-		
-		
-		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.internal_ref, schema_ns, prop_name, 0)
+		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.internal_ref, schema_ns, prop_name, options)
 		_check_for_error()
 		self.schema = schema_ns
 		self.prop_name = prop_name
@@ -738,9 +747,9 @@ class XMPIterator:
 		
 		
 	def __del__(self):
-		#_exempi.xmp_iterator_free(self.xmpiteratorptr);
-		#_check_for_error()
-		pass
+		#_exempi.xmp_iterator_free(self.xmpiteratorptr)
+		_check_for_error()
+
 		
 	def __iter__(self):
 		return self
