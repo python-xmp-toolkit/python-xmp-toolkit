@@ -63,11 +63,11 @@ def tests_xmp_core():
 	
 	print "DOPO"
 	
-	for i in range(1000):
+	while(True):
 		try:
 			print xmpi.next()
 		except:
-			raise
+			break
 
 	
 	xmpfile.close_file()

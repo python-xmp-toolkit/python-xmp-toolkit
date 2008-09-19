@@ -44,6 +44,32 @@ from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
 __all__ = ['XMPMeta','XMPIterator','XMPUtils']
 
 
+#
+# Serialize Options
+#		
+XMP_SERIAL_OMITPACKETWRAPPER   = 0x0010L  # Do not include an XML packet wrapper.
+XMP_SERIAL_READONLYPACKET      = 0x0020L  # Create a read-only XML packet wapper.
+XMP_SERIAL_USECOMPACTFORMAT    = 0x0040L  # Use a highly compact RDF syntax and layout.
+XMP_SERIAL_INCLUDETHUMBNAILPAD = 0x0100L  # Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
+XMP_SERIAL_EXACTPACKETLENGTH   = 0x0200L  # The padding parameter provides the overall packet length.
+XMP_SERIAL_WRITEALIASCOMMENTS  = 0x0400L  # Include XML comments for aliases.
+XMP_SERIAL_OMITALLFORMATTING   = 0x0800L  # Omit all formatting whitespace.
+
+#
+# XMPIterator Options
+#
+
+XMP_ITER_CLASSMASK      = 0x00FFL   # The low 8 bits are an enum of what data structure to iterate. 
+XMP_ITER_PROPERTIES     = 0x0000L   # Iterate the property tree of a TXMPMeta object. 
+XMP_ITER_ALIASES        = 0x0001L   # Iterate the global alias table. - XMP Toolkit and Exempi don't implement this option yet
+XMP_ITER_NAMESPACES     = 0x0002L   # Iterate the global namespace table. - XMP Toolkit and Exempi don't implement this option yet
+XMP_ITER_JUSTCHILDREN   = 0x0100L   # Just do the immediate children of the root, default is subtree. 
+XMP_ITER_JUSTLEAFNODES  = 0x0200L   # Just do the leaf nodes, default is all nodes in the subtree.
+XMP_ITER_JUSTLEAFNAME   = 0x0400L   # Return just the leaf part of the path, default is the full path. 
+XMP_ITER_INCLUDEALIASES = 0x0800L   # Include aliases, default is just actual properties. 
+XMP_ITER_OMITQUALIFIERS = 0x1000L   # Omit all qualifiers. 
+                                    
+
 class _XMPString(object):
 	"""
 	Helper class (not intended to be exposed) to help managed strings in Exempi
@@ -105,18 +131,6 @@ class _XmpDateTime(Structure):
 					('nanoSecond', c_int32),
 				]
 				
-
-
-#
-# Serialize Options
-#		
-XMP_SERIAL_OMITPACKETWRAPPER   = 0x0010L  # Do not include an XML packet wrapper.
-XMP_SERIAL_READONLYPACKET      = 0x0020L  # Create a read-only XML packet wapper.
-XMP_SERIAL_USECOMPACTFORMAT    = 0x0040L  # Use a highly compact RDF syntax and layout.
-XMP_SERIAL_INCLUDETHUMBNAILPAD = 0x0100L  # Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
-XMP_SERIAL_EXACTPACKETLENGTH   = 0x0200L  # The padding parameter provides the overall packet length.
-XMP_SERIAL_WRITEALIASCOMMENTS  = 0x0400L  # Include XML comments for aliases.
-XMP_SERIAL_OMITALLFORMATTING   = 0x0800L  # Omit all formatting whitespace.
 
 class XMPMeta(object):
 	""" """
@@ -711,8 +725,11 @@ class XMPMeta(object):
 class XMPIterator:
 	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, options = 0 ):
 		#TODO: check default value for options param
-		#options = c_ulong(0x0002L)
-		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.internal_ref, schema_ns, prop_name, options)
+		#mask = 0x0002L
+
+		
+		
+		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.internal_ref, schema_ns, prop_name, 0)
 		_check_for_error()
 		self.schema = schema_ns
 		self.prop_name = prop_name
@@ -736,11 +753,13 @@ class XMPIterator:
 		prop_value = _XMPString()
 		the_value = None
 		
+		schema_ns = _XMPString()
+		prop_name = _XMPString()
 		
-		_exempi.xmp_iterator_next(self.xmpiteratorptr,self.schema, self.prop_name, prop_value.get_ptr(),0 )
-			#the_value = _exempi.xmp_string_cstr(prop_value)
-	
-		return unicode(prop_value)
+		if _exempi.xmp_iterator_next(self.xmpiteratorptr,schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(),0 ):
+			return unicode(schema_ns),unicode(prop_name),unicode(prop_value)
+		else:
+			raise StopIteration
 		
 		
 	def skip( options ):
