@@ -167,12 +167,12 @@ class XMPMeta:
 		#					  const char *name, XmpStringPtr property,
 		#					  uint32_t *propsBits);
 		value = None
-		the_prop = _exempi.xmp_string_new();
+		the_prop = _exempi.xmp_string_new()
 
  		if _exempi.xmp_get_property( self.xmpptr, schema_ns, prop_name, the_prop, 0 ):
 			value = _exempi.xmp_string_cstr(the_prop)
 
-		_exempi.xmp_string_free(the_prop);
+		_exempi.xmp_string_free(the_prop)
 		return value
 		
 		
@@ -609,9 +609,9 @@ class XMPMeta:
 		raise NotImplementedError("Exempi does not implement this function yet")
 		
 class XMPIterator:
-	def __init__( self, xmp_obj, schema_ns, prop_name, options = 0 ):
+	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, options = 0 ):
 		#TODO: check default value for options param
-		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmpptr, schema, prop_name, options )
+		self.xmpiteratorptr = _exempi.xmp_iterator_new(xmp_obj._get_internal_ref(), schema_ns, prop_name, options )
 		_check_for_errors()
 		self.schema = schema
 		self.prop_name = prop_name
@@ -622,8 +622,8 @@ class XMPIterator:
 #		
 		
 	def __del__(self):
-		_exempi.xmp_iterator_free( self.xmpiteratorptr );
-		_check_for_error()
+		#_exempi.xmp_iterator_free(self.xmpiteratorptr);
+		#_check_for_error()
 		pass
 		
 	def __iter__(self):
@@ -634,13 +634,22 @@ class XMPIterator:
 		# TODO: pointers neeed to be passed in...hmm
 		#return _exempi.xmp_iterator_next( xmpiteratorptr, self.schema, self.prop_name, XmpStringPtr propValue,
 		#					   uint32_t *options);
-		raise NotImplementedError
+		#raise NotImplementedError
+		prop_value = _xmp_string_new()
+		the_value = None
+		
+		if _exempi.xmp_iterator_next(self.xmpiteratorptr,self.schema, self.prop_name, prop_value, 0 ):
+			the_value = _exempi.xmp_string_cstr(prop_value)
+		_xmp_string_free(prop_value)
 		
 	def skip( options ):
 		# TODO: define options
 		_exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
 		_check_for_error()
+		
+		
 
 		
 class XMPUtils:
-	pass
+	def __init__(self):
+		raise NotImplementedError

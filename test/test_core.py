@@ -32,6 +32,7 @@
 #TODO: make a proper testsuite for core using unittest
 
 from libxmp import *
+from libxmp.core import XMPIterator
 
 def tests_xmp_core():
 	XMPFiles.initialize()
@@ -50,6 +51,10 @@ def tests_xmp_core():
 	print xmp.set_property_bool("http://ns.adobe.com/camera-raw-settings/1.0/","AlreadyApplied", False)
 	print xmp.get_property_bool("http://ns.adobe.com/camera-raw-settings/1.0/", "AlreadyApplied")
 
+
+	#TEST ITERATOR
+	
+	xmpi = XMPIterator(xmp, "http://www.communicatingastronomy.org/avm/1.0/","http://www.communicatingastronomy.org/avm/1.0/" )
 	
 	xmpfile.close_file()
 	XMPFiles.terminate()
