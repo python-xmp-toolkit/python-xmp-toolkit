@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
+# Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -14,11 +15,11 @@
 #       documentation and/or other materials provided with the distribution.
 # 
 #     * Neither the name of the European Space Agency, European Southern 
-#       Observatory nor the names of its contributors may be used to endorse or 
+#       Observatory, CRS4 nor the names of its contributors may be used to endorse or 
 #       promote products derived from this software without specific prior 
 #       written permission.
 # 
-# THIS SOFTWARE IS PROVIDED BY ESA/ESO ``AS IS'' AND ANY EXPRESS OR IMPLIED
+# THIS SOFTWARE IS PROVIDED BY ESA/ESO AND CRS4 ``AS IS'' AND ANY EXPRESS OR IMPLIED
 # WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 # MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
 # EVENT SHALL ESA/ESO BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
