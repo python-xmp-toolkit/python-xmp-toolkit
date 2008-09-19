@@ -244,13 +244,13 @@ class XMPFiles:
 		""" 
 		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	def get_file_info( self ):
 		""" 
 		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	@staticmethod
 	def initialize( options = None ):
@@ -275,11 +275,11 @@ class XMPFiles:
 		""" 
 		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")
 	
 	@staticmethod
 	def get_format_info( format ):
 		""" 
 		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError()
+		raise NotImplementedError("Exempi does not implement this function yet")

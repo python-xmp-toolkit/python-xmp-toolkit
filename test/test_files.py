@@ -37,22 +37,9 @@ sys.path.append('../')
 from libxmp import *
 from libxmp import _exempi
 
-from samples import samplefiles, sampledir, make_temp_samples, remove_temp_samples
+from samples import samplefiles, open_flags, sampledir, make_temp_samples, remove_temp_samples
 
 class XMPFilesTestCase(unittest.TestCase):
-	open_flags = [
-		files.XMP_OPEN_NOOPTION,  #< No open option
-		files.XMP_OPEN_READ, #< Open for read-only access.
-		files.XMP_OPEN_FORUPDATE, #< Open for reading and writing.
-		files.XMP_OPEN_ONLYXMP, #< Only the XMP is wanted, allows space/time optimizations.
-		files.XMP_OPEN_CACHETNAIL, #< Cache thumbnail if possible,  GetThumbnail will be called.
-		files.XMP_OPEN_STRICTLY, #< Be strict about locating XMP and reconciling with other forms. 
-		files.XMP_OPEN_USESMARTHANDLER, #< Require the use of a smart handler.
-		files.XMP_OPEN_USEPACKETSCANNING, #< Force packet scanning, don't use a smart handler.
-		files.XMP_OPEN_LIMITSCANNING, #< Only packet scan files "known" to need scanning.
-		files.XMP_OPEN_INBACKGROUND,
-	]
-
 	def setUp(self):
 		make_temp_samples()
 		XMPFiles.initialize()
@@ -98,7 +85,7 @@ class XMPFilesTestCase(unittest.TestCase):
 			xmpfile = XMPFiles( file_path=f, format=fmt )
 
 		# Try all open options
-		for flg in self.open_flags:
+		for flg in open_flags:
 			for f,fmt in samplefiles.iteritems():
 				xmpfile = XMPFiles()
 				xmpfile.open_file( f, open_flags=flg, format=fmt )
@@ -109,7 +96,7 @@ class XMPFilesTestCase(unittest.TestCase):
 			xmpfile.close_file()	
 		
 	def test_get_xmp(self):
-		for flg in self.open_flags:
+		for flg in open_flags:
 			for f,fmt in samplefiles.iteritems():
 				# See test_exempi_error()
 				if not self.flg_fmt_combi(flg,fmt):
@@ -119,7 +106,7 @@ class XMPFilesTestCase(unittest.TestCase):
 					xmpfile.close_file()
 					
 	def test_can_put_xmp(self):
-		for flg in self.open_flags:
+		for flg in open_flags:
 			for f,fmt in samplefiles.iteritems():
 				# See test_exempi_error()
 				if not self.flg_fmt_combi(flg,fmt) and not self.exempi_problem(flg, fmt):
@@ -144,7 +131,7 @@ class XMPFilesTestCase(unittest.TestCase):
 		""" 
 		Certain combinations of formats and open flags will thrown an XMPError when you try to open the XMP
 		"""
-		for flg in self.open_flags:
+		for flg in open_flags:
 			for f,fmt in samplefiles.iteritems():
 				if not self.flg_fmt_combi(flg,fmt):
 					xmpfile = XMPFiles()
@@ -176,8 +163,8 @@ class XMPFilesTestCase(unittest.TestCase):
 		xmpfile.open_file( '.tempsamples/sig05-002a.xmp', files.XMP_OPEN_FORUPDATE )
 		xmp = xmpfile.get_xmp()
 		xmpfile.can_put_xmp( xmp )
-			
-				
+	
+	
 
 def suite():
 	suite = unittest.TestSuite()

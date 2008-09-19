@@ -33,10 +33,27 @@ import shutil
 import sys
 sys.path.append('../')
 
-
 import libxmp
 
+#
+# The 
+#
+open_flags = [
+	libxmp.files.XMP_OPEN_NOOPTION,  #< No open option
+	libxmp.files.XMP_OPEN_READ, #< Open for read-only access.
+	libxmp.files.XMP_OPEN_FORUPDATE, #< Open for reading and writing.
+	libxmp.files.XMP_OPEN_ONLYXMP, #< Only the XMP is wanted, allows space/time optimizations.
+	libxmp.files.XMP_OPEN_CACHETNAIL, #< Cache thumbnail if possible,  GetThumbnail will be called.
+	libxmp.files.XMP_OPEN_STRICTLY, #< Be strict about locating XMP and reconciling with other forms. 
+	libxmp.files.XMP_OPEN_USESMARTHANDLER, #< Require the use of a smart handler.
+	libxmp.files.XMP_OPEN_USEPACKETSCANNING, #< Force packet scanning, don't use a smart handler.
+	libxmp.files.XMP_OPEN_LIMITSCANNING, #< Only packet scan files "known" to need scanning.
+	libxmp.files.XMP_OPEN_INBACKGROUND,
+]
+
+
 sampledir = '.tempsamples/'
+""" Name of temporary sample directory. """
 
 """
 Definitions of test files

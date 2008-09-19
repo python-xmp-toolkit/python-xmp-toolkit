@@ -43,20 +43,52 @@ from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
 
 __all__ = ['XMPMeta','XMPIterator','XMPUtils']
 
-def _xmp_string_new():
-	# TODO: check
-	return _exempi.xmp_string_new()
 
-def _xmp_string_free(xmpstr):
-	# TODO: check
-	return _exempi.xmp_string_free(xmpstr)
+class _XMPString(object):
+	"""
+	Helper class (not intended to be exposed) to help managed strings in Exempi
+	"""
+	def __init__(self):
+		self._ptr  = _exempi.xmp_string_new()
 
-def _xmp_string_to_str(xmpstr):
-	# Note the string returned belongs to the object
-	# in C++
-	# TODO: check
-	return _exempi.xmp_string_cstr(xmpstr)
+	def __del__(self):
+		_exempi.xmp_string_free(self._ptr)
+		
+	def get_ptr(self):
+		return self._ptr
+	ptr = property(get_ptr)
+		
+	def __str__(self):
+		# Returns a UTF-8 encode 8-bit string. With a encoding specified so it cannot be
+		# decoded into a unicode string. This is needed when writing it to a file e.g. 
+		return _exempi.xmp_string_cstr(self._ptr)
+		
+	def __unicode__(self):
+		"""
+		Note string cannot be used to be written to file, as it the special encoding character
+		is not included.
+		"""
+		s = _exempi.xmp_string_cstr(self._ptr)
+		return s.decode('utf-8',errors='ignore')
+			
+	
 
+def encode_as_utf8( obj, input_encoding=None ):
+	"""
+	Helper function to ensure that a proper string object in UTF-8 encoding.
+	
+	If obj is not a string, it will try to convert the object into a unicode
+	string and thereafter encode as UTF-8.
+	"""
+	if isinstance( obj, unicode ):
+		return obj.encode('utf-8')
+	elif isinstance( obj, str ):
+		if not input_encoding or input_encoding == 'utf-8':
+			return obj
+		else:
+			return obj.decode(input_encoding).encode('utf-8')
+	else:
+		return unicode( obj ).encode('utf-8')
 
 class _XmpDateTime(Structure):
 	
@@ -71,10 +103,22 @@ class _XmpDateTime(Structure):
 					('tzHour', c_int32),
 					('tzMinute', c_int32),
 					('nanoSecond', c_int32),
-				]			
+				]
+				
 
 
-class XMPMeta:
+#
+# Serialize Options
+#		
+XMP_SERIAL_OMITPACKETWRAPPER   = 0x0010L  # Do not include an XML packet wrapper.
+XMP_SERIAL_READONLYPACKET      = 0x0020L  # Create a read-only XML packet wapper.
+XMP_SERIAL_USECOMPACTFORMAT    = 0x0040L  # Use a highly compact RDF syntax and layout.
+XMP_SERIAL_INCLUDETHUMBNAILPAD = 0x0100L  # Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
+XMP_SERIAL_EXACTPACKETLENGTH   = 0x0200L  # The padding parameter provides the overall packet length.
+XMP_SERIAL_WRITEALIASCOMMENTS  = 0x0400L  # Include XML comments for aliases.
+XMP_SERIAL_OMITALLFORMATTING   = 0x0800L  # Omit all formatting whitespace.
+
+class XMPMeta(object):
 	""" """
 	
 	def __init__( self, **kwargs ):
@@ -135,20 +179,20 @@ class XMPMeta:
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	def set_global_options(self, options):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	@staticmethod
 	def get_version_info():
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	# -------------------------------------
 	# Functions for getting property values
@@ -430,19 +474,19 @@ class XMPMeta:
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	def delete_struct_field( self, schema_ns, struct_name, field_ns, field_name ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 
 	def delete_qualifier( self, schema_ns, prop_name, qual_ns, qual_name ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError
+		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	def does_property_exist(self, schema_ns, prop_name ):
 		"""  """
@@ -476,20 +520,39 @@ class XMPMeta:
 	# -------------------------------------
 	# Functions for parsing and serializing
 	# -------------------------------------
-	def parse_from_str( self, xmp_packet_str ):
-		#/** Parse the XML passed through the buffer and load
-		# * it.
-		# * @param xmp the XMP packet.
-		# * @param buffer the buffer.
-		# * @param len the length of the buffer.
-		# */
-		# TODO: convert string to proper data type
+	# These functions support parsing serialized RDF into an XMP object, and serailizing an XMP object into RDF. 
+	# Serialization is always as UTF-8. 
+	def parse_from_str( self, xmp_packet_str, xmpmeta_wrap = False, input_encoding = None ):
+		"""
+		Parses RDF from a string into a XMP object. The input for parsing may be any valid 
+		Unicode encoding. ISO Latin-1 is also recognized, but its use is strongly discouraged.
+		
+		Note RDF string must contain an outermost <x:xmpmeta> object.
+		
+		:param xmp_packet_str: String to parse.
+		:param xmpmeta_wrap: Optional - If True, the string will be wrapped in an <x:xmpmeta> element.
+		:param input_encoding: Optional - If `xmp_packet_str` is a 8-bit string, it will by default be assumed to be UTF-8 encoded.
+		:return:  true if :class:`libxmp.core.XMPMeta` object can be written in file.
+		:rtype: bool
+		"""
+		xmp_packet_str = encode_as_utf8( xmp_packet_str, input_encoding )
+		
+		if xmpmeta_wrap:
+			xmp_packet_str = "<x:xmpmeta xmlns:x='adobe:ns:meta/'>%s</x:xmpmeta>" % xmp_packet_str
+		
+		
 		l = len(xmp_packet_str)
 		res = _exempi.xmp_parse(self.xmpptr, xmp_packet_str, l )
 		_check_for_error()
 		return res
 		
-	def serialize_to_str( self, options, padding, newline, indent, base_indent ):
+	def serialize_and_format( self, options, padding, newline, indent, base_indent ):
+		"""
+		Serializes an XMPMeta object into a string as RDF. 
+		
+		The specified options must be logically consistent, an exception is thrown if not. You cannot specify both kXMP_OmitPacketWrapper along with kXMP_ReadOnlyPacket, kXMP_IncludeThumbnailPad, or kXMP_ExactPacketLength.
+		
+		"""
 		#/** Serialize the XMP Packet to the given buffer with formatting
 		# * @param xmp the XMP Packet
 		# * @param buffer the buffer to write the XMP to
@@ -507,20 +570,55 @@ class XMPMeta:
 		#							  const char *tab, int32_t indent);
 		raise NotImplementedError
 		
-	def serialize_to_str( self, options, padding = 0 ):
-		#/** Serialize the XMP Packet to the given buffer
-		# * @param xmp the XMP Packet
-		# * @param buffer the buffer to write the XMP to
-		# * @param options options on how to write the XMP.  See XMP_SERIAL_*
-		# * @param padding number of bytes of padding, useful for modifying
-		# *                embedded XMP in place.
-		# * @return TRUE if success.
-		# */
+	def serialize_to_str( self, padding = 0, omit_packet_wrapper = None, read_only_packet = None, use_compact_format = None, 
+			include_thumbnail_pad = None, exact_packet_length = None, write_alias_comments = None, omit_all_formatting = None ):
+		"""
+		Serializes an XMPMeta object into a string as RDF and format. 
 		
-		#xmp_string_new()
-		#bool _exempi.xmp_serialize( xmpptr, xmpstring, options, padding )
-		#
-		raise NotImplementedError
+		:param omit_packet_wrapper: Do not include an XML packet wrapper.
+		:param read_only_packet: Create a read-only XML packet wapper.
+		:param use_compact_format: Use a highly compact RDF syntax and layout.
+		:param include_thumbnail_pad: Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
+		:param exact_packet_length: The padding parameter provides the overall packet length.
+		:param write_alias_comments: Include XML comments for aliases.
+		:param omit_all_formatting: Omit all formatting whitespace.
+		:return: XMPMeta object serialized into a string as RDF.
+		:rtype: 8-bit string in UTF-8 encoding (ready to e.g.  be writtin to a file). Note cannot be converted into unicode python string due to the
+				byte-order mark and encoding character of the XMP packet.
+		"""
+		res_str = None
+		
+		# Ensure padding is an int.
+		padding = int(padding)		
+
+		# Define options
+		options = 0x0L
+		if omit_packet_wrapper:
+			options |= XMP_SERIAL_OMITPACKETWRAPPER
+		if read_only_packet:
+			options |= XMP_SERIAL_READONLYPACKET
+		if use_compact_format:
+			options |= XMP_SERIAL_USECOMPACTFORMAT
+		if include_thumbnail_pad:
+			options |= XMP_SERIAL_INCLUDETHUMBNAILPAD
+		if exact_packet_length:
+			options |= XMP_SERIAL_EXACTPACKETLENGTH
+		if write_alias_comments:
+			options |= XMP_SERIAL_WRITEALIASCOMMENTS
+		if omit_all_formatting:
+			options |= XMP_SERIAL_OMITALLFORMATTING
+		
+		# Serialize
+		xmpstring = _XMPString()
+		res = _exempi.xmp_serialize( self.xmpptr, xmpstring.ptr, options, int(padding) )
+		_check_for_error()
+		
+		# Get string
+		if res:
+			res_str = xmpstring.__str__()
+			
+		del xmpstring
+		return res_str
 		
 	
 	# -------------------------------------
@@ -607,7 +705,8 @@ class XMPMeta:
 		Not Implemented - Exempi does not implement this function yet
 		"""
 		raise NotImplementedError("Exempi does not implement this function yet")
-		
+	
+	
 class XMPIterator:
 	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, options = 0 ):
 		#TODO: check default value for options param

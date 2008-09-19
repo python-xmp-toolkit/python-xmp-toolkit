@@ -29,49 +29,65 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-#TODO: make a proper testsuite for core using unittest
-
+import unittest
 import sys
 import os
 sys.path.append('../')
 
 from libxmp import *
-from libxmp.core import XMPIterator
+from libxmp import XMPIterator
+from libxmp import _exempi
 
+from samples import samplefiles, open_flags, sampledir, make_temp_samples, remove_temp_samples
+import xmpcoverage
 
-def tests_xmp_core():
-	XMPFiles.initialize()
-	xmpfile = XMPFiles()
-	xmpfile.open_file( 'samples/sig05-002a.tif', files.XMP_OPEN_READ )
-	xmp = xmpfile.get_xmp()
+class TestClass(object):
+	def __unicode__(self):
+		return xmpcoverage.RDFCoverage
 
-	print xmp.set_property("http://www.communicatingastronomy.org/avm/1.0/", "Publisher", "Eric Idle")
-	print xmp.get_property("http://www.communicatingastronomy.org/avm/1.0/", "Publisher")
+class XMPMetaTestCase(unittest.TestCase):
+	def setUp(self):
+		make_temp_samples()
+		XMPMeta.initialize()
+		
+	def tearDown(self):
+		XMPMeta.terminate()
+		remove_temp_samples()
+		
+	def test_init_del(self):
+		xmp = XMPMeta()
+		self.failUnless( xmp.internal_ref )
+		del xmp
+		
+	def test_test_files(self):
+		for f in samplefiles.iterkeys():
+			self.assert_( os.path.exists(f), "Test file does not exists." )
+		
+	def test_get_xmp(self):
+		for f,fmt in samplefiles.iteritems():
+			xmpfile = XMPFiles( file_path=f )
+			xmp = xmpfile.get_xmp()
+			self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
+			xmpfile.close_file()
+			
+	def test_parse_str(self):
+		xmp = XMPMeta()
+		self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+		self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp1" ), "Simple1 value" ) 
+		print xmp.serialize_to_str(use_compact_format=True, omit_packet_wrapper=True)
+		del xmp
+		
+def suite():
+	suite = unittest.TestSuite()
+	suite.addTest(unittest.makeSuite(XMPMetaTestCase))	
+	return suite
 
-	import datetime
-	print xmp.set_property_datetime("http://ns.adobe.com/xap/1.0/","ModifyDate", datetime.datetime.now())
-	
-	print xmp.get_property_datetime("http://ns.adobe.com/xap/1.0/","ModifyDate")
-	
-	print xmp.set_property_bool("http://ns.adobe.com/camera-raw-settings/1.0/","AlreadyApplied", False)
-	print xmp.get_property_bool("http://ns.adobe.com/camera-raw-settings/1.0/", "AlreadyApplied")
-
-
-	#TEST ITERATOR
-	
-	xmpi = XMPIterator(xmp, None, None )
-	
-	for i in xrange(1000):
-		print "found:", xmpi.next()
-
-	
-	xmpfile.close_file()
-	XMPFiles.terminate()
-
-def main():
-	tests_xmp_core()
+def test( verbose=2 ):
+	all_tests = suite()
+	runner = unittest.TextTestRunner(verbosity=verbose)
+	result = runner.run(all_tests)
+	return result, runner
 
 if __name__ == "__main__":
-	main()
-	
-	
+	test()
+	#unittest.main()
