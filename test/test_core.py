@@ -59,10 +59,15 @@ def tests_xmp_core():
 
 	#TEST ITERATOR
 	
-	xmpi = XMPIterator(xmp, None, None )
+	xmpi = XMPIterator(xmp)
 	
-	for i in xrange(1000):
-		print "found:", xmpi.next()
+	print "DOPO"
+	
+	for i in range(1000):
+		try:
+			print xmpi.next()
+		except:
+			raise
 
 	
 	xmpfile.close_file()
@@ -73,5 +78,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-	
-	

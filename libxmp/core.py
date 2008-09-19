@@ -69,7 +69,7 @@ class _XMPString(object):
 		is not included.
 		"""
 		s = _exempi.xmp_string_cstr(self._ptr)
-		return s.decode('utf-8',errors='ignore')
+		return s.decode('utf-8') #,errors='ignore')
 			
 	
 
@@ -149,6 +149,7 @@ class XMPMeta(object):
 		representation of the XMPMeta instance.
 		"""
 		return  self.xmpptr
+		
 	internal_ref = property( _get_internal_ref )
 
 	# -------------------------------------
@@ -710,16 +711,13 @@ class XMPMeta(object):
 class XMPIterator:
 	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, options = 0 ):
 		#TODO: check default value for options param
-		options = c_ulong(0x0002L)
-		self.xmpiteratorptr = _exempi.xmp_iterator_new(xmp_obj._get_internal_ref(), schema_ns, prop_name, 0 )
+		#options = c_ulong(0x0002L)
+		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.internal_ref, schema_ns, prop_name, options)
 		_check_for_error()
 		self.schema = schema_ns
 		self.prop_name = prop_name
 		self.options = options
 		
-#	def __init__( self, str ):
-#		raise NotImplementedError
-#		
 		
 	def __del__(self):
 		#_exempi.xmp_iterator_free(self.xmpiteratorptr);
@@ -735,15 +733,14 @@ class XMPIterator:
 		#return _exempi.xmp_iterator_next( xmpiteratorptr, self.schema, self.prop_name, XmpStringPtr propValue,
 		#					   uint32_t *options);
 		#raise NotImplementedError
-		prop_value = _xmp_string_new()
+		prop_value = _XMPString()
 		the_value = None
 		
-		options = c_ulong(0x0002L) #FIXME: hardcoded for testing purposes only
 		
-		if _exempi.xmp_iterator_next(self.xmpiteratorptr,self.schema, self.prop_name, prop_value,0 ):
-			the_value = _exempi.xmp_string_cstr(prop_value)
-		_xmp_string_free(prop_value)
-		return the_value
+		_exempi.xmp_iterator_next(self.xmpiteratorptr,self.schema, self.prop_name, prop_value.get_ptr(),0 )
+			#the_value = _exempi.xmp_string_cstr(prop_value)
+	
+		return unicode(prop_value)
 		
 		
 	def skip( options ):
