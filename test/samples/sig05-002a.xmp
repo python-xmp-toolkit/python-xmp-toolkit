@@ -58,14 +58,14 @@
             <rdf:Bag>
                <rdf:li>Crab Nebula</rdf:li>
                <rdf:li>M1</rdf:li>
-               <rdf:li>Messier 1</rdf:li>
-               <rdf:li>NGC 1952</rdf:li>
-            </rdf:Bag>
-         </dc:subject>
-         <dc:creator>
-            <rdf:Seq>
-               <rdf:li>Spitzer Space Telescope</rdf:li>
-            </rdf:Seq>
+               <rdf:li>Messier 1</rdf:li>                                     
+               <rdf:li>NGC 1952</rdf:li>                                      
+            </rdf:Bag>                                                        
+         </dc:subject>                                                        
+         <dc:creator>                                                         
+            <rdf:Seq>                                                         
+               <rdf:li>Spitzer Space Telescope</rdf:li>                       
+            </rdf:Seq>                                                        
          </dc:creator>
       </rdf:Description>
       <rdf:Description rdf:about=""

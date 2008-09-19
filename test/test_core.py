@@ -54,7 +54,11 @@ def tests_xmp_core():
 
 	#TEST ITERATOR
 	
-	xmpi = XMPIterator(xmp, "http://www.communicatingastronomy.org/avm/1.0/","http://www.communicatingastronomy.org/avm/1.0/" )
+	xmpi = XMPIterator(xmp, None, None )
+	
+	for i in xrange(1000):
+		print "found:", xmpi.next()
+
 	
 	xmpfile.close_file()
 	XMPFiles.terminate()

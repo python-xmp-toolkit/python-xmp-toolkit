@@ -97,7 +97,7 @@ class XMPMeta:
 		"""
 		if self.xmpptr != None:
 			if not _exempi.xmp_free(self.xmpptr):
-				_check_for_errors()
+				_check_for_error()
 		
 	def _get_internal_ref(self):
 		"""
@@ -611,9 +611,10 @@ class XMPMeta:
 class XMPIterator:
 	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, options = 0 ):
 		#TODO: check default value for options param
-		self.xmpiteratorptr = _exempi.xmp_iterator_new(xmp_obj._get_internal_ref(), schema_ns, prop_name, options )
-		_check_for_errors()
-		self.schema = schema
+		options = c_ulong(0x0002L)
+		self.xmpiteratorptr = _exempi.xmp_iterator_new(xmp_obj._get_internal_ref(), schema_ns, prop_name, 0 )
+		_check_for_error()
+		self.schema = schema_ns
 		self.prop_name = prop_name
 		self.options = options
 		
@@ -629,7 +630,7 @@ class XMPIterator:
 	def __iter__(self):
 		return self
 		
-	def next():
+	def next(self):
 		# TODO: define options			
 		# TODO: pointers neeed to be passed in...hmm
 		#return _exempi.xmp_iterator_next( xmpiteratorptr, self.schema, self.prop_name, XmpStringPtr propValue,
@@ -638,9 +639,13 @@ class XMPIterator:
 		prop_value = _xmp_string_new()
 		the_value = None
 		
-		if _exempi.xmp_iterator_next(self.xmpiteratorptr,self.schema, self.prop_name, prop_value, 0 ):
+		options = c_ulong(0x0002L) #FIXME: hardcoded for testing purposes only
+		
+		if _exempi.xmp_iterator_next(self.xmpiteratorptr,self.schema, self.prop_name, prop_value,0 ):
 			the_value = _exempi.xmp_string_cstr(prop_value)
 		_xmp_string_free(prop_value)
+		return the_value
+		
 		
 	def skip( options ):
 		# TODO: define options
