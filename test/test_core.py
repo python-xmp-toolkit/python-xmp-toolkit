@@ -46,28 +46,6 @@ def tests_xmp_core():
 	xmpfile.open_file( 'samples/sig05-002a.tif', files.XMP_OPEN_READ )
 	xmp = xmpfile.get_xmp()
 
- #  print xmp.set_property("http://www.communicatingastronomy.org/avm/1.0/", "Publisher", "Eric Idle")
- #  print xmp.get_property("http://www.communicatingastronomy.org/avm/1.0/", "Publisher")
- #
- #  import datetime
- #  print xmp.set_property_datetime("http://ns.adobe.com/xap/1.0/","ModifyDate", datetime.datetime.now())
- #  
- #  print xmp.get_property_datetime("http://ns.adobe.com/xap/1.0/","ModifyDate")
- #  
- #  print xmp.set_property_bool("http://ns.adobe.com/camera-raw-settings/1.0/","AlreadyApplied", False)
- #  print xmp.get_property_bool("http://ns.adobe.com/camera-raw-settings/1.0/", "AlreadyApplied")
-
-
-	#TEST ITERATOR
-	
-	#xmpi = XMPIterator(xmp)
-	
-	
-#   while(True):
-#   	try:
-#   		print xmpi.next()
-#   	except:
-#   		break
 
 
 	for x in xmp:

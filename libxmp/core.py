@@ -59,7 +59,6 @@ XMP_SERIAL_OMITALLFORMATTING   = 0x0800L  # Omit all formatting whitespace.
 #
 # XMPIterator Options
 #
-
 XMP_ITER_CLASSMASK      = 0x00FFL   # The low 8 bits are an enum of what data structure to iterate. 
 XMP_ITER_PROPERTIES     = 0x0000L   # Iterate the property tree of a TXMPMeta object. 
 XMP_ITER_ALIASES        = 0x0001L   # Iterate the global alias table. - XMP Toolkit and Exempi don't implement this option yet
@@ -69,7 +68,12 @@ XMP_ITER_JUSTLEAFNODES  = 0x0200L   # Just do the leaf nodes, default is all nod
 XMP_ITER_JUSTLEAFNAME   = 0x0400L   # Return just the leaf part of the path, default is the full path. 
 XMP_ITER_INCLUDEALIASES = 0x0800L   # Include aliases, default is just actual properties. 
 XMP_ITER_OMITQUALIFIERS = 0x1000L   # Omit all qualifiers. 
-                                    
+ 
+#
+# XMPIterator Skip Options
+#
+XMP_ITER_SKIPSUBTREE   = 0x0001UL,  # Skip the subtree below the current node. 
+XMP_ITER_SKIPSIBLINGS  = 0x0002UL   # Skip the subtree below and remainingsiblings of the current node. 
 
 class _XMPString(object):
 	"""
@@ -165,7 +169,7 @@ class XMPMeta(object):
 		if self.iterator is not None:
 			del self.iterator
 	
-	#CHANGES: XMPMeta is now directly iterable		
+	#CHANGED: XMPMeta is now directly iterable		
 	def __iter__(self):
 		if self.iterator is None:
 			self.iterator = XMPIterator(self)
@@ -264,7 +268,7 @@ class XMPMeta(object):
 		#bool xmp_get_array_item(XmpPtr xmp, const char *schema, 
 		#						const char *name, int32_t index, XmpStringPtr property,
 		#						uint32_t *propsBits);
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 	
 	def get_struct_field( self, schema_ns, struct_name, field_ns, field_name ):
 		""" 
@@ -302,7 +306,7 @@ class XMPMeta(object):
 		#bool xmp_set_array_item(XmpPtr xmp, const char *schema, 
 		#						const char *name, int32_t index, const char *value,
 		#						uint32_t optionBits);
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 		
 	def append_array_item( self, schema_ns, array_name, array_options, item_value, options = 0 ):
 		"""  """
@@ -317,7 +321,7 @@ class XMPMeta(object):
 		#bool xmp_append_array_item(XmpPtr xmp, const char *schema, const char *name,
 		#						   uint32_t arrayOptions, const char *value,
 		#						   uint32_t optionBits);
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 	
 	def set_struct_field( self, schema_ns, struct_name, field_ns, field_name, field_value, options = 0 ):
 		""" 
@@ -407,17 +411,14 @@ class XMPMeta(object):
 	
 	def set_property_float(self, schema_ns, prop_name, prop_value, options = 0 ):
 		"""  """
-		#/** Set a float XMP property in the XMP packet
-		# * @param xmp the XMP packet
-		# * @param schema
-		# * @param name
-		# * @param value the float value
-		# * @param optionBits
-		# * @return false if failure
-		# */
-		#bool xmp_set_property_float(XmpPtr xmp, const char *schema, 
-		#							const char *name, double value,
-		#							uint32_t optionBits);
+		# Set a float XMP property in the XMP packet
+		# @param xmp the XMP packet
+		# @param schema_ns the schema namespace's URI
+		# @param prop_name the property name
+		# @param value the float value
+		# @param options a bitmask representing options
+		# @return False if failure, True otherwise
+		#
 		prop_value = c_float(prop_value)
 		return bool(_exempi.xmp_set_property_float(self.xmpptr, schema_ns, prop_name, prop_value,0))
 		
@@ -462,7 +463,7 @@ class XMPMeta(object):
 		#			    const char *genericLang, const char *specificLang,
 		#			    XmpStringPtr actualLang, XmpStringPtr itemValue,
 		#			    uint32_t *propBits);
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 
 	def set_localized_text( self, schema_ns, alt_text_name, generic_lang, specific_lang, item_value, options = 0 ):
 		#/** Set a localised text in a localisable property.
@@ -479,13 +480,13 @@ class XMPMeta(object):
 		#bool xmp_set_localized_text(XmpPtr xmp, const char *schema, const char *name,
 		#							const char *genericLang, const char *specificLang,
 		#							const char *value, uint32_t optionBits);
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 		
 	def delete_localized_text( self, schema_ns, alt_text_name, generic_lang, specific_lang ):
 		#bool xmp_delete_localized_text(XmpPtr xmp, const char *schema,
 		#							   const char *name, const char *genericLang,
 		#							   const char *specificLang);
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 			
 	# ------------------------------------------------
 	# Functions for deleting and detecting properties.
@@ -498,7 +499,7 @@ class XMPMeta(object):
 		# * @param name the name of the property
 		# */
 		#bool xmp_delete_property(XmpPtr xmp, const char *schema, const char *name);
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 
 	def delete_array_item( self, schema_ns, array_name, item_index ):
 		""" 
@@ -598,7 +599,7 @@ class XMPMeta(object):
 		#							  uint32_t options, 
 		#							  uint32_t padding, const char *newline, 
 		#							  const char *tab, int32_t indent);
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 		
 	def serialize_to_str( self, padding = 0, omit_packet_wrapper = None, read_only_packet = None, use_compact_format = None, 
 			include_thumbnail_pad = None, exact_packet_length = None, write_alias_comments = None, omit_all_formatting = None ):
@@ -658,7 +659,7 @@ class XMPMeta(object):
 		# TODO: check what xmp_copy can return.
 		# newptr = _exempi.xmp_copy( self.xmpptr )
 		
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
 
 	def count_array_items( self, schema_ns, array_name ):
 		""" 
@@ -682,7 +683,7 @@ class XMPMeta(object):
 		#bool xmp_register_namespace(const char *namespaceURI, 
 		#														const char *suggestedPrefix,
 		#														XmpStringPtr registeredPrefix);
-		raise NotImplementedError()
+		raise NotImplementedError #TODO: implement()
 
 	@staticmethod
 	def get_namespace_prefix( namespace_uri ):
@@ -759,15 +760,17 @@ class XMPIterator:
 		# TODO: pointers neeed to be passed in...hmm
 		#return _exempi.xmp_iterator_next( xmpiteratorptr, self.schema, self.prop_name, XmpStringPtr propValue,
 		#					   uint32_t *options);
-		#raise NotImplementedError
+
 		prop_value = _XMPString()
 		the_value = None
 		
 		schema_ns = _XMPString()
 		prop_name = _XMPString()
 		
-		if _exempi.xmp_iterator_next(self.xmpiteratorptr,schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(),0 ):
-			return unicode(schema_ns),unicode(prop_name),unicode(prop_value)
+		options = c_uint32()
+		
+		if _exempi.xmp_iterator_next(self.xmpiteratorptr, schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(), byref(options)):
+			return unicode(schema_ns),unicode(prop_name),unicode(prop_value), hex(options.value)
 		else:
 			raise StopIteration
 		
@@ -777,9 +780,8 @@ class XMPIterator:
 		_exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
 		_check_for_error()
 		
-		
 
-		
+#FIXME: What's XMPUtils class meant to do?		
 class XMPUtils:
 	def __init__(self):
-		raise NotImplementedError
+		raise NotImplementedError #TODO: implement
