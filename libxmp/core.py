@@ -41,39 +41,11 @@ import datetime
 
 from libxmp import XMPError
 from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
+from libxmp.consts import * 
 
 __all__ = ['XMPMeta','XMPIterator','XMPUtils']
 
 
-#
-# Serialize Options
-#		
-XMP_SERIAL_OMITPACKETWRAPPER   = 0x0010L  # Do not include an XML packet wrapper.
-XMP_SERIAL_READONLYPACKET      = 0x0020L  # Create a read-only XML packet wapper.
-XMP_SERIAL_USECOMPACTFORMAT    = 0x0040L  # Use a highly compact RDF syntax and layout.
-XMP_SERIAL_INCLUDETHUMBNAILPAD = 0x0100L  # Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
-XMP_SERIAL_EXACTPACKETLENGTH   = 0x0200L  # The padding parameter provides the overall packet length.
-XMP_SERIAL_WRITEALIASCOMMENTS  = 0x0400L  # Include XML comments for aliases.
-XMP_SERIAL_OMITALLFORMATTING   = 0x0800L  # Omit all formatting whitespace.
-
-#
-# XMPIterator Options
-#
-XMP_ITER_CLASSMASK      = 0x00FFL   # The low 8 bits are an enum of what data structure to iterate. 
-XMP_ITER_PROPERTIES     = 0x0000L   # Iterate the property tree of a TXMPMeta object. 
-XMP_ITER_ALIASES        = 0x0001L   # Iterate the global alias table. - XMP Toolkit and Exempi don't implement this option yet
-XMP_ITER_NAMESPACES     = 0x0002L   # Iterate the global namespace table. - XMP Toolkit and Exempi don't implement this option yet
-XMP_ITER_JUSTCHILDREN   = 0x0100L   # Just do the immediate children of the root, default is subtree. 
-XMP_ITER_JUSTLEAFNODES  = 0x0200L   # Just do the leaf nodes, default is all nodes in the subtree.
-XMP_ITER_JUSTLEAFNAME   = 0x0400L   # Return just the leaf part of the path, default is the full path. 
-XMP_ITER_INCLUDEALIASES = 0x0800L   # Include aliases, default is just actual properties. 
-XMP_ITER_OMITQUALIFIERS = 0x1000L   # Omit all qualifiers. 
- 
-#
-# XMPIterator Skip Options
-#
-XMP_ITER_SKIPSUBTREE   = 0x0001UL,  # Skip the subtree below the current node. 
-XMP_ITER_SKIPSIBLINGS  = 0x0002UL   # Skip the subtree below and remainingsiblings of the current node. 
 
 class _XMPString(object):
 	"""
