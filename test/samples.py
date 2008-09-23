@@ -31,9 +31,10 @@
 # POSSIBILITY OF SUCH DAMAGE
 
 import os
+import os.path
 import shutil
 import sys
-sys.path.append('../')
+sys.path.append(os.path.pardir)
 
 import libxmp
 

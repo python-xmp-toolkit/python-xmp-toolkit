@@ -34,7 +34,9 @@
 
 import sys
 import os
-sys.path.append('../')
+import os.path
+
+sys.path.append(os.path.pardir)
 
 from libxmp import *
 from libxmp.core import XMPIterator

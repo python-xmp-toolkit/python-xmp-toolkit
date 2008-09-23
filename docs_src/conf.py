@@ -12,10 +12,11 @@
 # serve to show the default value.
 
 import sys, os
+import os.path
 
 def read_version():
     try:
-        return open('../VERSION', 'r').readline().strip()
+        return open(os.path.join(os.path.pardir,'VERSION'), 'r').readline().strip()
     except IOError, e:
         raise SystemExit(
             "Error: you must run setup from the root directory (%s)" % str(e))
@@ -23,7 +24,7 @@ def read_version():
 # If your extensions are in another directory, add it here. If the directory
 # is relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
-sys.path.append( os.path.abspath('../') )
+sys.path.append( os.path.abspath(os.path.pardir) )
 
 # General configuration
 # ---------------------
@@ -43,7 +44,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'Python XMP/AVM Toolkit'
-copyright = '2008 European Space Agency & European Southern Observatory'
+copyright = '2008 European Space Agency & European Southern Observatory AND CRS4 - Centre for Centre for Advanced Studies, Research and Development in Sardinia'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.

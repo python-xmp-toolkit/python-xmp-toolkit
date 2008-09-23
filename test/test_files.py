@@ -33,7 +33,9 @@
 import unittest
 import sys
 import os
-sys.path.append('../')
+import os.path
+
+sys.path.append(os.path.pardir)
 
 from libxmp import *
 from libxmp import _exempi
@@ -130,7 +132,7 @@ class XMPFilesTestCase(unittest.TestCase):
 				
 	def test_exempi_bad_combinations(self):
 		""" 
-		Certain combinations of formats and open flags will thrown an XMPError when you try to open the XMP
+		Certain combinations of formats and open flags will raise an XMPError when you try to open the XMP
 		"""
 		for flg in open_flags:
 			for f,fmt in samplefiles.iteritems():
