@@ -13,11 +13,11 @@ See the additional documentation in docs/ directory for further more detailed
 installation instructions.
 
 Note, in case you haven't installed Exempi you will get an ExempiLoadError
-exception once you try to load libxmp or libavm.
+exception once you try to load libxmp.
 
 Exempi
 ======
-Python XMP/AVM Toolkit requires Exempi 2.0.2 which can be downloaded from
+Python XMP Toolkit requires Exempi 2.0.2 which can be downloaded from
 http://libopenraw.freedesktop.org/wiki/Exempi. To install Exempi, unpack the
 distribution and run:
 

@@ -43,8 +43,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = 'Python XMP/AVM Toolkit'
-copyright = '2008 European Space Agency & European Southern Observatory AND CRS4 - Centre for Centre for Advanced Studies, Research and Development in Sardinia'
+project = 'Python XMP Toolkit'
+copyright = '2008 European Space Agency, European Southern Observatory AND CRS4 - Centre for Centre for Advanced Studies, Research and Development in Sardinia'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -165,7 +165,7 @@ latex_paper_size = 'a4'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'PythonXMPToolkit.tex', 'Python XMP/AVM Toolkit Documentation', 'European Space Agency \& European Southern Observatory', 'manual'),
+  ('index', 'PythonXMPToolkit.tex', 'Python XMP Toolkit Documentation', 'European Space Agency (ESA), European Southern Observatory (ESO) \& CRS4 - Centre for Centre for Advanced Studies, Research and Development in Sardinia', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

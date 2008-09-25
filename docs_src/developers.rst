@@ -1,6 +1,6 @@
 Developers
 ==========
-This section is intended for developers of Python XMP/AVM Toolkit.
+This section is intended for developers of Python XMP Toolkit.
 
 To obtain a source distribution go to the project website at
 http://code.google.com/p/python-xmp-toolkit/source/checkout and follow the
@@ -12,7 +12,6 @@ Overview of Source Distribution
 -------------------------------
 
  * ``docs_src/`` -- Source code for documentation.
- * ``libavm/`` -- Source files for AVM Toolkit
  * ``libxmp/`` -- Source files for XMP Toolkit
  * ``Makeile`` -- Makefile for producing documentation, distributions and cleaning directory.
  * ``setup.py`` -- Distutils configuration file.

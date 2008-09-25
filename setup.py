@@ -31,7 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE
 
 """
-Install script for libxmp and libavm.
+Install script for libxmp.
 """
 
 from distutils.core import setup
@@ -47,12 +47,12 @@ def read_version():
 setup(
 	name='python-xmp-toolkit',
 	version=read_version(),
-	description='Python XMP/AVM Toolkit for working with metadata.',
+	description='Python XMP Toolkit for working with metadata.',
 	author='Lars Holm Nielsen & Fabien Chereau',
-	author_email='lnielsen@eso.org',
+	author_email='lnielsen@eso.org,federico.caboni@me.com',
 	url='http://code.google.com/p/python-xmp-toolkit/',
 	download_url='http://code.google.com/p/python-xmp-toolkit/downloads/list',
-	long_description='Python XMP/AVM Toolkit is a library for working with XMP metadata, as well as reading/writing XMP metadata stored in many different file formats. The library further includes support for working with Astronomy Visualization Metadata (AVM) – a metadata standard for print-ready and screen ready astronomical imagery based on XMP.',
+	long_description='Python XMP Toolkit is a library for working with XMP metadata, as well as reading/writing XMP metadata stored in many different file formats.',
 	license='New BSD License',
-	packages=['libxmp', 'libavm'],
+	packages=['libxmp'],
 )

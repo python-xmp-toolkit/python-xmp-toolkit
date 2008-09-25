@@ -38,6 +38,7 @@ then be used to manipulate the individual XMP properties. :class:`XMPFiles` cont
 includes a fallback packet scanner that can be used for unknown file formats. 
 
 **Open Options:**
+
  * :attr:`XMP_OPEN_NOOPTION`
  * :attr:`XMP_OPEN_READ`
  * :attr:`XMP_OPEN_FORUPDATE`
@@ -50,6 +51,7 @@ includes a fallback packet scanner that can be used for unknown file formats.
  * :attr:`XMP_OPEN_INBACKGROUND`
 
 **Close Options:**
+
  * :attr:`XMP_CLOSE_NOOPTION`
  * :attr:`XMP_CLOSE_SAFEUPDATE`
 """

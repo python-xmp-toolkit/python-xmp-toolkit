@@ -45,10 +45,9 @@ sdist: docs clean
 	python setup.py sdist
 
 runtests: 
-	env PYTHONPATH=.:$PYTHONPATH python test/test.py
+	env PYTHONPATH=.:$PYTHONPATH python test/test_all.py
 
 clean:
-	rm -f libavm/*.pyc
 	rm -f libxmp/*.pyc
 	rm -rf docs_src/.build
 	rm -rf dist

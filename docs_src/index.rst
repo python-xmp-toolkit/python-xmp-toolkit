@@ -1,14 +1,18 @@
 Welcome
 =======
 
-*Python XMP/AVM Toolkit* is a library for working with `XMP <http://www.adobe.com/products/xmp/>`_ metadata, as well as reading/writing XMP metadata stored in many different file formats. The library further includes support for working with `Astronomy Visualization Metadata (AVM) <http://www.virtualastronomy.org>`_ -- a metadata standard for print-ready and screen ready astronomical imagery based on XMP.
+*Python XMP Toolkit* is a library for working with `XMP <http://www.adobe.com/products/xmp/>`_ metadata, as well as reading/writing XMP metadata stored in many different file formats. 
 
 **Authors:**
  * Lars Holm Nielsen <lnielsen@eso.org>
+ * Federico Caboni <federico.caboni@me.com>
+ * Fabien Chereau <fchereau@eso.org>
 
 .. warning::
 
-	Library is under heavy development at the moment - in case you want to test it, you need to install Exempi first (http://libopenraw.freedesktop.org/wiki/Exempi). We are testing against Exempi version 2.0.1. Also note that to make Exempi compile on OS X, you need to apply a patch to the file exempi/exempi.cpp in the distribution. The library has only been tested on OS X for the moment - it will probably run on Linux. Windows is however not support, and it's unclear whether it will be (depends on if we manage to compile Exempi on Windows).
+	The library is at the moment in an unusable state. A development sprint is going on to bring the library up in a feature complete usable state. Further updates will follow just after the sprint. 
+	
+	In case you want to test the library, you need to install Exempi first (http://libopenraw.freedesktop.org/wiki/Exempi). Be aware that only Exempi version 2.0.2 compiles on Mac, as version 2.0.1 where using compiler features not available for GCC on OS X. We suggest installing Exempi's own dependencies (i.e.: Boost) using the excellent MacPorts (formerly known as Darwin Ports). The library is being tested with OS X and Linux (Ubuntu) for the moment: Microsoft Windows is not currently supported, and it's unclear whether it will ever be (depends on if we manage to compile Exempi on Windows, which is quite low on our priority list right now). Further documentation can be found in docs_src/ in the source code.
 
 Documentation
 =============

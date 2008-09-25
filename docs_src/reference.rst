@@ -49,7 +49,3 @@ XMPFiles
 .. autoclass:: XMPFiles
 	:members:
 	:inherited-members:
-
-AVM Toolkit
------------
-.. automodule:: libavm
