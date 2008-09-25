@@ -33,12 +33,6 @@ XMPIterator
 	:members:
 	:inherited-members:
 
-XMPUtils
-""""""""
-.. autoclass:: XMPUtils
-	:members:
-	:inherited-members:
-
 Files Package
 ^^^^^^^^^^^^^
 

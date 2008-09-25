@@ -1,3 +1,35 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
+# Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# 
+#	  * Redistributions of source code must retain the above copyright
+#		notice, this list of conditions and the following disclaimer.
+# 
+#	  * Redistributions in binary form must reproduce the above copyright
+#		notice, this list of conditions and the following disclaimer in the
+#		documentation and/or other materials provided with the distribution.
+# 
+#	  * Neither the name of the European Space Agency, European Southern 
+#		Observatory, CRS4 nor the names of its contributors may be used to endorse or 
+#		promote products derived from this software without specific prior 
+#		written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY ESA/ESO AND CRS4 ``AS IS'' AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL ESA/ESO BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE
+
 ### XMP FILES 
 
 #
@@ -91,5 +123,37 @@ XMP_ITER_OMITQUALIFIERS = 0x1000L   # Omit all qualifiers.
 # XMPIterator Skip Options
 #
 XMP_ITER_SKIPSUBTREE   = 0x0001L,  # Skip the subtree below the current node. 
-XMP_ITER_SKIPSIBLINGS  = 0x0002L   # Skip the subtree below and remaining siblings of the current node. 
+XMP_ITER_SKIPSIBLINGS  = 0x0002L   # Skip the subtree below and remaining siblings of the current node.
 
+#
+# Definition of serialization options names.
+#
+XMP_SERIAL_OPTIONS = {
+	'omit_packet_wrapper' : XMP_SERIAL_OMITPACKETWRAPPER,
+	'read_only_packet' : XMP_SERIAL_READONLYPACKET,
+	'use_compact_format' : XMP_SERIAL_USECOMPACTFORMAT,
+	'include_thumbnail_pad' : XMP_SERIAL_INCLUDETHUMBNAILPAD,
+	'exact_packet_length' : XMP_SERIAL_EXACTPACKETLENGTH,
+	'write_alias_comments' : XMP_SERIAL_WRITEALIASCOMMENTS,
+	'omit_all_formatting' : XMP_SERIAL_OMITALLFORMATTING,
+}
+
+def options_mask( xmp_options, **kwargs ):
+	"""
+	Function for creating the options bit mask to parse into exempi C functions.
+	
+	Example::
+	
+	  opt = consts.options_mask( consts.XMP_SERIAL, **kwargs )
+	
+	or::
+	
+	  opt = consts.options_mask( consts.XMP_SERIAL, omit_packet_wrapper=True )	
+	"""
+	bitmask = 0x0L
+	
+	for const_name,const_value in kwargs.iteritems():
+		if const_value ==True and const_name in xmp_options:
+			bitmask |= xmp_options[const_name]
+			
+	return bitmask

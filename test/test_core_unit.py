@@ -77,8 +77,44 @@ class XMPMetaTestCase(unittest.TestCase):
 		xmp = XMPMeta()
 		self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
 		self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp1" ), "Simple1 value" ) 
-		print xmp.serialize_to_str(use_compact_format=True, omit_packet_wrapper=True)
 		del xmp
+
+	def test_serialize_str(self):
+		xmp = XMPMeta()
+		self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+		self.assert_( isinstance( xmp.serialize_to_str(use_compact_format=True, omit_packet_wrapper=True), str ), "Result is not a 8-bit string" )
+		self.assertRaises( XMPError, xmp.serialize_to_str, read_only_packet=True, omit_packet_wrapper=True )
+		self.assertRaises( XMPError, xmp.serialize_to_str, include_thumbnail_pad=True, omit_packet_wrapper=True )
+		self.assertRaises( XMPError, xmp.serialize_to_str, exact_packet_length=True, omit_packet_wrapper=True )
+		del xmp
+		
+	def test_serialize_unicode(self):
+		xmp = XMPMeta()
+		self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+		self.assert_( isinstance( xmp.serialize_to_unicode(use_compact_format=True, omit_packet_wrapper=False), unicode ), "Result is not a unicode string" )
+		self.assertRaises( XMPError, xmp.serialize_to_unicode, read_only_packet=True, omit_packet_wrapper=True )
+		self.assertRaises( XMPError, xmp.serialize_to_unicode, include_thumbnail_pad=True, omit_packet_wrapper=True )
+		self.assertRaises( XMPError, xmp.serialize_to_unicode, exact_packet_length=True, omit_packet_wrapper=True )
+		del xmp
+		
+	def test_serialize_and_format(self):
+		xmp = XMPMeta()
+		self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+		self.assert_( isinstance( xmp.serialize_and_format( padding=0, newlinechr='NEWLINE', tabchr = 'TAB', indent=6 ), str ), "Result is not a 8-bit string" )
+		self.assertRaises( XMPError, xmp.serialize_and_format, read_only_packet=True, omit_packet_wrapper=True )
+		self.assertRaises( XMPError, xmp.serialize_and_format, include_thumbnail_pad=True, omit_packet_wrapper=True )
+		self.assertRaises( XMPError, xmp.serialize_and_format, exact_packet_length=True, omit_packet_wrapper=True )
+		del xmp
+		
+	def test_clone(self):
+		xmp1 = XMPMeta()
+		self.assert_( xmp1 == xmp1, "XMP1 not equal it self" )
+		self.failIf( xmp1 != xmp1, "XMP1 is equal it self" )
+		xmp2 = xmp1.clone()
+		self.failIf( xmp1 == xmp2, "XMP1 is not equal XMP2" )
+		self.assert_( xmp1 != xmp2, "XMP1 is not equal XMP2" )
+		del xmp1
+		del xmp2
 		
 def suite():
 	suite = unittest.TestSuite()
