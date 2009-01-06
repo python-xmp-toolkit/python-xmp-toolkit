@@ -254,7 +254,14 @@ class XMPMeta(object):
 		#bool xmp_get_array_item(XmpPtr xmp, const char *schema, 
 		#						const char *name, int32_t index, XmpStringPtr property,
 		#						uint32_t *propsBits);
-		raise NotImplementedError #TODO: implement
+		value = None
+		the_prop = _exempi.xmp_string_new()
+		
+		if _exempi.xmp_get_array_item( self.xmpptr, schema_ns, array_name, item_index, the_prop, 0 ):
+			value = _exempi.xmp_string_cstr(the_prop)
+
+		_exempi.xmp_string_free(the_prop)
+		return value
 	
 	def get_struct_field( self, schema_ns, struct_name, field_ns, field_name ):
 		""" 
@@ -292,7 +299,7 @@ class XMPMeta(object):
 		#bool xmp_set_array_item(XmpPtr xmp, const char *schema, 
 		#						const char *name, int32_t index, const char *value,
 		#						uint32_t optionBits);
-		raise NotImplementedError #TODO: implement
+		return bool(_exempi.xmp_set_array_item(self.xmpptr, schema_ns, array_name, item_index, item_value, 0))
 		
 	def append_array_item( self, schema_ns, array_name, array_options, item_value, options = 0 ):
 		"""	 """
