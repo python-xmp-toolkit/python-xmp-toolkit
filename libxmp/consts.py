@@ -122,8 +122,49 @@ XMP_ITER_OMITQUALIFIERS = 0x1000L   # Omit all qualifiers.
 #
 # XMPIterator Skip Options
 #
-XMP_ITER_SKIPSUBTREE   = 0x0001L,  # Skip the subtree below the current node. 
+XMP_ITER_SKIPSUBTREE   = 0x0001L  # Skip the subtree below the current node. 
 XMP_ITER_SKIPSIBLINGS  = 0x0002L   # Skip the subtree below and remaining siblings of the current node.
+
+#
+# PropBits
+#
+XMP_PROP_VALUE_IS_URI     = 0x00000002L # The value is a URI, use rdf:resource attribute.  DISCOURAGED 
+# Options relating to qualifiers attached to a property. 
+XMP_PROP_HAS_QUALIFIERS   = 0x00000010L # The property has qualifiers,includes rdf:type and  xml:lang.
+XMP_PROP_IS_QUALIFIER     = 0x00000020L # This is a qualifier, includes rdf:type and xml:lang. */
+XMP_PROP_HAS_LANG         = 0x00000040L # Implies XMP_PropHasQualifiers,  property has xml:lang. 
+XMP_PROP_HAS_TYPE         = 0x00000080L # Implies XMP_PropHasQualifiers,  property has rdf:type.
+
+# Options relating to the data structure form. 
+XMP_PROP_VALUE_IS_STRUCT = 0x00000100L  # The value is a structure with nested fields. 
+XMP_PROP_VALUE_IS_ARRAY  = 0x00000200L  # The value is an array (RDF alt/bag/seq). 
+XMP_PROP_ARRAY_IS_UNORDERED = XMP_PROP_VALUE_IS_ARRAY  # The item order does not matter.
+XMP_PROP_ARRAY_IS_ORDERED = 0x00000400L # Implies XMP_PropValueIsArray,item order matters. 
+XMP_PROP_ARRAY_IS_ALT    = 0x00000800L  # Implies XMP_PropArrayIsOrdered,items are alternates. 
+
+
+# Additional struct and array options.
+XMP_PROP_ARRAY_IS_ALTTEXT = 0x00001000L  # Implies kXMP_PropArrayIsAlternate,items are localized text. 
+# kXMP_InsertBeforeItem  = 0x00004000L  ! Used by SetXyz functions. */
+# kXMP_InsertAfterItem   = 0x00008000L  ! Used by SetXyz functions. */
+
+# Other miscellaneous options
+XMP_PROP_IS_ALIAS         = 0x00010000L #This property is an alias name for another property. 
+XMP_PROP_HAS_ALIASES      = 0x00020000L #This property is the base value for a set of aliases. 
+XMP_PROP_IS_INTERNAL      = 0x00040000L #This property is an "internal" property, owned by applications. 
+XMP_PROP_IS_STABLE        = 0x00100000L #This property is not derived from the document content. 
+XMP_PROP_IS_DERIVED       = 0x00200000L #This property is derived from the document content. 
+# kXMPUtil_AllowCommas   = 0x10000000L  ! Used by TXMPUtils::CatenateArrayItems and ::SeparateArrayItems. 
+# kXMP_DeleteExisting    = 0x20000000L  ! Used by TXMPMeta::SetXyz functions to delete any pre-existing property. 
+XMP_IS_SCHEMA            = 0x80000000L  #Returned by iterators - #define to avoid warnings - Not defined by Exempi
+XMP_PROP_IS_SCHEMA            = 0x80000000L  #Returned by iterators - #define to avoid warnings - Not defined by Exempi
+
+# Multiple flag masks
+XMP_PROP_ARRAY_FORM_MASK  = XMP_PROP_VALUE_IS_ARRAY	| XMP_PROP_ARRAY_IS_ORDERED | XMP_PROP_ARRAY_IS_ALT | XMP_PROP_ARRAY_IS_ALTTEXT
+XMP_PROP_COMPOSITE_MASK   = XMP_PROP_VALUE_IS_STRUCT | XMP_PROP_ARRAY_FORM_MASK  #Is it simple or composite (array or struct)? 
+XMP_IMPL_RESERVED_MASK    = 0x70000000L   # Reserved for transient use by the implementation. 
+
+
 
 #
 # Definition of serialization options names.
@@ -137,6 +178,10 @@ XMP_SERIAL_OPTIONS = {
 	'write_alias_comments' : XMP_SERIAL_WRITEALIASCOMMENTS,
 	'omit_all_formatting' : XMP_SERIAL_OMITALLFORMATTING,
 }
+
+
+def has_option ( xmp_option, bitmask ):
+	return bool( xmp_option & bitmask )
 
 def options_mask( xmp_options, **kwargs ):
 	"""

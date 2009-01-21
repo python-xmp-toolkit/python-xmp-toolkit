@@ -64,7 +64,7 @@ class XMPMetaTestCase(unittest.TestCase):
 		
 	def test_test_files(self):
 		for f in samplefiles.iterkeys():
-			self.assert_( os.path.exists(f), "Test file does not exists." )
+			self.assert_( os.path.exi sts(f), "Test file does not exists." )
 		
 	def test_get_xmp(self):
 		for f,fmt in samplefiles.iteritems():

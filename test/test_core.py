@@ -39,25 +39,49 @@ import os.path
 sys.path.append(os.path.pardir)
 
 from libxmp import *
-from libxmp.core import XMPIterator
+from libxmp.core import XMPIterator, XMPMeta
+from libxmp.consts import *
 
 
 def tests_xmp_core():
 	XMPFiles.initialize()
 	xmpfile = XMPFiles()
-	xmpfile.open_file( 'samples/sig05-002a.tif', files.XMP_OPEN_READ )
-	xmp = xmpfile.get_xmp()
-
-
-
-	for x in xmp:
-		print x
+	xmpfile.open_file( 'samples/img1.png', XMP_OPEN_FORUPDATE )
+	#xmp = xmpfile.get_xmp()
+	xmp = XMPMeta()
+	d = {}
+	print "OK"
 	
+	
+#	for x in xmp:
+#		print x
+#		if has_option(x[-1],XMP_IS_SCHEMA):
+#			d[x[0]] = []
+#		else:
+#			d[x[0]].append(x[1:])
+
+#bool xmp_set_property(XmpPtr xmp, const char *schema, 
+#					  const char *name, const char *value,
+#					  uint32_t optionBits);			
+	
+	xmp.set_property('http://purl.org/dc/elements/1.1/', 'dc:description', 'Ciao mamma guarda come mi diverto col cantatu',0)
+	xmp.append_array_item('http://purl.org/dc/elements/1.1/', 'dc:creator', 'Gianni', XMP_PROP_ARRAY_IS_ORDERED )
+	xmp.append_array_item('http://purl.org/dc/elements/1.1/', 'dc:creator', 'Pino', XMP_PROP_ARRAY_IS_ORDERED )
+
+	print "OK2"
+	xmpfile.put_xmp(xmp)
+	print d.keys()
+	print "ok3"
 	xmpfile.close_file()
 	XMPFiles.terminate()
 
+
+	
+
+
 def main():
 	tests_xmp_core()
+
 
 if __name__ == "__main__":
 	main()

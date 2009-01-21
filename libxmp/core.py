@@ -72,9 +72,41 @@ class _XMPString(object):
 		"""
 		s = _exempi.xmp_string_cstr(self._ptr)
 		return s.decode('utf-8') #,errors='ignore')
-			
+
+#CHANGED: added an _XMPNode class whose instances are (will soon be, actually) returned by XMPIterator			
+class _XMPNode(object):
+	"""
+	Helper class (not intended to be exposed): its instances are returned by XMPIterator
+	"""
+	def __init__(self, schema, name, value, options): 
+		self.schema = schema
+		self.name = name
+		self.value = value
+		self.options = options
+		
+		
+	def __del__(self):
+		pass
+		
+		
+	def _get_kind(self):
+		if has_option(self.options,XMP_IS_SCHEMA):
+			return 'schema'	
+		elif has_option(self.options,XMP_PROP_VALUE_IS_ARRAY):
+			return 'bag'
+		elif has_option(self.options,XMP_PROP_ARRAY_IS_ORDERED):
+			return 'array'
+		elif has_option(self.options,XMP_PROP_VALUE_IS_STRUCT):
+			return 'struct'
+		else:
+			return self.options
+		
+	def _get_options(self):
+		pass
+		
+	kind = property(_get_kind)
 	
-# CHANGED: renamed from encode_as_utf8 to _encode_as_utf8
+
 def _encode_as_utf8( obj, input_encoding=None ):
 	"""
 	Helper function to ensure that a proper string object in UTF-8 encoding.
@@ -161,6 +193,18 @@ class XMPMeta(object):
 	def __ne__(self, other):
 		""" Check if two XMPMeta object are not equal. """
 		return self.xmpptr != other.xmpptr
+		
+	def as_object(self):
+		d = {}
+		
+		for i in self:
+			if i.kind == 'schema':
+				d[i.schema] = {}
+			else:
+				d[i.schema][i.name] = i.value
+			
+		return d
+			
 		
 	def _get_internal_ref(self):
 		"""
@@ -254,14 +298,15 @@ class XMPMeta(object):
 		#bool xmp_get_array_item(XmpPtr xmp, const char *schema, 
 		#						const char *name, int32_t index, XmpStringPtr property,
 		#						uint32_t *propsBits);
-		value = None
-		the_prop = _exempi.xmp_string_new()
+		# CHANGED: implemented get_array_item
 		
-		if _exempi.xmp_get_array_item( self.xmpptr, schema_ns, array_name, item_index, the_prop, 0 ):
-			value = _exempi.xmp_string_cstr(the_prop)
-
-		_exempi.xmp_string_free(the_prop)
-		return value
+		the_prop = _exempi.xmp_string_new()
+		options = c_int32()
+		
+		if _exempi.xmp_get_array_item( self.xmpptr, schema_ns, array_name, item_index, the_prop, byref(options)):
+			return {_exempi.xmp_string_cstr(the_prop):options.value}
+		else:
+			raise Exception,"Spacciau"
 	
 	def get_struct_field( self, schema_ns, struct_name, field_ns, field_name ):
 		""" 
@@ -299,7 +344,7 @@ class XMPMeta(object):
 		#bool xmp_set_array_item(XmpPtr xmp, const char *schema, 
 		#						const char *name, int32_t index, const char *value,
 		#						uint32_t optionBits);
-		return bool(_exempi.xmp_set_array_item(self.xmpptr, schema_ns, array_name, item_index, item_value, 0))
+		return bool(_exempi.xmp_set_array_item(self.xmpptr, schema_ns, array_name, item_index, item_value, options))
 		
 	def append_array_item( self, schema_ns, array_name, array_options, item_value, options = 0 ):
 		"""	 """
@@ -314,7 +359,9 @@ class XMPMeta(object):
 		#bool xmp_append_array_item(XmpPtr xmp, const char *schema, const char *name,
 		#						   uint32_t arrayOptions, const char *value,
 		#						   uint32_t optionBits);
-		raise NotImplementedError #TODO: implement
+		return bool(_exempi.xmp_append_array_item(self.xmpptr, schema_ns, array_name, item_value, options))
+				
+		
 	
 	def set_struct_field( self, schema_ns, struct_name, field_ns, field_name, field_value, options = 0 ):
 		""" 
@@ -523,11 +570,25 @@ class XMPMeta(object):
 		#bool xmp_has_property(XmpPtr xmp, const char *schema, const char *name);
 		return bool(_exempi.xmp_has_property(xmp.xmpptr, schema_ns, prop_name))
 		
-	def does_array_item_exist(self, schema_ns, array_name, item_index ):
+	def does_array_item_exist(self, schema_ns, array_name, item ):
 		""" 
-		Not Implemented - Exempi does not implement this function yet
+		Returns True if item is in array, False otherwise
+		Implemented in pure Python - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
+		#CHANGED: Implemented in Python!
+		
+
+		index = 0
+		
+		the_prop = _exempi.xmp_string_new()
+		
+		while( True ):
+			if _exempi.xmp_get_array_item( self.xmpptr, str(schema_ns), str(array_name), index+1, the_prop, None):
+				index += 1
+			else:
+				break
+		
+		return index
 		
 	def does_struct_field_exist(self, schema_ns, struct_name, field_ns, field_name ):
 		""" 
@@ -689,9 +750,23 @@ class XMPMeta(object):
 
 	def count_array_items( self, schema_ns, array_name ):
 		""" 
-		Not Implemented - Exempi does not implement this function yet
+		Counts the number of a given array's items
+		Implemented in pure Python - Exempi does not implement this function yet
 		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
+		#CHANGED: Implemented in Python!
+		
+
+		index = 0
+		
+		the_prop = _exempi.xmp_string_new()
+		
+		while( True ):
+			if _exempi.xmp_get_array_item( self.xmpptr, str(schema_ns), str(array_name), index+1, the_prop, None):
+				index += 1
+			else:
+				break
+		
+		return index
 			
 	# -------------------------------------
 	# Namespace Functions
@@ -781,11 +856,8 @@ class XMPIterator:
 	def __iter__(self):
 		return self
 		
-	def next(self):
-		# TODO: define options			
-		# TODO: pointers neeed to be passed in...hmm
-		#return _exempi.xmp_iterator_next( xmpiteratorptr, self.schema, self.prop_name, XmpStringPtr propValue,
-		#					   uint32_t *options);
+	def next(self):		
+		# CHANGED: I figured that out: those uint32 pointers are used to write in bitmasks that identify the kind of the visited node
 
 		prop_value = _XMPString()
 		the_value = None
@@ -795,8 +867,38 @@ class XMPIterator:
 		
 		options = c_uint32()
 		
-		if _exempi.xmp_iterator_next(self.xmpiteratorptr, schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(), byref(options)):
-			return unicode(schema_ns),unicode(prop_name),unicode(prop_value), hex(options.value)
+
+		
+		
+		
+		if _exempi.xmp_iterator_next(self.xmpiter
+		atorptr, schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(), byref(options)):   	
+		
+			#decode option bits into a human-readable format (that is, a dict)
+			opts = {
+				'VALUE_IS_URI' : False,
+				'IS_QUALIFIER' : False,
+				'HAS_QUALIFIERS' : False,
+				'HAS_LANG' : False,
+				'HAS_TYPE' : False,
+				'VALUE_IS_STRUCT' : False,
+				'VALUE_IS_ARRAY' : False,
+				'ARRAY_IS_ORDERED' : False,
+				'ARRAY_IS_ALT' : False,
+				'ARRAY_IS_ALTTEXT' : False,
+				'IS_ALIAS' : False,
+				'HAS_ALIASES' : False,
+				'IS_INTERNAL' : False, 
+				'IS_STABLE' : False,
+				'IS_DERIVED' : False,
+				'IS_SCHEMA' : False,
+			}
+			
+			for opt in opts:
+				if has_option(options.value, getattr(consts,'XMP_PROP_'+opt)):
+					opts[opt] = True
+			
+			return (unicode(schema_ns),unicode(prop_name),unicode(prop_value), opts)
 		else:
 			raise StopIteration
 		
@@ -805,6 +907,3 @@ class XMPIterator:
 		# TODO: define options
 		_exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
 		_check_for_error()
-		
-
-# CHANGED: Removed XMPUtils class. I don't think Exempi implements any of the classes from Adobe XMP Toolkit XMPUtils.
