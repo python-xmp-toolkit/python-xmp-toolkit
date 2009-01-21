@@ -871,9 +871,8 @@ class XMPIterator:
 		
 		
 		
-		if _exempi.xmp_iterator_next(self.xmpiter
-		atorptr, schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(), byref(options)):   	
-		
+		if _exempi.xmp_iterator_next(self.xmpiteratorptr, schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(), 
+byref(options)):
 			#decode option bits into a human-readable format (that is, a dict)
 			opts = {
 				'VALUE_IS_URI' : False,
