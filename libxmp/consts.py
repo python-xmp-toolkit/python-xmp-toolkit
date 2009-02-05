@@ -164,7 +164,22 @@ XMP_PROP_ARRAY_FORM_MASK  = XMP_PROP_VALUE_IS_ARRAY	| XMP_PROP_ARRAY_IS_ORDERED 
 XMP_PROP_COMPOSITE_MASK   = XMP_PROP_VALUE_IS_STRUCT | XMP_PROP_ARRAY_FORM_MASK  #Is it simple or composite (array or struct)? 
 XMP_IMPL_RESERVED_MASK    = 0x70000000L   # Reserved for transient use by the implementation. 
 
-
+#
+# Common Namespaces
+#
+XMP_NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+XMP_NS_DC = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+XMP_NS_PHOTOSHOP = "http://ns.adobe.com/photoshop/1.0/"
+XMP_NS_TIFF = "http://ns.adobe.com/tiff/1.0/"
+XMP_NS_EXIF = "http://ns.adobe.com/exif/1.0/"
+XMP_NS_XAP = "http://ns.adobe.com/xap/1.0/"
+XMP_NS_AUX = "http://ns.adobe.com/exif/1.0/aux/"
+XMP_NS_CRS = "http://ns.adobe.com/camera-raw-settings/1.0/"
+XMP_NS_XAPMM = "http://ns.adobe.com/xap/1.0/mm/"
+XMP_NS_IPTC = "http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/"
+XMP_NS_ILLUSTRATOR = "http://ns.adobe.com/illustrator/1.0/"
+XMP_NS_VR = "http://www.communicatingastronomy.org/repository/1.0/"
+XMP_NS_AVM = "http://www.communicatingastronomy.org/avm/1.0/"
 
 #
 # Definition of serialization options names.

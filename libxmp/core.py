@@ -538,8 +538,7 @@ class XMPMeta(object):
 		# * @param schema the schema of the property
 		# * @param name the name of the property
 		# */
-		#bool xmp_delete_property(XmpPtr xmp, const char *schema, const char *name);
-		raise NotImplementedError #TODO: implement
+		_exempi.xmp_delete_property(self.xmpptr, schema_ns, prop_name);
 
 	def delete_array_item( self, schema_ns, array_name, item_index ):
 		""" 
