@@ -295,6 +295,20 @@ XMP_ITERATOR_OPTIONS = {
 	'iter_omitqualifiers' : XMP_ITER_OMITQUALIFIERS								
 }
 
+# Definition of open options names
+XMP_OPEN_OPTIONS = {
+	'open_nooption' : XMP_OPEN_NOOPTION,
+	'open_read' : XMP_OPEN_READ,
+	'open_forupdate' : XMP_OPEN_FORUPDATE,
+	'open_onlyxmp' : XMP_OPEN_ONLYXMP,
+	'open_cachetnail' : XMP_OPEN_CACHETNAIL,
+	'open_strictly' : XMP_OPEN_STRICTLY,
+	'open_usesmarthandler' : XMP_OPEN_USESMARTHANDLER,
+	'open_usepacketscanning' : XMP_OPEN_USEPACKETSCANNING,
+	'open_limitscanning' : XMP_OPEN_LIMITSCANNING,
+	'open_inbackground' : XMP_OPEN_INBACKGROUND,								
+}
+
 # Definition of XMPIterator.skip()'s option names
 XMP_SKIP_OPTIONS = {
 	'iter_skipsubtree' : XMP_ITER_SKIPSUBTREE, 

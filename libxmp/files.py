@@ -104,7 +104,7 @@ class XMPFiles:
 			raise XMPError( 'Could not free memory for XMPFiles.' )
 
 		
-	def open_file(self, file_path, open_flags = XMP_OPEN_NOOPTION ):
+	def open_file(self, file_path, **kwargs):
 		"""
 		Open a given file and read XMP from file. File must be closed again with
 		:func:`close_file`
@@ -113,6 +113,8 @@ class XMPFiles:
 		:param open_flags: One of the open flags - can be left out.
 		:raises XMPError: in case of errors.
 		"""
+		open_flags = options_mask(consts.XMP_OPEN_OPTIONS, **kwargs ) if kwargs else XMP_OPEN_NOOPTION
+		
 		if self._file_path != None:
 			raise XMPError('A file is already open - close it first.')
 		
