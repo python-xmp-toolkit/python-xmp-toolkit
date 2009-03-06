@@ -270,16 +270,16 @@ def options_mask( xmp_options, **kwargs ):
 	
 	Example::
 	
-	  opt = consts.options_mask( consts.XMP_SERIAL, **kwargs )
+	  opt = consts.options_mask( consts.XMP_SERIAL_OPTIONS, **kwargs )
 	
 	or::
 	
-	  opt = consts.options_mask( consts.XMP_SERIAL, omit_packet_wrapper=True )	
+	  opt = consts.options_mask( consts.XMP_SERIAL_OPTIONS, omit_packet_wrapper=True )	
 	"""
 	bitmask = 0x0L
 	
 	for const_name,const_value in kwargs.iteritems():
-		if const_value ==True and const_name in xmp_options:
+		if const_value and const_name in xmp_options:
 			bitmask |= xmp_options[const_name]
 			
 	return bitmask
