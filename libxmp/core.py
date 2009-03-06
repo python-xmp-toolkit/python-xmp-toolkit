@@ -710,25 +710,32 @@ class XMPMeta(object):
 	# Namespace Functions
 	# -------------------------------------
 	@staticmethod
+	def get_prefix_for_namespace(namespace):
+		"""		
+		Check if a namespace is registered.
+		@param namespace: the namespace to check.
+
+ 		Return the associated prefix if registered, None if the namespace is not registered
+		"""
+		associated_prefix = _exempi.xmp_string_new()
+		if _exempi.xmp_namespace_prefix(namespace, associated_prefix):
+			return _exempi.xmp_string_cstr(associated_prefix)
+		else:
+			return None
+
+	@staticmethod
 	def get_namespace_for_prefix(prefix):
 		"""
-		bool xmp_namespace_prefix(const char *ns, XmpStringPtr prefix);
-		
-		Check if a ns prefix is registered.
-		@param prefix the prefix to check.
+		Check if a prefix is registered.
+		@param prefix: the prefix to check.
 
  		Return the associated namespace if registered, None if the prefix is not registered
 		"""
 		associated_namespace = _exempi.xmp_string_new()
-		if _exempi.xmp_namespace_prefix(prefix):
+		if _exempi.xmp_prefix_namespace_uri(prefix, associated_namespace):
 			return _exempi.xmp_string_cstr(associated_namespace)
 		else:
 			return None
-
-	
-	@staticmethod
-	def prefix_namespace_uri():
-		pass
 	
 	@staticmethod
 	def register_namespace( namespace_uri, suggested_prefix ):

@@ -45,9 +45,9 @@ from libxmp.consts import *
 def main():
 	#tests_xmp_core()
 	from libxmp import utils
-#	
+	
 	xmpfile = XMPFiles()
-	xmpfile.open_file( 'samples/BlueSquare.tif', XMP_OPEN_FORUPDATE )
+	xmpfile.open_file( 'samples/img1.png', XMP_OPEN_FORUPDATE )
 	xmp = xmpfile.get_xmp()
 #	
 
@@ -55,10 +55,16 @@ def main():
 	print utils.object_to_dict(xmp)
 	print "---"
 	print xmp.register_namespace('http://purl.org/dc/elements/1.1/','dc')
-	print xmp.get_namespace_for_prefix('foo')
-	print xmp.get_namespace_for_prefix('xmpMM:')
+#	xmpfile.close_file()
+#
+#
+#	xmpfile = XMPFiles()
+#	xmpfile.open_file( 'samples/img1.png', XMP_OPEN_READ )
+#	xmp = xmpfile.get_xmp()
+	
+
+	print xmp.get_prefix_for_namespace('http://purl.org/dc/elements/1.1/')
 	print xmp.get_namespace_for_prefix('dc:')
-	print xmp.get_namespace_for_prefix('dc')
 	
 if __name__ == "__main__":
 	main()
