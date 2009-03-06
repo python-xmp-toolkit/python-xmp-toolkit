@@ -112,12 +112,14 @@ class _XmpDateTime(Structure):
 				
 
 class XMPMeta(object):
-	""" """
+	""" 
+	XMPMeta is the class providing the core services of the library
+	"""
 	
 	def __init__( self, **kwargs ):
 		"""
-		@param xmp_str Optional.
-		@param xmp_internal_ref Optional - used for internal purposes.
+		:param xmp_str Optional.
+		:param xmp_internal_ref Optional - used for internal purposes.
 		"""
 		if '_xmp_internal_ref' in kwargs:
 			self.xmpptr = kwargs['_xmp_internal_ref']
@@ -132,7 +134,7 @@ class XMPMeta(object):
 		
 	def __del__(self):
 		"""
-		Ensure memory is deallocated when destroying object.
+		Ensures memory is deallocated when destroying object.
 		"""
 		if self.xmpptr != None:
 			if not _exempi.xmp_free(self.xmpptr):
@@ -143,6 +145,10 @@ class XMPMeta(object):
 			
 	
 	def __iter__(self):
+		"""
+		Defines XMPIterator as an iterator for this class' instances
+		"""
+		
 		if self.iterator is None:
 			self.iterator = XMPIterator(self)
 		
@@ -155,33 +161,33 @@ class XMPMeta(object):
 		return self.serialize_to_str()
 		
 	def __eq__(self, other):
-		""" Check if two XMPMeta object are equal. """
+		""" Checks if two XMPMeta object are equal. """
 		return self.xmpptr == other.xmpptr
 		
 	def __ne__(self, other):
-		""" Check if two XMPMeta object are not equal. """
+		""" Checks if two XMPMeta object are not equal. """
 		return self.xmpptr != other.xmpptr
 	
 	# -------------------------------------
 	# Functions for getting property values
 	# -------------------------------------
-	def get_property(self, schema_ns, prop_name ):
-		"""	 """
-		#/** Get an XMP property and its option bits from the XMP packet
-		# * @param xmp the XMP packet
-		# * @param schema
-		# * @param name
-		# * @param property the allocated XmpStringPtr
-		# * @param propsBits pointer to the option bits. Pass NULL if not needed
-		# * @return true if found
-		# */
-		#bool xmp_get_property(XmpPtr xmp, const char *schema, 
-		#					  const char *name, XmpStringPtr property,
-		#					  uint32_t *propsBits);
+	def get_property(self, schema_ns, prop_name):
+		"""
+		get_property() reports whether a property exists, and retrieves its value.
+
+		This is the simplest property accessor: use this to retrieve the values of top-level simple properties.
+
+		:param schema_ns 	The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
+		:param prop_name 	The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace. 
+
+		:return: The property's value if the property exists, None otherwise.
+		
+		.. todo:: Make get_property optionally return keywords describing property's options
+		"""
 		value = None
 		the_prop = _exempi.xmp_string_new()
 
-		if _exempi.xmp_get_property( self.xmpptr, schema_ns, prop_name, the_prop, 0 ):
+		if _exempi.xmp_get_property( self.xmpptr, schema_ns, prop_name, the_prop, 0 ): #we're never returning options
 			value = _exempi.xmp_string_cstr(the_prop)
 
 		_exempi.xmp_string_free(the_prop)
@@ -189,25 +195,19 @@ class XMPMeta(object):
 		
 		
 	def get_array_item( self, schema_ns, array_name, item_index ):
-		"""	 """
-		#/** Get an item from an array property
-		# * @param xmp the xmp meta
-		# * @param schema the schema
-		# * @param name the property name
-		# * @param index the index in the array
-		# * @param property the property value
-		# * @param propsBits the property bits. Pass NULL is unwanted.
-		# * @return TRUE if success.
-		# */
-		#bool xmp_get_array_item(XmpPtr xmp, const char *schema, 
-		#						const char *name, int32_t index, XmpStringPtr property,
-		#						uint32_t *propsBits);
-		# CHANGED: implemented get_array_item
+		"""
+		get_array_item() provides access to items within an array.
 		
+
+		Reports whether the item exists; if it does, and if it has a value, the function retrieves the value.; if it doesn't it raises Exception.
+		Items are accessed by an integer index, where the first item has index 1.
+		
+		.. todo:: Make get_array_item optionally return keywords describing array item's options
+		"""	
 		the_prop = _exempi.xmp_string_new()
 		options = c_int32()
 		
-		if _exempi.xmp_get_array_item( self.xmpptr, schema_ns, array_name, item_index, the_prop, byref(options)):
+		if _exempi.xmp_get_array_item( self.xmpptr, schema_ns, array_name, item_index, the_prop, byref(options)): #we're never returning options
 			return {_exempi.xmp_string_cstr(the_prop):options.value}
 		else:
 			raise Exception, "Array's over"
@@ -216,181 +216,210 @@ class XMPMeta(object):
 	# -------------------------------------
 	# Functions for setting property values
 	# -------------------------------------
-	def set_property(self, schema_ns, prop_name, prop_value, options = 0 ):
-		"""	 """
-		#/** Set an XMP property in the XMP packet
-		# * @param xmp the XMP packet
-		# * @param schema
-		# * @param name
-		# * @param value 0 terminated string
-		# * @param optionBits
-		# * @return false if failure
-		# */
-		#bool xmp_set_property(XmpPtr xmp, const char *schema, 
-		#					  const char *name, const char *value,
-		#					  uint32_t optionBits);
+	def set_property(self, schema_ns, prop_name, prop_value, **kwargs ):
+		"""
+		set_property() creates or sets a property value.
+
+		The method takes optional keyword aguments that describesthe property. 
+		You can use these functions to create empty arrays and structs by setting appropriate option flags. 
+		When you assign a value, all levels of a struct that are implicit in the assignment are created if necessary; append_array_item() implicitly creates the named array if necessary.
 		
-		return bool(_exempi.xmp_set_property(self.xmpptr, schema_ns, prop_name, prop_value, 0))
+		:param schema_ns	The namespace URI; see get_property().
+		:param prop_name 	The name of the property. Can be a general path expression, must not be null or the empty string; see get_property() for namespace prefix usage.
+		:param **kwargs	Optional keyword arguments describing the options; must much an already existing option from consts.XMP_PROP_OPTIONS					
+
+		:return True if the property was set correctly, False otherwise.
+		"""
+		options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0		
+		return bool(_exempi.xmp_set_property(self.xmpptr, schema_ns, prop_name, prop_value, options))
 		
-	def set_array_item( self, schema_ns, array_name, item_index, item_value, options = 0 ):
-		"""	 """
-		#bool xmp_set_array_item(XmpPtr xmp, const char *schema, 
-		#						const char *name, int32_t index, const char *value,
-		#						uint32_t optionBits);
+	def set_array_item( self, schema_ns, array_name, item_index, item_value, **kwargs ):
+		"""	
+		set_array_item() creates or sets the value of an item within an array.
+
+		Items are accessed by an integer index, where the first item has index 1. T
+		This function creates the item if necessary, but the array itself must already exist: use append_array_item() to create arrays. 
+		A new item is automatically appended if the index is the array size plus 1; to insert a new item before or after an existing item, use kwargs.
+
+		:param schema_ns:	The namespace URI; see get_property().
+		:param array_mame: 	The name of the array. Can be a general path expression, must not be null or the empty string; see get_property() for namespace prefix usage.
+		:param item_index: 	The 1-based index of the desired item. 
+		:param item_value: 	The new item value, a string, if the array item has a value.
+		:param **kwargs: 	Optional keywork arguments describing the array type and insertion location for a new item
+		            		The type, if specified, must match the existing array type, prop_array_is_ordered, prop_array_is_alternate, or prop_array_is_alt_text. Default (no keyword parameters) matches the existing array type.		
+		:return True if the array item was set correctly, False otherwise.
+		:rtype bool
+		"""
+		options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
 		return bool(_exempi.xmp_set_array_item(self.xmpptr, schema_ns, array_name, item_index, item_value, options))
 		
-	def append_array_item( self, schema_ns, array_name, array_options, item_value, options = 0 ):
-		"""	 """
-		#/** Append a value to the XMP Property array in the XMP Packet provided
-		# * @param xmp the XMP packet
-		# * @param schema the schema of the property
-		# * @param name the name of the property
-		# * @param arrayOptions option bits of the parent array
-		# * @param value null-terminated string
-		# * @param optionBits option bits of the value itself.
-		# */
-		#bool xmp_append_array_item(XmpPtr xmp, const char *schema, const char *name,
-		#						   uint32_t arrayOptions, const char *value,
-		#						   uint32_t optionBits);
-		return bool(_exempi.xmp_append_array_item(self.xmpptr, schema_ns, array_name, item_value, options))
+	def append_array_item( self, schema_ns, array_name,  item_value, array_options={}, **kwargs ):
+		"""	 
+		append_array_item() adds an item to an array, creating the array if necessary.
+
+		This function simplifies construction of an array by not requiring that you pre-create an empty array. T
+		The array that is assigned is created automatically if it does not yet exist. If the array exists, it must have the form specified by the options. 
+		Each call appends a new item to the array.
+
+		:param schema_ns 	  The namespace URI; see GetProperty().
+		:param array_name 	  The name of the array. Can be a general path expression, must not be null or the empty string; see GetProperty() for namespace prefix usage.
+		:param item_value 	  The new item value, a null-terminated UTF-8 string, if the array item has a value.
+		:param array_options An optional dictionary of keywords from XMP_PROP_OPTIONS describing the array type to create.	
+		:param **kwargs	  Optional keyword arguments describing the item type to create.
+		:return True if the array item was appended correctly, False otherwise.
+		:rtype bool
+		"""
+		array_options = options.mask(XMP_PROP_OPTIONS, **array_options) if array_options else 0
+		options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
+		return bool(_exempi.xmp_append_array_item(self.xmpptr, schema_ns, array_name, array_options, item_value, options))
 
 		
 	# -----------------------------------------------
 	# Functions accessing properties as binary values
 	# -----------------------------------------------
 	def get_property_bool(self, schema_ns, prop_name ):
-		"""	 """
-		#bool xmp_get_property_bool(XmpPtr xmp, const char *schema, 
-		#							const char *name, bool * property,
-		#							uint32_t *propsBits);
+		"""
+		get_property_bool is just like get_property(), but it's only to be used to get boolean properties.
+
+		:param schema_ns 	The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
+		:param prop_name 	The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace. 
+
+		:return The property's value if the property exists, None otherwise.
+		
+		.. todo:: Make get_property_bool optionally return keywords describing property's options
+		"""					
 		prop_value = c_int()
-		_exempi.xmp_get_property_bool(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
+		_exempi.xmp_get_property_bool(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 ) #we never return options
 		return bool(prop_value.value)
 		
 	def get_property_int(self, schema_ns, prop_name ):
-		"""	 """
-		#bool xmp_get_property_int32(XmpPtr xmp, const char *schema, 
-		#							const char *name, int32_t * property,
-		#							uint32_t *propsBits);
+		"""
+		get_property_int is just like get_property(), but it's only to be used to get integer properties.
 
+		:param schema_ns 	The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
+		:param prop_name 	The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace. 
+		:return The property's value if the property exists, None otherwise.
+		
+		.. todo:: Make get_property_int optionally return keywords describing property's options
+		"""	
 		prop_value =  c_int32()
 		_exempi.xmp_get_property_int32(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
 		return prop_value.value
 		
 	def get_property_long(self, schema_ns, prop_name ):
-		"""	 """
-		#bool xmp_get_property_int64(XmpPtr xmp, const char *schema, 
-		#							const char *name, int64_t * property,
-		#							uint32_t *propsBits);
+		"""
+		get_property_long is just like get_property(), but it's only to be used to get long nteger properties.
+
+		:param schema_ns 	The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
+		:param prop_name 	The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace. 
+		:return The property's value if the property exists, None otherwise.
 		
+		.. todo:: Make get_property_long optionally return keywords describing property's options
+		"""		
 		prop_value =  c_int64()
 		_exempi.xmp_get_property_int64(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
 		return prop_value.value
 		
 	def get_property_float(self, schema_ns, prop_name ):
-		"""	 """
-		#bool xmp_get_property_float(XmpPtr xmp, const char *schema, 
-		#							const char *name, double * property,
-		#							uint32_t *propsBits);
+		"""
+		get_property_float is just like get_property(), but it's only to be used to get float properties.
 
+		:param schema_ns 	The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
+		:param prop_name 	The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace. 
+		:return The property's value if the property exists, None otherwise.
+		
+		.. todo:: Make get_property_float optionally return keywords describing property's options
+		"""	
 		prop_value =  c_float()
 		_exempi.xmp_get_property_float(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
 		return prop_value.value
 		
 	def get_property_datetime(self, schema_ns, prop_name ):
-		"""	 """
-		#bool xmp_get_property_date(XmpPtr xmp, const char *schema, 
-		#						   const char *name, XmpDateTime * property,
-		#						   uint32_t *propsBits);
+		"""
+		get_property_date is just like get_property(), but it's only to be used to get datetime properties.
+		It returns a standart datetime.datetime instance.
+
+		:param schema_ns 	The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
+		:param prop_name 	The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace. 
+		:return The property's value if the property exists, None otherwise.
 		
+		.. todo:: Make get_property_int optionally return keywords describing property's options
+		.. todo:: Ad the tzInfo to the datetime.datetime object
+		"""	
 		d = _XmpDateTime()
 		_exempi.xmp_get_property_date(self.xmpptr, schema_ns, prop_name, byref(d), 0 )
-		return datetime.datetime(d.year,d.month,d.day,d.hour,d.minute,d.second) #TODO: add the tzInfo stuff
+		return datetime.datetime(d.year,d.month,d.day,d.hour,d.minute,d.second)
 		
-	def set_property_bool(self, schema_ns, prop_name, prop_value, options = 0 ):
-		"""	 """
-		#bool xmp_set_property_bool(XmpPtr xmp, const char *schema, 
-		#							const char *name, bool value,
-		#							uint32_t optionBits);
+	def set_property_bool(self, schema_ns, prop_name, prop_value, **kwargs ):
+		"""
+		set_property_bool is just like set_property(), but it's only to be used to set boolean properties
+		"""
+		options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0	
 		prop_value = int(prop_value)
-		return bool(_exempi.xmp_set_property_bool(self.xmpptr, schema_ns, prop_name, prop_value,0))
+		return bool(_exempi.xmp_set_property_bool(self.xmpptr, schema_ns, prop_name, prop_value, options))
 
-	def set_property_int(self, schema_ns, prop_name, prop_value, options = 0 ):
-		"""	 """
-		#bool xmp_set_property_int32(XmpPtr xmp, const char *schema, 
-		#							const char *name, int32_t value,
-		#							uint32_t optionBits);
-		return bool(_exempi.xmp_set_property_int32(self.xmpptr, schema_ns, prop_name, prop_value,0))
+	def set_property_int(self, schema_ns, prop_name, prop_value, **kwargs ):
+		"""
+		set_property_int is just like set_property(), but it's only to be used to set integer properties
+		"""
+		options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0								
+		return bool(_exempi.xmp_set_property_int32(self.xmpptr, schema_ns, prop_name, prop_value,options))
 	
-	def set_property_long(self, schema_ns, prop_name, prop_value, options = 0 ):
-		"""	 """
-		#bool xmp_set_property_int64(XmpPtr xmp, const char *schema, 
-		#							const char *name, int64_t value,
-		#							uint32_t optionBits);
-		return bool(_exempi.xmp_set_property_int64(self.xmpptr, schema_ns, prop_name, prop_value,0))
+	def set_property_long(self, schema_ns, prop_name, prop_value, **kwargs ):
+		"""
+		set_property_long is just like set_property(), but it's only to be used to set long integer properties
+		"""
+		options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0	
+		return bool(_exempi.xmp_set_property_int64(self.xmpptr, schema_ns, prop_name, prop_value, options))
 	
-	def set_property_float(self, schema_ns, prop_name, prop_value, options = 0 ):
-		"""	 """
-		# Set a float XMP property in the XMP packet
-		# @param xmp the XMP packet
-		# @param schema_ns the schema namespace's URI
-		# @param prop_name the property name
-		# @param value the float value
-		# @param options a bitmask representing options
-		# @return False if failure, True otherwise
-		#
+	def set_property_float(self, schema_ns, prop_name, prop_value, **kwargs ):
+		"""
+		set_property_float is just like set_property(), but it's only to be used to set float properties
+		"""
+		options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0	
 		prop_value = c_float(prop_value)
-		return bool(_exempi.xmp_set_property_float(self.xmpptr, schema_ns, prop_name, prop_value,0))
+		return bool(_exempi.xmp_set_property_float(self.xmpptr, schema_ns, prop_name, prop_value, options))
 		
 	
-	def set_property_datetime(self, schema_ns, prop_name, prop_value, options = 0 ):
-		"""	 """
-		#/** Set a date XMP property in the XMP packet
-		# * @param xmp the XMP packet
-		# * @param schema
-		# * @param name
-		# * @param value the date-time struct
-		# * @param optionBits
-		# * @return false if failure
-		# */
-		#bool xmp_set_property_date(XmpPtr xmp, const char *schema, 
-		#						   const char *name, const XmpDateTime *value,
-		#						   uint32_t optionBits);
+	def set_property_datetime(self, schema_ns, prop_name, prop_value, **kwargs ):
+		"""
+		set_property_datetime is just like set_property(), but it's only to be used to set datetime properties
 		
-		#TODO: add the tzInfo stuff on the object below
-		
+		.. todo:: Add tzInfo support
+		"""
+		options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0		
 		d = _XmpDateTime(prop_value.year, prop_value.month, prop_value.day, prop_value.hour, prop_value.minute, prop_value.second,0,0,0)
-		return bool(_exempi.xmp_set_property_date(self.xmpptr, schema_ns, prop_name, byref(d), 0))
+		return bool(_exempi.xmp_set_property_date(self.xmpptr, schema_ns, prop_name, byref(d), options))
 		
 			
 	# ------------------------------------------------
 	# Functions for deleting and detecting properties.
 	# ------------------------------------------------
 	def delete_property(self, schema_ns, prop_name ):
-		"""	 """
-		# TODO: Check return value/error checking?
-		#/** Delete a property from the XMP Packet provided
-		# * @param xmp the XMP packet
-		# * @param schema the schema of the property
-		# * @param name the name of the property
-		# */
+		"""
+		delete_property() deletes an XMP subtree rooted at a given property.
+		It is not an error if the property does not exist.			
+		"""
 		_exempi.xmp_delete_property(self.xmpptr, schema_ns, prop_name);
+		return None
 		
 	def does_property_exist(self, schema_ns, prop_name ):
-		"""	 """
-		#/** Determines if a property exists in the XMP Packet provided
-		# * @param xmp the XMP packet
-		# * @param schema the schema of the property. Can't be NULL or empty.
-		# * @param name the name of the property. Can't be NULL or empty.
-		# * @return true is the property exists
-		# */
-		#bool xmp_has_property(XmpPtr xmp, const char *schema, const char *name);
+		"""
+		does_property_exist() reports whether a property currently exists.
+
+		:param schema_ns	The namespace URI for the property; see get_property().
+		:param prop_name 	The name of the property; see get_property().
+
+		:return True if the property exists, False otherwise.	
+		"""
 		return bool(_exempi.xmp_has_property(xmp.xmpptr, schema_ns, prop_name))
 		
 	def does_array_item_exist(self, schema_ns, array_name, item ):
 		""" 
-		Returns True if item is in array, False otherwise
-		Implemented in pure Python - Exempi does not implement this function yet
+		does_array_item_exist() reports whether an array's item currently exists.
+
+		:return: True if item is in array, False otherwise
+		:rtype: bool
 		"""
 		index = 0
 		
@@ -552,8 +581,7 @@ class XMPMeta(object):
 
 	def count_array_items( self, schema_ns, array_name ):
 		""" 
-		Counts the number of a given array's items
-		Implemented in pure Python - Exempi does not implement this function yet
+		count_array_items returns the number of a given array's items
 		"""
 		index = 0
 		
@@ -574,9 +602,11 @@ class XMPMeta(object):
 	def get_prefix_for_namespace(namespace):
 		"""		
 		Check if a namespace is registered.
-		@param namespace: the namespace to check.
+		
+		Parameters:
+		namespace: the namespace to check.
 
- 		Return the associated prefix if registered, None if the namespace is not registered
+ 		Returns the associated prefix if registered, None if the namespace is not registered
 		"""
 		associated_prefix = _exempi.xmp_string_new()
 		if _exempi.xmp_namespace_prefix(namespace, associated_prefix):
@@ -587,10 +617,11 @@ class XMPMeta(object):
 	@staticmethod
 	def get_namespace_for_prefix(prefix):
 		"""
-		Check if a prefix is registered.
-		@param prefix: the prefix to check.
+		Checks if a prefix is registered.
+		Parameters:
+		prefix: the prefix to check.
 
- 		Return the associated namespace if registered, None if the prefix is not registered
+ 		Returns the associated namespace if registered, None if the prefix is not registered
 		"""
 		associated_namespace = _exempi.xmp_string_new()
 		if _exempi.xmp_prefix_namespace_uri(prefix, associated_namespace):
@@ -600,14 +631,16 @@ class XMPMeta(object):
 	
 	@staticmethod
 	def register_namespace( namespace_uri, suggested_prefix ):
-		# Register a new namespace to add properties to
-		# This is done automatically when reading the metadata block
-		# @param namespaceURI the namespace URI to register
-		# @param suggestedPrefix the suggested prefix
-		# @param registeredPrefix the really registered prefix. Not necessarily
-		# %suggestedPrefix. 
-		# @return the registered prefix (which is NOT necessarily suggsted_prefix if success, 
-		# None otherwise.
+		"""
+		Register a new namespace to save properties to.
+		
+		Parameters:
+		namespace_uri: the new namespace's URI
+		suggested prefix: the suggested prefix: note that is NOT guaranteed it'll be the actual namespace's prefix
+		
+		Returns the actual registered prefix for the namespace of None if the namespace wasn't created.
+		"""
+
 
 		registered_prefix = _exempi.xmp_string_new()
 		if _exempi.xmp_register_namespace(namespace_uri, suggested_prefix, registered_prefix):
@@ -618,17 +651,23 @@ class XMPMeta(object):
 	
 	
 class XMPIterator:
-	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, options = 0 ):
+	"""
+	XMPIterator provides a uniform means to iterate over the schema and properties within an XMP object. 
+	It's implemented according to Python's iterator protocol and it's the iterator for XMPMeta class.
+	:param  xmp_obj  : an XMPMeta instance
+	:param  schema_ns: Optional namespace URI to restrict the iteration.
+	:param  prop_name: Optional property name to restrict the iteration.
+	:param **kwargs : Optional keyword arguments from XMP_ITERATOR_OPTIONS
+	:returns: an iterator for the given xmp_obj
+	"""
+	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, **kwargs ):
 		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.xmpptr, schema_ns, prop_name, options)
 		_check_for_error()
 		self.schema = schema_ns
 		self.prop_name = prop_name
-		self.options = options
-		
+		self.options = options_mask(consts.XMP_ITERATOR_OPTIONS, **kwargs) if kwargs else 0
 		
 	def __del__(self):
-		# TODO: check
-		#_exempi.xmp_iterator_free(self.xmpiteratorptr)
 		_check_for_error()
 
 		
@@ -642,7 +681,7 @@ class XMPIterator:
 		schema_ns = _XMPString()
 		prop_name = _XMPString()
 		
-		options = c_uint32()
+		options = self.options
 			
 		if _exempi.xmp_iterator_next(self.xmpiteratorptr, schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(), 
 byref(options)):
@@ -674,7 +713,15 @@ byref(options)):
 		else:
 			raise StopIteration
 				
-	def skip( options ):
-		# TODO: define options ( keyword arguments )
+	def skip( **kwargs ):
+		"""
+		skip() skips some portion of the remaining iterations.
+		
+		:param **kwargs: Optional keyword parameters from XMP_SKIP_OPTIONS to control the iteration
+		:returns: None
+		:rtype: NoneType
+		"""
+		options = options_mask(consts.XMP_SKIP_OPTIONS, **kwargs) if kwargs else 0
 		_exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
 		_check_for_error()
+		return None
