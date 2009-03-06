@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
-# Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+# Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
+# Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ import os.path
 sys.path.append(os.path.pardir)
 
 from libxmp import *
+from libxmp.consts import *
 from libxmp import _exempi
 
 from samples import samplefiles, open_flags, sampledir, make_temp_samples, remove_temp_samples
@@ -75,46 +76,45 @@ class XMPFilesTestCase(unittest.TestCase):
 		for f in samplefiles.iterkeys():
 			xmpfile = XMPFiles()
 			xmpfile.open_file( f )
-			
-		# Open all sample files with format spec.
-		for f,fmt in samplefiles.iteritems():
-			xmpfile = XMPFiles()
-			xmpfile.open_file( f, format=fmt )
-			
+						
 		# Try using init
 		for f,fmt in samplefiles.iteritems():
-			xmpfile = XMPFiles( file_path=f, format=fmt )
+			xmpfile = XMPFiles( file_path=f )
 
 		# Try all open options
 		for flg in open_flags:
+			kwargs = { flg: True }
+			
 			for f,fmt in samplefiles.iteritems():
 				xmpfile = XMPFiles()
-				xmpfile.open_file( f, open_flags=flg, format=fmt )
+				xmpfile.open_file( f, **kwargs )
 		
 	def test_close_file(self):
 		for f,fmt in samplefiles.iteritems():
-			xmpfile = XMPFiles( file_path=f, format=fmt )
+			xmpfile = XMPFiles( file_path=f )
 			xmpfile.close_file()	
 		
 	def test_get_xmp(self):
 		for flg in open_flags:
+			kwargs = { flg: True }
 			for f,fmt in samplefiles.iteritems():
 				# See test_exempi_error()
 				if not self.flg_fmt_combi(flg,fmt):
-					xmpfile = XMPFiles( file_path=f, open_flags=flg, format=fmt )
+					xmpfile = XMPFiles( file_path=f, **kwargs )
 					xmp = xmpfile.get_xmp()
 					self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
 					xmpfile.close_file()
 					
 	def test_can_put_xmp(self):
 		for flg in open_flags:
+			kwargs = { flg: True }
 			for f,fmt in samplefiles.iteritems():
 				# See test_exempi_error()
 				if not self.flg_fmt_combi(flg,fmt) and not self.exempi_problem(flg, fmt):
 					xmpfile = XMPFiles()
-					xmpfile.open_file( f, open_flags=flg, format=fmt )
+					xmpfile.open_file( f, **kwargs )
 					xmp = xmpfile.get_xmp()
-					if flg == files.XMP_OPEN_FORUPDATE:
+					if flg == 'open_forupdate':
 						self.assert_( xmpfile.can_put_xmp( xmp ) )
 					else:
 						self.failIf( xmpfile.can_put_xmp( xmp ) )
@@ -124,8 +124,8 @@ class XMPFilesTestCase(unittest.TestCase):
 		
 	def flg_fmt_combi( self, flg, fmt ):
 		""" See test_exempi_bad_combinations """
-		return (((fmt == files.XMP_FT_TEXT or fmt == files.XMP_FT_PDF or fmt == files.XMP_FT_ILLUSTRATOR) and flg == files.XMP_OPEN_USESMARTHANDLER) or 
-				((fmt == files.XMP_FT_TEXT or fmt == files.XMP_FT_PDF) and flg == files.XMP_OPEN_LIMITSCANNING)
+		return (((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_ILLUSTRATOR) and flg == 'open_usesmarthandler' ) or 
+				((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF) and flg == 'open_limitscanning' )
 				)
 				
 	def test_exempi_bad_combinations(self):
@@ -133,14 +133,15 @@ class XMPFilesTestCase(unittest.TestCase):
 		Certain combinations of formats and open flags will raise an XMPError when you try to open the XMP
 		"""
 		for flg in open_flags:
+			kwargs = { flg: True }
 			for f,fmt in samplefiles.iteritems():
 				if not self.flg_fmt_combi(flg,fmt):
 					xmpfile = XMPFiles()
-					xmpfile.open_file( f, open_flags=flg, format=fmt )
+					xmpfile.open_file( f, **kwargs )
 					xmpfile.get_xmp()
 				else:
 					xmpfile = XMPFiles()
-					xmpfile.open_file( f, open_flags=flg, format=fmt )
+					xmpfile.open_file( f, **kwargs )
 					self.assertRaises( XMPError, xmpfile.get_xmp )
 
 	def exempi_problem( self, flg, fmt ):
@@ -149,7 +150,7 @@ class XMPFilesTestCase(unittest.TestCase):
 		
 		See exempi_error for a test case where this fails.
 		"""
-		return ((fmt == files.XMP_FT_TEXT or fmt == files.XMP_FT_XML) and flg == files.XMP_OPEN_FORUPDATE )
+		return ((fmt == XMP_FT_TEXT or fmt == XMP_FT_XML) and flg == 'open_forupdate' )
 		
 	def exempi_error(self):
 		""" 
@@ -161,7 +162,7 @@ class XMPFilesTestCase(unittest.TestCase):
 		a C++ exception is thrown.
 		"""
 		xmpfile = XMPFiles()
-		xmpfile.open_file( '.tempsamples/sig05-002a.xmp', files.XMP_OPEN_FORUPDATE )
+		xmpfile.open_file( '.tempsamples/sig05-002a.xmp', open_forupdate = True )
 		xmp = xmpfile.get_xmp()
 		xmpfile.can_put_xmp( xmp )
 	

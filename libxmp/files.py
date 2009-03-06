@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
-# Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+# Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,32 +31,11 @@
 # POSSIBILITY OF SUCH DAMAGE
 
 """
-The Files pacakage provides support for locating the XMP in a file, adding XMP to a file, 
+The Files module provides support for locating the XMP in a file, adding XMP to a file, 
 or updating the XMP in a file. It returns the entire XMP packet, the core pacakage can 
 then be used to manipulate the individual XMP properties. :class:`XMPFiles` contains a number of 
 "smart" file handlers that know how to efficiently access the XMP in specific file formats. It also 
 includes a fallback packet scanner that can be used for unknown file formats. 
-
-TODO: Describe when to use one option or the other
-
-**Open Flags:**
-
- * :attr:`XMP_OPEN_NOOPTION`.
- * :attr:`XMP_OPEN_READ`
- * :attr:`XMP_OPEN_FORUPDATE`
- * :attr:`XMP_OPEN_ONLYXMP`
- * :attr:`XMP_OPEN_CACHETNAIL`
- * :attr:`XMP_OPEN_STRICTLY`
- * :attr:`XMP_OPEN_USESMARTHANDLER` 
- * :attr:`XMP_OPEN_USEPACKETSCANNING`
- * :attr:`XMP_OPEN_LIMITSCANNING`
- * :attr:`XMP_OPEN_INBACKGROUND`
-
-**Close Options:**
-
- * :attr:`XMP_CLOSE_NOOPTION`
- * :attr:`XMP_CLOSE_SAFEUPDATE`
-
 """
 
 from libxmp import XMPError, XMPMeta
@@ -80,7 +59,9 @@ class XMPFiles:
 	Errors result in raising of an :exc:`libxmp.XMPError` exception.
 		
 	:keyword file_path: 	Path to file to open.
-	:keyword open_flags: 	*file_path* must be given to have effect. 
+	
+	.. todo:: 
+		Documentation
     """
 	def __init__(self, **kwargs ):
 		self._file_path = None
@@ -88,12 +69,9 @@ class XMPFiles:
 			
 		if kwargs.has_key( 'file_path' ):
 			file_path = kwargs['file_path']
+			del kwargs['file_path']
 			
-			open_flags = XMP_OPEN_NOOPTION
-			if kwargs.has_key('open_flags'):
-				open_flags = kwargs['open_flags']
-			
-			self.open_file( file_path, open_flags )
+			self.open_file( file_path, **kwargs )
 			
 			
 	def __del__(self):
@@ -104,16 +82,18 @@ class XMPFiles:
 			raise XMPError( 'Could not free memory for XMPFiles.' )
 
 		
-	def open_file(self, file_path, **kwargs):
+	def open_file(self, file_path, **kwargs ):
 		"""
 		Open a given file and read XMP from file. File must be closed again with
 		:func:`close_file`
 		
 		:param file_path: Path to file to open.
-		:param open_flags: One of the open flags - can be left out.
 		:raises XMPError: in case of errors.
+		
+		.. todo:: 
+			Change signature into using kwargs to set option flag
 		"""
-		open_flags = options_mask(consts.XMP_OPEN_OPTIONS, **kwargs ) if kwargs else XMP_OPEN_NOOPTION
+		open_flags = options_mask( XMP_OPEN_OPTIONS, **kwargs ) if kwargs else XMP_OPEN_NOOPTION
 		
 		if self._file_path != None:
 			raise XMPError('A file is already open - close it first.')
@@ -133,6 +113,9 @@ class XMPFiles:
 		
 		:param close_flags: One of the close flags
 		:raises XMPError: in case of errors.
+		
+		.. todo:: 
+			Change signature into using kwargs to set option flag
 		"""
 		if not _exempi.xmp_files_close( self.xmpfileptr, close_flags ):
 			_check_for_error()
@@ -179,22 +162,3 @@ class XMPFiles:
 			return _exempi.xmp_files_can_put_xmp(self.xmpfileptr, xmpptr )
 		else:
 			return False
-					
-#	def get_thumbnail( self ):
-#		""" 
-#		.. warning:: Not Implemented - Exempi does not implement this function yet
-#		"""
-#		raise NotImplementedError("Exempi does not implement this function yet")
-#
-#	def get_file_info( self ):
-#		""" 
-#		.. warning:: Not Implemented - Exempi does not implement this function yet
-#		"""
-#		raise NotImplementedError("Exempi does not implement this function yet")
-#	
-#	@staticmethod
-#	def get_format_info( format ):
-#		""" 
-#		.. warning:: Not Implemented - Exempi does not implement this function yet
-#		"""
-#		raise NotImplementedError("Exempi does not implement this function yet")

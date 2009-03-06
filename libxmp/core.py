@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
-# Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+# Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE
 
 """
-A component for parsing, manipulating, and serializing XMP data. The core package has 
+A module for parsing, manipulating, and serializing XMP data. The core module has 
 no knowledge of files. The core API is provided by the :class:`XMPMeta` and :class:`XMPIterator` classes.
 """
 
@@ -224,9 +224,9 @@ class XMPMeta(object):
 		You can use these functions to create empty arrays and structs by setting appropriate option flags. 
 		When you assign a value, all levels of a struct that are implicit in the assignment are created if necessary; append_array_item() implicitly creates the named array if necessary.
 		
-		:param schema_ns	The namespace URI; see get_property().
-		:param prop_name 	The name of the property. Can be a general path expression, must not be null or the empty string; see get_property() for namespace prefix usage.
-		:param **kwargs	Optional keyword arguments describing the options; must much an already existing option from consts.XMP_PROP_OPTIONS					
+		:param schema_ns:	The namespace URI; see get_property().
+		:param prop_name: 	The name of the property. Can be a general path expression, must not be null or the empty string; see get_property() for namespace prefix usage.
+		:param **kwargs:	Optional keyword arguments describing the options; must much an already existing option from consts.XMP_PROP_OPTIONS					
 
 		:return True if the property was set correctly, False otherwise.
 		"""
@@ -661,11 +661,11 @@ class XMPIterator:
 	:returns: an iterator for the given xmp_obj
 	"""
 	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, **kwargs ):
+		self.options = options_mask(consts.XMP_ITERATOR_OPTIONS, **kwargs) if kwargs else 0
 		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.xmpptr, schema_ns, prop_name, options)
 		_check_for_error()
 		self.schema = schema_ns
 		self.prop_name = prop_name
-		self.options = options_mask(consts.XMP_ITERATOR_OPTIONS, **kwargs) if kwargs else 0
 		
 	def __del__(self):
 		_check_for_error()

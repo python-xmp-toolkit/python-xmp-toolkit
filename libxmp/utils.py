@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
-# Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+# Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,12 +32,16 @@
 
 import libxmp
 
+"""
+The `utils` module includes
+"""
+
 __all__ = ['terminate','object_to_dict','file_to_dict']
 
 def object_to_dict(xmp):
-	"""extracts all XMP data from a given XMPMeta instance organizing it into a standard
-	 python dictionary
-	
+	"""
+	Extracts all XMP data from a given XMPMeta instance organizing it into a standard
+	Python dictionary.
 	"""
 	d = dict()
 	
@@ -49,16 +53,19 @@ def object_to_dict(xmp):
 	
 	return d
 
-def file_to_dict(myfile):
-	"""extracts all XMP data from a given file organizing it into a standard
-	 python dictionary.	
-	 Returns an empty dictionary if there's no valid XMP in the file passed as
-	 an argument.
+def file_to_dict(file_path):
+	"""
+	Extracts all XMP data from a given file organizing it into a standard Python 
+	dictionary.	
+	
+	:param file_path: Path to file to open.
+	:return: An empty dictionary if there's no valid XMP in the file passed as
+		an argument.
 	"""	
 	xmpfile = libxmp.files.XMPFiles()
 	
 	try:
-		xmpfile.open_file(myfile, libxmp.files.XMP_OPEN_READ)
+		xmpfile.open_file(file_path, libxmp.files.XMP_OPEN_READ)
 		xmp = xmpfile.get_xmp()
 	except	libxmp.XMPError:
 		return {}
@@ -71,8 +78,10 @@ def terminate():
 	"""
 	Terminate usage of library. 
 	
-	.. warning:: 	
+	Normally function should not be called. Cases however might exists 
+	where memory clean-up is needed, then this method may be called.
 	
+	.. warning:: 	
 		After this function have been called, any call to methods in 
 		libxmp will result in a crash of Python.
 	

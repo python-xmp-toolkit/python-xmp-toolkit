@@ -5,7 +5,6 @@ XMP Toolkit
 -----------
 .. automodule:: libxmp
 
-
 Exceptions
 ^^^^^^^^^^
 
@@ -17,7 +16,7 @@ ExempiLoadError
 """""""""""""""
 .. autoexception:: ExempiLoadError
 
-Core Package
+Core Module
 ^^^^^^^^^^^^
 .. automodule:: libxmp.core
 
@@ -33,8 +32,8 @@ XMPIterator
 	:members:
 	:inherited-members:
 
-Files Package
-^^^^^^^^^^^^^
+Files Module
+^^^^^^^^^^^^
 
 .. automodule:: libxmp.files
 
@@ -44,15 +43,15 @@ XMPFiles
 	:members:
 	:inherited-members:
 
-Utils Packages
-^^^^^^^^^^^^^^
+Utils Module
+^^^^^^^^^^^^
 
 .. automodule:: libxmp.utils
 	:members:
-	
 	
 Constants
 ^^^^^^^^^
 
 .. automodule:: libxmp.consts
 	:members:
+	:inherited-members:

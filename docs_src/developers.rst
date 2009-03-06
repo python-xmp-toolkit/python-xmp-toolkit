@@ -72,7 +72,7 @@ Test are run by issuing the command::
 
   make runtests
 
-This will run ``test/test.py``.
+This will run ``test/test_all.py``.
 
 Distribution Configuration
 --------------------------

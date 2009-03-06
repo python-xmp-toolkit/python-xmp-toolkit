@@ -17,9 +17,16 @@ The XMP features provided are similar to that of Adobe XMP Toolkit, which are:
 
  * Support for parsing, manipulating, and serializing XMP data.
  * Support for locating the XMP in a file, adding XMP to a file, or updating the XMP in a file.
- * Support for nearly any file format with smart file handlers for JPEG, TIFF, PNG, PSD, MPEG, AVI, MOV, MP3, WAV, PostScript, PDF and InDesign.
+ * Support for nearly any file format with smart file handlers for JPEG, TIFF, GIF, PNG, PSD, InDesign, MOV, MP3, MPEG2, MPEG4, AVI, FLV, SWF, ASF, PostScript, P2, SonyHDV, AVCHD, UCF, WAV, XDCAM, XDCAMEX.
  * An API very similar to Adobe XMP Toolkit.
+ * Based on Exempi 2.1 and Adobe XMP Toolkit 4.4.2
 
+Following important features from Adobe XMP Toolkit are not available in Python XMP Toolkit:
+
+  * Localized text support
+  * Methods for working with XMP structs.
+  * Methods for working with XMP qualifiers
+  * Methods for working with XMP Aliases
 
 What is XMP?
 ------------

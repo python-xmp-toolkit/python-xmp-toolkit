@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
-# Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+# Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
+# Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,9 @@
 # POSSIBILITY OF SUCH DAMAGE
 
 ### XMP FILES 
+
+"""
+"""
 
 #
 # Open options
@@ -171,6 +174,7 @@ XMP_IMPL_RESERVED_MASK    = 0x70000000L   # Reserved for transient use by the im
 # XML namespace constants for standard XMP schema.
 #
 XMP_NS_XMP = "http://ns.adobe.com/xap/1.0/"
+""" XMP Namespace """
 
 XMP_NS_XMP_Rights = "http://ns.adobe.com/xap/1.0/rights/"
 XMP_NS_XMP_MM = "http://ns.adobe.com/xap/1.0/mm/"
@@ -320,7 +324,7 @@ def has_option ( xmp_option, bitmask ):
 
 def options_mask( xmp_options, **kwargs ):
 	"""
-	Function for creating the options bit mask to parse into exempi C functions.
+	Internal function for creating the options bit mask to parse into exempi C functions.
 	
 	Example::
 	

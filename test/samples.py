@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
-# Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+# Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
+# Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,19 +39,19 @@ sys.path.append(os.path.pardir)
 import libxmp
 
 #
-# The 
+# 
 #
 open_flags = [
-	libxmp.files.XMP_OPEN_NOOPTION,  #< No open option
-	libxmp.files.XMP_OPEN_READ, #< Open for read-only access.
-	libxmp.files.XMP_OPEN_FORUPDATE, #< Open for reading and writing.
-	libxmp.files.XMP_OPEN_ONLYXMP, #< Only the XMP is wanted, allows space/time optimizations.
-	libxmp.files.XMP_OPEN_CACHETNAIL, #< Cache thumbnail if possible,  GetThumbnail will be called.
-	libxmp.files.XMP_OPEN_STRICTLY, #< Be strict about locating XMP and reconciling with other forms. 
-	libxmp.files.XMP_OPEN_USESMARTHANDLER, #< Require the use of a smart handler.
-	libxmp.files.XMP_OPEN_USEPACKETSCANNING, #< Force packet scanning, don't use a smart handler.
-	libxmp.files.XMP_OPEN_LIMITSCANNING, #< Only packet scan files "known" to need scanning.
-	libxmp.files.XMP_OPEN_INBACKGROUND,
+	'open_nooption',
+	'open_read',
+	'open_forupdate',
+	'open_onlyxmp',
+	'open_cachetnail',
+	'open_strictly',
+	'open_usesmarthandler',
+	'open_usepacketscanning',
+	'open_limitscanning',
+	'open_inbackground'
 ]
 
 

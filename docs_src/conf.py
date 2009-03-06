@@ -31,7 +31,9 @@ sys.path.append( os.path.abspath(os.path.pardir) )
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo',]
+
+todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
@@ -44,7 +46,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'Python XMP Toolkit'
-copyright = '2008 European Space Agency, European Southern Observatory AND CRS4 - Centre for Centre for Advanced Studies, Research and Development in Sardinia'
+copyright = '2008-2009 European Space Agency, European Southern Observatory AND CRS4 - Centre for Centre for Advanced Studies, Research and Development in Sardinia'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.

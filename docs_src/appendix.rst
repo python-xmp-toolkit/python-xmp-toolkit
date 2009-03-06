@@ -15,21 +15,17 @@ Glossary
 
 	XMP
 		eXtensible Metadata Platform
-		
 
+TODO list
+---------
 
-Not implemented by Exempi
----------------
-Struct
-Qualifier
-Localization
-Alias
-
+.. todolist::
 
 License
 -------
-Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
-Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
+
+Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -61,6 +57,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 Changes
 -------
-
+**Release 1.0rc1 (March 6, 2009)**
+  * Backwards incompatible with previous releases.
+  * Based on Exempi 2.1.0 and Adobe XMP Toolkit 4.4.2
+  * Initialise and Terminate should no longer be called before usage. 
 **Release 1.0beta1 (July 6, 2008)**
   * First public release.
