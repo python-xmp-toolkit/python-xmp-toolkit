@@ -164,21 +164,87 @@ XMP_PROP_ARRAY_FORM_MASK  = XMP_PROP_VALUE_IS_ARRAY	| XMP_PROP_ARRAY_IS_ORDERED 
 XMP_PROP_COMPOSITE_MASK   = XMP_PROP_VALUE_IS_STRUCT | XMP_PROP_ARRAY_FORM_MASK  #Is it simple or composite (array or struct)? 
 XMP_IMPL_RESERVED_MASK    = 0x70000000L   # Reserved for transient use by the implementation. 
 
+#####################
+# Common Namespaces #
+#####################
 #
-# Common Namespaces
+# XML namespace constants for standard XMP schema.
 #
-XMP_NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-XMP_NS_DC = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-XMP_NS_PHOTOSHOP = "http://ns.adobe.com/photoshop/1.0/"
-XMP_NS_TIFF = "http://ns.adobe.com/tiff/1.0/"
+XMP_NS_XMP = "http://ns.adobe.com/xap/1.0/"
+
+XMP_NS_XMP_Rights = "http://ns.adobe.com/xap/1.0/rights/"
+XMP_NS_XMP_MM = "http://ns.adobe.com/xap/1.0/mm/"
+XMP_NS_XMP_BJ = "http://ns.adobe.com/xap/1.0/bj/"
+
+XMP_NS_PDF = "http://ns.adobe.com/pdf/1.3/"
+XMP_NS_Photoshop = "http://ns.adobe.com/photoshop/1.0/"
+XMP_NS_PSAlbum = "http://ns.adobe.com/album/1.0/"
 XMP_NS_EXIF = "http://ns.adobe.com/exif/1.0/"
-XMP_NS_XAP = "http://ns.adobe.com/xap/1.0/"
-XMP_NS_AUX = "http://ns.adobe.com/exif/1.0/aux/"
-XMP_NS_CRS = "http://ns.adobe.com/camera-raw-settings/1.0/"
-XMP_NS_XAPMM = "http://ns.adobe.com/xap/1.0/mm/"
-XMP_NS_IPTC = "http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/"
-XMP_NS_ILLUSTRATOR = "http://ns.adobe.com/illustrator/1.0/"
-XMP_NS_VR = "http://www.communicatingastronomy.org/repository/1.0/"
+XMP_NS_EXIF_Aux = "http://ns.adobe.com/exif/1.0/aux/"
+XMP_NS_TIFF = "http://ns.adobe.com/tiff/1.0/"
+XMP_NS_PNG = "http://ns.adobe.com/png/1.0/"
+XMP_NS_SWF = "http://ns.adobe.com/swf/1.0/"
+XMP_NS_JPEG = "http://ns.adobe.com/jpeg/1.0/"
+XMP_NS_JP2K = "http://ns.adobe.com/jp2k/1.0/"
+XMP_NS_CameraRaw = "http://ns.adobe.com/camera-raw-settings/1.0/"
+XMP_NS_DM = "http://ns.adobe.com/xmp/1.0/DynamicMedia/"
+XMP_NS_ASF = "http://ns.adobe.com/asf/1.0/"
+XMP_NS_WAV = "http://ns.adobe.com/xmp/wav/1.0/"
+
+XMP_NS_XMP_Note = "http://ns.adobe.com/xmp/note/"
+
+XMP_NS_AdobeStockPhoto = "http://ns.adobe.com/StockPhoto/1.0/"
+XMP_NS_CreatorAtom = "http://ns.adobe.com/creatorAtom/1.0/"
+
+#
+# XML namespace constants for qualifiers and structured property fields.
+#
+XMP_NS_XMP_IdentifierQual = "http://ns.adobe.com/xmp/Identifier/qual/1.0/"
+XMP_NS_XMP_Dimensions = "http://ns.adobe.com/xap/1.0/sType/Dimensions#"
+XMP_NS_XMP_Text = "http://ns.adobe.com/xap/1.0/t/"
+XMP_NS_XMP_PagedFile = "http://ns.adobe.com/xap/1.0/t/pg/"
+XMP_NS_XMP_Graphics = "http://ns.adobe.com/xap/1.0/g/"
+XMP_NS_XMP_Image = "http://ns.adobe.com/xap/1.0/g/img/"
+XMP_NS_XMP_Font = "http://ns.adobe.com/xap/1.0/sType/Font#"
+XMP_NS_XMP_ResourceEvent = "http://ns.adobe.com/xap/1.0/sType/ResourceEvent#"
+XMP_NS_XMP_ResourceRef = "http://ns.adobe.com/xap/1.0/sType/ResourceRef#"
+XMP_NS_XMP_ST_Version = "http://ns.adobe.com/xap/1.0/sType/Version#"
+XMP_NS_XMP_ST_Job = "http://ns.adobe.com/xap/1.0/sType/Job#"
+XMP_NS_XMP_ManifestItem = "http://ns.adobe.com/xap/1.0/sType/ManifestItem#"
+
+# Deprecated XML namespace constants
+XMP_NS_XMP_T = "http://ns.adobe.com/xap/1.0/t/"
+XMP_NS_XMP_T_PG = "http://ns.adobe.com/xap/1.0/t/pg/"
+XMP_NS_XMP_G_IMG = "http://ns.adobe.com/xap/1.0/g/img/"
+
+#
+# XML namespace constants from outside Adobe.
+#
+XMP_NS_DC = "http://purl.org/dc/elements/1.1/"
+XMP_NS_IPTCCore = "http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/"
+XMP_NS_DICOM = "http://ns.adobe.com/DICOM/"
+XMP_NS_PDFA_Schema = "http://www.aiim.org/pdfa/ns/schema#"
+XMP_NS_PDFA_Property = "http://www.aiim.org/pdfa/ns/property#"
+XMP_NS_PDFA_Type = "http://www.aiim.org/pdfa/ns/type#"
+XMP_NS_PDFA_Field = "http://www.aiim.org/pdfa/ns/field#"
+XMP_NS_PDFA_ID = "http://www.aiim.org/pdfa/ns/id/"
+XMP_NS_PDFA_Extension = "http://www.aiim.org/pdfa/ns/extension/"
+XMP_NS_PDFX = "http://ns.adobe.com/pdfx/1.3/"
+XMP_NS_PDFX_ID = "http://www.npes.org/pdfx/ns/id/"
+XMP_NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+XMP_NS_XML = "http://www.w3.org/XML/1998/namespace"
+
+#
+# Exempi added namespaces
+#
+XMP_NS_XMPMeta = "adobe:ns:meta/"
+XMP_NS_Lightroom = "http://ns.adobe.com/lightroom/1.0/"
+XMP_NS_CameraRawSavedSettings = "http://ns.adobe.com/camera-raw-saved-settings/1.0/"
+XMP_NS_CC = "http://creativecommons.org/ns#"
+
+#
+# Python XMP Toolkit added namespaces
+#
 XMP_NS_AVM = "http://www.communicatingastronomy.org/avm/1.0/"
 
 #

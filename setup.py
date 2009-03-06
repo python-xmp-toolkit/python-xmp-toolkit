@@ -48,7 +48,7 @@ setup(
 	name='python-xmp-toolkit',
 	version=read_version(),
 	description='Python XMP Toolkit for working with metadata.',
-	author='Lars Holm Nielsen & Fabien Chereau',
+	author='Lars Holm Nielsen & Federico Caboni',
 	author_email='lnielsen@eso.org,federico.caboni@me.com',
 	url='http://code.google.com/p/python-xmp-toolkit/',
 	download_url='http://code.google.com/p/python-xmp-toolkit/downloads/list',
