@@ -10,11 +10,21 @@ Resources
 
 Glossary
 --------
+
 .. glossary::
 
 	XMP
 		eXtensible Metadata Platform
 		
+
+
+Not implemented by Exempi
+---------------
+Struct
+Qualifier
+Localization
+Alias
+
 
 License
 -------

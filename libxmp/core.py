@@ -141,7 +141,6 @@ class XMPMeta(object):
 		if self.iterator is not None:
 			del self.iterator
 			
-		_exempi.xmp_terminate()
 	
 	def __iter__(self):
 		if self.iterator is None:
@@ -163,43 +162,6 @@ class XMPMeta(object):
 		""" Check if two XMPMeta object are not equal. """
 		return self.xmpptr != other.xmpptr
 	
-	# -------------------------------------
-	# Initialization and termination
-	# -------------------------------------
-	@staticmethod
-	def initialize( options = None ):
-		"""
-		Initialize library. Must be called before anything else.
-		
-		@param options Not implemented - provided for future implementations.
-		"""
-		if not _exempi.xmp_init():
-			_check_for_error()
-	
-			
-	# -------------------------------------
-	# Global option flags
-	# -------------------------------------
-	@staticmethod
-	def get_global_options():
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	def set_global_options(self, options):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	@staticmethod
-	def get_version_info():
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
 	# -------------------------------------
 	# Functions for getting property values
 	# -------------------------------------
@@ -250,18 +212,7 @@ class XMPMeta(object):
 		else:
 			raise Exception, "Array's over"
 	
-	def get_struct_field( self, schema_ns, struct_name, field_ns, field_name ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-		
-	def get_qualifier( self, schema_ns, prop_name, qual_ns, qual_name ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-		
+	
 	# -------------------------------------
 	# Functions for setting property values
 	# -------------------------------------
@@ -302,20 +253,7 @@ class XMPMeta(object):
 		#						   uint32_t arrayOptions, const char *value,
 		#						   uint32_t optionBits);
 		return bool(_exempi.xmp_append_array_item(self.xmpptr, schema_ns, array_name, item_value, options))
-				
-		
-	
-	def set_struct_field( self, schema_ns, struct_name, field_ns, field_name, field_value, options = 0 ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-		
-	def set_qualifier( self, schema_ns, prop_name, qual_ns, qual_name, qual_value, options = 0 ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
+
 		
 	# -----------------------------------------------
 	# Functions accessing properties as binary values
@@ -424,81 +362,19 @@ class XMPMeta(object):
 		d = _XmpDateTime(prop_value.year, prop_value.month, prop_value.day, prop_value.hour, prop_value.minute, prop_value.second,0,0,0)
 		return bool(_exempi.xmp_set_property_date(self.xmpptr, schema_ns, prop_name, byref(d), 0))
 		
-	# ------------------------------------------------------------
-	# Functions for accessing localized text (alt-text) properties
-	# ------------------------------------------------------------
-	def get_localized_text( self, schema_ns, alt_text_name, generic_lang, specific_lang ):
-		#/** Get a localised text from a localisable property.
-		# * @param xmp the XMP packet
-		# * @param schema the schema
-		# * @param name the property name.
-		# * @param genericLang the generic language you may want as a fall back. 
-		# * Can be NULL or empty.
-		# * @param specificLang the specific language you want. Can't be NULL or empty.
-		# * @param actualLang the actual language of the value. Can be NULL if 
-		# * not wanted.
-		# * @param itemValue the localized value. Can be NULL if not wanted.
-		# * @param propBits the options flags describing the property. Can be NULL.
-		# * @return true if found, false otherwise.
-		# */
-		#bool xmp_get_localized_text(XmpPtr xmp, const char *schema, const char *name,
-		#				const char *genericLang, const char *specificLang,
-		#				XmpStringPtr actualLang, XmpStringPtr itemValue,
-		#				uint32_t *propBits);
-		raise NotImplementedError #TODO: implement
-
-	def set_localized_text( self, schema_ns, alt_text_name, generic_lang, specific_lang, item_value, options = 0 ):
-		#/** Set a localised text in a localisable property.
-		# * @param xmp the XMP packet
-		# * @param schema the schema
-		# * @param name the property name.
-		# * @param genericLang the generic language you may want to set too. 
-		# * Can be NULL or empty.
-		# * @param specificLang the specific language you want. Can't be NULL or empty.
-		# * @param value the localized value. Cannot be NULL.
-		# * @param optionBits the options flags describing the property.
-		# * @return true if set, false otherwise.
-		# */
-		#bool xmp_set_localized_text(XmpPtr xmp, const char *schema, const char *name,
-		#							const char *genericLang, const char *specificLang,
-		#							const char *value, uint32_t optionBits);
-		raise NotImplementedError #TODO: implement
-		
-	def delete_localized_text( self, schema_ns, alt_text_name, generic_lang, specific_lang ):
-		#bool xmp_delete_localized_text(XmpPtr xmp, const char *schema,
-		#							   const char *name, const char *genericLang,
-		#							   const char *specificLang);
-		raise NotImplementedError #TODO: implement
 			
 	# ------------------------------------------------
 	# Functions for deleting and detecting properties.
 	# ------------------------------------------------
 	def delete_property(self, schema_ns, prop_name ):
 		"""	 """
+		# TODO: Check return value/error checking?
 		#/** Delete a property from the XMP Packet provided
 		# * @param xmp the XMP packet
 		# * @param schema the schema of the property
 		# * @param name the name of the property
 		# */
 		_exempi.xmp_delete_property(self.xmpptr, schema_ns, prop_name);
-
-	def delete_array_item( self, schema_ns, array_name, item_index ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	def delete_struct_field( self, schema_ns, struct_name, field_ns, field_name ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	def delete_qualifier( self, schema_ns, prop_name, qual_ns, qual_name ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
 		
 	def does_property_exist(self, schema_ns, prop_name ):
 		"""	 """
@@ -516,9 +392,6 @@ class XMPMeta(object):
 		Returns True if item is in array, False otherwise
 		Implemented in pure Python - Exempi does not implement this function yet
 		"""
-		#CHANGED: Implemented in Python!
-		
-
 		index = 0
 		
 		the_prop = _exempi.xmp_string_new()
@@ -530,18 +403,6 @@ class XMPMeta(object):
 				break
 		
 		return index
-		
-	def does_struct_field_exist(self, schema_ns, struct_name, field_ns, field_name ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	def does_qualifier_exist(self, schema_ns, prop_name, qual_ns, qual_name ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
 
 	# -------------------------------------
 	# Functions for parsing and serializing
@@ -686,7 +547,7 @@ class XMPMeta(object):
 		"""
 		newptr = _exempi.xmp_copy( self.xmpptr )
 		
-		return (XMPMeta( internal_ref = newptr ) if newptr else None)
+		return (XMPMeta( _xmp_internal_ref = newptr ) if newptr else None)
 		
 
 	def count_array_items( self, schema_ns, array_name ):
@@ -753,58 +614,7 @@ class XMPMeta(object):
 			return _exempi.xmp_string_cstr(registered_prefix)
 		else:
 			return None
-
-	@staticmethod
-	def get_namespace_prefix( namespace_uri ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	@staticmethod
-	def get_namespace_uri( namespace_prefix ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
 		
-	@staticmethod
-	def delete_namespace( namespace_uri):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-		
-	# -------------------------------------
-	# Alias Functions
-	# -------------------------------------
-	@staticmethod
-	def register_alias( alias_ns, alias_prop, actual_ns, actual_prop, array_form = None ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	@staticmethod
-	def resolve_alias( alias_ns, alias_prop ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	@staticmethod
-	def delete_alias( alias_ns, alias_prop ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	@staticmethod
-	def register_standard_alias( schema_ns ):
-		""" 
-		Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
 	
 	
 class XMPIterator:
@@ -817,6 +627,7 @@ class XMPIterator:
 		
 		
 	def __del__(self):
+		# TODO: check
 		#_exempi.xmp_iterator_free(self.xmpiteratorptr)
 		_check_for_error()
 
@@ -864,6 +675,6 @@ byref(options)):
 			raise StopIteration
 				
 	def skip( options ):
-		# TODO: define options
+		# TODO: define options ( keyword arguments )
 		_exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
 		_check_for_error()

@@ -93,6 +93,9 @@ try:
 			_exempi = ctypes.WinDLL( lib )
 	else:
 		raise ExempiLoadError('Could not load shared library exempi.')
+	
+	if not _exempi.xmp_init():
+		_check_for_error()
 except OSError, e:
 	raise ExempiLoadError('Could not load shared library exempi.')
 
@@ -127,3 +130,4 @@ def _check_for_error():
 # Import classes into global namespace
 from core import *
 from files import *
+from utils import *

@@ -48,10 +48,8 @@ import test_core_unit
 class LibXMPTestCase(unittest.TestCase):
 	def setUp(self):
 		make_temp_samples()
-		XMPFiles.initialize()
 		
 	def tearDown(self):
-		XMPFiles.terminate()
 		remove_temp_samples()
 
 	def test_full(self):

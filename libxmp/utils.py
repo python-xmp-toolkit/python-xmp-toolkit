@@ -32,6 +32,8 @@
 
 import libxmp
 
+__all__ = ['terminate','object_to_dict','file_to_dict']
+
 def object_to_dict(xmp):
 	"""extracts all XMP data from a given XMPMeta instance organizing it into a standard
 	 python dictionary
@@ -63,3 +65,19 @@ def file_to_dict(myfile):
 	
 	return object_to_dict(xmp)
 	
+	
+	
+def terminate():
+	"""
+	Terminate usage of library. 
+	
+	.. warning:: 	
+	
+		After this function have been called, any call to methods in 
+		libxmp will result in a crash of Python.
+	
+		
+	Note, Exempi library is automatically initialized when loading libxmp and normally
+	you will not need to call this method. However, there might be cases where 
+	"""
+	_exempi.xmp_terminate()

@@ -51,15 +51,13 @@ class TestClass(object):
 class XMPMetaTestCase(unittest.TestCase):
 	def setUp(self):
 		make_temp_samples()
-		XMPMeta.initialize()
 		
 	def tearDown(self):
-		XMPMeta.terminate()
 		remove_temp_samples()
 		
 	def test_init_del(self):
 		xmp = XMPMeta()
-		self.failUnless( xmp.internal_ref )
+		self.failUnless( xmp.xmpptr )
 		del xmp
 		
 	def test_test_files(self):

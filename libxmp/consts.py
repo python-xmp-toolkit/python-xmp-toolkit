@@ -41,9 +41,9 @@ XMP_OPEN_FORUPDATE = 0x00000002 #< Open for reading and writing.
 XMP_OPEN_ONLYXMP = 0x00000004 #< Only the XMP is wanted, allows space/time optimizations.
 XMP_OPEN_CACHETNAIL = 0x00000008 #< Cache thumbnail if possible,  GetThumbnail will be called.
 XMP_OPEN_STRICTLY = 0x00000010 #< Be strict about locating XMP and reconciling with other forms. 
-XMP_OPEN_USESMARTHANDLER = 0x00000020 #< Require the use of a smart handler.
+XMP_OPEN_USESMARTHANDLER = 0x00000020 #< Require the use of a smart handler (Text files, PDF and Illustrator are incompatible with this option).
 XMP_OPEN_USEPACKETSCANNING = 0x00000040 #< Force packet scanning, don't use a smart handler.
-XMP_OPEN_LIMITSCANNING = 0x00000080 #< Only packet scan files "known" to need scanning.
+XMP_OPEN_LIMITSCANNING = 0x00000080 #< Only packet scan files "known" to need scanning (Text files, PDF are incompatible with this option).
 XMP_OPEN_INBACKGROUND = 0x10000000  #< Set if calling from background thread.
 
 #

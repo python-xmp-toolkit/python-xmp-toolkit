@@ -1,2 +1,5 @@
+Release 1.0brc1 (March 6, 2009)
+  * Based on Exempi 2.1.0 and Adobe XMP Toolkit 4.4.2
+  * Initialise and Terminate should no longer be called before usage. 
 Release 1.0beta1 (July 6, 2008)
   * First public release.

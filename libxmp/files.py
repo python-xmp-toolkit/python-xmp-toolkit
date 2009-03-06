@@ -37,15 +37,17 @@ then be used to manipulate the individual XMP properties. :class:`XMPFiles` cont
 "smart" file handlers that know how to efficiently access the XMP in specific file formats. It also 
 includes a fallback packet scanner that can be used for unknown file formats. 
 
-**Open Options:**
+TODO: Describe when to use one option or the other
 
- * :attr:`XMP_OPEN_NOOPTION`
+**Open Flags:**
+
+ * :attr:`XMP_OPEN_NOOPTION`.
  * :attr:`XMP_OPEN_READ`
  * :attr:`XMP_OPEN_FORUPDATE`
  * :attr:`XMP_OPEN_ONLYXMP`
  * :attr:`XMP_OPEN_CACHETNAIL`
  * :attr:`XMP_OPEN_STRICTLY`
- * :attr:`XMP_OPEN_USESMARTHANDLER`
+ * :attr:`XMP_OPEN_USESMARTHANDLER` 
  * :attr:`XMP_OPEN_USEPACKETSCANNING`
  * :attr:`XMP_OPEN_LIMITSCANNING`
  * :attr:`XMP_OPEN_INBACKGROUND`
@@ -54,6 +56,7 @@ includes a fallback packet scanner that can be used for unknown file formats.
 
  * :attr:`XMP_CLOSE_NOOPTION`
  * :attr:`XMP_CLOSE_SAFEUPDATE`
+
 """
 
 from libxmp import XMPError, XMPMeta
@@ -75,28 +78,18 @@ class XMPFiles:
 	with typical exclusion for both modes.
 
 	Errors result in raising of an :exc:`libxmp.XMPError` exception.
-	
-	.. warning::
-	   Note not all methods are implemented and also some options of methods.
-	
+		
 	:keyword file_path: 	Path to file to open.
-	:keyword format:		Not implemented - *file_path* must be given to have effect.
-	:keyword open_flags: 	*file_path* must be given to have effect.
+	:keyword open_flags: 	*file_path* must be given to have effect. 
     """
 	def __init__(self, **kwargs ):
-		if not _exempi.xmp_init():
-			_check_for_error()
-			
 		self._file_path = None
 		self.xmpfileptr = _exempi.xmp_files_new()
 			
 		if kwargs.has_key( 'file_path' ):
 			file_path = kwargs['file_path']
 			
-			format = XMP_FT_UNKNOWN
 			open_flags = XMP_OPEN_NOOPTION
-			if kwargs.has_key('format'):
-				format = kwargs['format']
 			if kwargs.has_key('open_flags'):
 				open_flags = kwargs['open_flags']
 			
@@ -109,17 +102,15 @@ class XMPFiles:
 		"""
 		if not _exempi.xmp_files_free( self.xmpfileptr ):
 			raise XMPError( 'Could not free memory for XMPFiles.' )
+
 		
-		_exempi.xmp_terminate()
-		
-	def open_file(self, file_path, open_flags = XMP_OPEN_NOOPTION, format = XMP_FT_UNKNOWN ):
+	def open_file(self, file_path, open_flags = XMP_OPEN_NOOPTION ):
 		"""
 		Open a given file and read XMP from file. File must be closed again with
 		:func:`close_file`
 		
 		:param file_path: Path to file to open.
 		:param open_flags: One of the open flags - can be left out.
-		:param format: Not implemented. Put here for forward compatiblilty with TXMPFiles C++ class.
 		:raises XMPError: in case of errors.
 		"""
 		if self._file_path != None:
@@ -187,28 +178,21 @@ class XMPFiles:
 		else:
 			return False
 					
-	def get_thumbnail( self ):
-		""" 
-		.. warning:: Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-
-	def get_file_info( self ):
-		""" 
-		.. warning:: Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-	
-	@staticmethod
-	def get_version_info():
-		""" 
-		.. warning:: Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
-	
-	@staticmethod
-	def get_format_info( format ):
-		""" 
-		.. warning:: Not Implemented - Exempi does not implement this function yet
-		"""
-		raise NotImplementedError("Exempi does not implement this function yet")
+#	def get_thumbnail( self ):
+#		""" 
+#		.. warning:: Not Implemented - Exempi does not implement this function yet
+#		"""
+#		raise NotImplementedError("Exempi does not implement this function yet")
+#
+#	def get_file_info( self ):
+#		""" 
+#		.. warning:: Not Implemented - Exempi does not implement this function yet
+#		"""
+#		raise NotImplementedError("Exempi does not implement this function yet")
+#	
+#	@staticmethod
+#	def get_format_info( format ):
+#		""" 
+#		.. warning:: Not Implemented - Exempi does not implement this function yet
+#		"""
+#		raise NotImplementedError("Exempi does not implement this function yet")

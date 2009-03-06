@@ -43,3 +43,16 @@ XMPFiles
 .. autoclass:: XMPFiles
 	:members:
 	:inherited-members:
+
+Utils Packages
+^^^^^^^^^^^^^^
+
+.. automodule:: libxmp.utils
+	:members:
+	
+	
+Constants
+^^^^^^^^^
+
+.. automodule:: libxmp.consts
+	:members:

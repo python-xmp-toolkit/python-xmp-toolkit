@@ -45,10 +45,8 @@ from samples import samplefiles, open_flags, sampledir, make_temp_samples, remov
 class XMPFilesTestCase(unittest.TestCase):
 	def setUp(self):
 		make_temp_samples()
-		XMPFiles.initialize()
 		
 	def tearDown(self):
-		XMPFiles.terminate()
 		remove_temp_samples()
 		
 	def test_init_del(self):
