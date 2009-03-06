@@ -29,36 +29,3 @@
 # IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE
-
-#TODO: make a proper testsuite for core using unittest
-
-import sys
-import os
-import os.path
-
-sys.path.append(os.path.pardir)
-
-from libxmp import *
-from libxmp.core import XMPIterator, XMPMeta
-from libxmp.consts import *
-
-def main():
-	#tests_xmp_core()
-	from libxmp import utils
-#	
-	xmpfile = XMPFiles()
-	xmpfile.open_file( 'samples/BlueSquare.tif', XMP_OPEN_FORUPDATE )
-	xmp = xmpfile.get_xmp()
-#	
-
-
-	print utils.object_to_dict(xmp)
-	print "---"
-	print xmp.register_namespace('http://purl.org/dc/elements/1.1/','dc')
-	print xmp.get_namespace_for_prefix('foo')
-	print xmp.get_namespace_for_prefix('xmpMM:')
-	print xmp.get_namespace_for_prefix('dc:')
-	print xmp.get_namespace_for_prefix('dc')
-	
-if __name__ == "__main__":
-	main()

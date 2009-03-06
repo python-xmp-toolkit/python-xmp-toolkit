@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
+# Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
 # Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #

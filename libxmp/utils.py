@@ -30,35 +30,36 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE
 
-#TODO: make a proper testsuite for core using unittest
+import libxmp
 
-import sys
-import os
-import os.path
-
-sys.path.append(os.path.pardir)
-
-from libxmp import *
-from libxmp.core import XMPIterator, XMPMeta
-from libxmp.consts import *
-
-def main():
-	#tests_xmp_core()
-	from libxmp import utils
-#	
-	xmpfile = XMPFiles()
-	xmpfile.open_file( 'samples/BlueSquare.tif', XMP_OPEN_FORUPDATE )
-	xmp = xmpfile.get_xmp()
-#	
-
-
-	print utils.object_to_dict(xmp)
-	print "---"
-	print xmp.register_namespace('http://purl.org/dc/elements/1.1/','dc')
-	print xmp.get_namespace_for_prefix('foo')
-	print xmp.get_namespace_for_prefix('xmpMM:')
-	print xmp.get_namespace_for_prefix('dc:')
-	print xmp.get_namespace_for_prefix('dc')
+def object_to_dict(xmp):
+	"""extracts all XMP data from a given XMPMeta instance organizing it into a standard
+	 python dictionary
 	
-if __name__ == "__main__":
-	main()
+	"""
+	d = dict()
+	
+	for x in xmp:           
+		if x[-1]['IS_SCHEMA']:
+			d[x[0]] = []
+		else:
+			d[x[0]].append(x[1:])
+	
+	return d
+
+def file_to_dict(myfile):
+	"""extracts all XMP data from a given file organizing it into a standard
+	 python dictionary.	
+	 Returns an empty dictionary if there's no valid XMP in the file passed as
+	 an argument.
+	"""	
+	xmpfile = libxmp.files.XMPFiles()
+	
+	try:
+		xmpfile.open_file(myfile, libxmp.files.XMP_OPEN_READ)
+		xmp = xmpfile.get_xmp()
+	except	libxmp.XMPError:
+		return {}
+	
+	return object_to_dict(xmp)
+	

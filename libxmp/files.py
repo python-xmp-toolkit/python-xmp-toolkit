@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
+# Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
 # Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
@@ -84,6 +84,9 @@ class XMPFiles:
 	:keyword open_flags: 	*file_path* must be given to have effect.
     """
 	def __init__(self, **kwargs ):
+		if not _exempi.xmp_init():
+			_check_for_error()
+			
 		self._file_path = None
 		self.xmpfileptr = _exempi.xmp_files_new()
 			
@@ -106,6 +109,8 @@ class XMPFiles:
 		"""
 		if not _exempi.xmp_files_free( self.xmpfileptr ):
 			raise XMPError( 'Could not free memory for XMPFiles.' )
+		
+		_exempi.xmp_terminate()
 		
 	def open_file(self, file_path, open_flags = XMP_OPEN_NOOPTION, format = XMP_FT_UNKNOWN ):
 		"""
@@ -158,7 +163,7 @@ class XMPFiles:
 		
 		:param xmp_obj: An :class:`libxmp.core.XMPMeta` object
 		"""
-		xmpptr = xmp_obj._get_internal_ref()
+		xmpptr = xmp_obj.xmpptr
 		
 		if xmpptr != None:
 			if not _exempi.xmp_files_put_xmp( self.xmpfileptr, xmpptr ):
@@ -175,7 +180,7 @@ class XMPFiles:
 		if not isinstance( xmp_obj, XMPMeta ):
 			raise XMPError('Not a XMPMeta object')
 			
-		xmpptr = xmp_obj._get_internal_ref()
+		xmpptr = xmp_obj.xmpptr
 		
 		if xmpptr != None:
 			return _exempi.xmp_files_can_put_xmp(self.xmpfileptr, xmpptr )
@@ -193,24 +198,6 @@ class XMPFiles:
 		.. warning:: Not Implemented - Exempi does not implement this function yet
 		"""
 		raise NotImplementedError("Exempi does not implement this function yet")
-		
-	@staticmethod
-	def initialize( options = None ):
-		"""
-		Initialize library. Must be called before anything else.
-		
-		:param options: .. warninig: Not implemented - provided for future implementations.
-		:raises XMPError: in case of errors.
-		"""
-		if not _exempi.xmp_init():
-			_check_for_error()
-	
-	@staticmethod
-	def terminate():
-		"""
-		Terminate use of library. Must be called when finished using library.
-		"""
-		_exempi.xmp_terminate()
 	
 	@staticmethod
 	def get_version_info():

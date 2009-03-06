@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008, European Space Agency & European Southern Observatory (ESA/ESO)
+# Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
 # Copyright (c) 2008, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 # All rights reserved.
 #
@@ -41,6 +41,7 @@ import datetime
 from libxmp import XMPError
 from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
 from libxmp.consts import *
+from libxmp import consts
 
 __all__ = ['XMPMeta','XMPIterator']
 
@@ -72,41 +73,7 @@ class _XMPString(object):
 		"""
 		s = _exempi.xmp_string_cstr(self._ptr)
 		return s.decode('utf-8') #,errors='ignore')
-
-#CHANGED: added an _XMPNode class whose instances are (will soon be, actually) returned by XMPIterator			
-class _XMPNode(object):
-	"""
-	Helper class (not intended to be exposed): its instances are returned by XMPIterator
-	"""
-	def __init__(self, schema, name, value, options): 
-		self.schema = schema
-		self.name = name
-		self.value = value
-		self.options = options
-		
-		
-	def __del__(self):
-		pass
-		
-		
-	def _get_kind(self):
-		if has_option(self.options,XMP_IS_SCHEMA):
-			return 'schema'	
-		elif has_option(self.options,XMP_PROP_VALUE_IS_ARRAY):
-			return 'bag'
-		elif has_option(self.options,XMP_PROP_ARRAY_IS_ORDERED):
-			return 'array'
-		elif has_option(self.options,XMP_PROP_VALUE_IS_STRUCT):
-			return 'struct'
-		else:
-			return self.options
-		
-	def _get_options(self):
-		pass
-		
-	kind = property(_get_kind)
 	
-
 def _encode_as_utf8( obj, input_encoding=None ):
 	"""
 	Helper function to ensure that a proper string object in UTF-8 encoding.
@@ -128,7 +95,7 @@ def _encode_as_utf8( obj, input_encoding=None ):
 
 class _XmpDateTime(Structure):
 	"""
-	Helper class (not intended to be exposed) to help managed datetimes in Exempi
+	Helper class (not intended to be exposed) to manage datetimes in Exempi
 	""" 
 	_fields_ = [
 					('year', c_int32),
@@ -173,6 +140,8 @@ class XMPMeta(object):
 		
 		if self.iterator is not None:
 			del self.iterator
+			
+		_exempi.xmp_terminate()
 	
 	def __iter__(self):
 		if self.iterator is None:
@@ -193,28 +162,7 @@ class XMPMeta(object):
 	def __ne__(self, other):
 		""" Check if two XMPMeta object are not equal. """
 		return self.xmpptr != other.xmpptr
-		
-	def as_object(self):
-		d = {}
-		
-		for i in self:
-			if i.kind == 'schema':
-				d[i.schema] = {}
-			else:
-				d[i.schema][i.name] = i.value
-			
-		return d
-			
-		
-	def _get_internal_ref(self):
-		"""
-		Method used for internal purpose - XMPFiles need access to the internal
-		representation of the XMPMeta instance.
-		"""
-		return	self.xmpptr
-		
-	internal_ref = property( _get_internal_ref )
-
+	
 	# -------------------------------------
 	# Initialization and termination
 	# -------------------------------------
@@ -228,12 +176,6 @@ class XMPMeta(object):
 		if not _exempi.xmp_init():
 			_check_for_error()
 	
-	@staticmethod
-	def terminate():
-		"""
-		After the library is no more needed, call this function.
-		"""
-		_exempi.xmp_terminate()
 			
 	# -------------------------------------
 	# Global option flags
@@ -306,7 +248,7 @@ class XMPMeta(object):
 		if _exempi.xmp_get_array_item( self.xmpptr, schema_ns, array_name, item_index, the_prop, byref(options)):
 			return {_exempi.xmp_string_cstr(the_prop):options.value}
 		else:
-			raise Exception,"Spacciau"
+			raise Exception, "Array's over"
 	
 	def get_struct_field( self, schema_ns, struct_name, field_ns, field_name ):
 		""" 
@@ -752,9 +694,6 @@ class XMPMeta(object):
 		Counts the number of a given array's items
 		Implemented in pure Python - Exempi does not implement this function yet
 		"""
-		#CHANGED: Implemented in Python!
-		
-
 		index = 0
 		
 		the_prop = _exempi.xmp_string_new()
@@ -771,19 +710,42 @@ class XMPMeta(object):
 	# Namespace Functions
 	# -------------------------------------
 	@staticmethod
+	def get_namespace_for_prefix(prefix):
+		"""
+		bool xmp_namespace_prefix(const char *ns, XmpStringPtr prefix);
+		
+		Check if a ns prefix is registered.
+		@param prefix the prefix to check.
+
+ 		Return the associated namespace if registered, None if the prefix is not registered
+		"""
+		associated_namespace = _exempi.xmp_string_new()
+		if _exempi.xmp_namespace_prefix(prefix):
+			return _exempi.xmp_string_cstr(associated_namespace)
+		else:
+			return None
+
+	
+	@staticmethod
+	def prefix_namespace_uri():
+		pass
+	
+	@staticmethod
 	def register_namespace( namespace_uri, suggested_prefix ):
-		#/** Register a new namespace to add properties to
-		# *	 This is done automatically when reading the metadata block
-		# *	 @param namespaceURI the namespace URI to register
-		# *	 @param suggestedPrefix the suggested prefix
-		# *	 @param registeredPrefix the really registered prefix. Not necessarily
-		# *	 %suggestedPrefix. 
-		# *	 @return true if success, false otherwise.
-		# */
-		#bool xmp_register_namespace(const char *namespaceURI, 
-		#														const char *suggestedPrefix,
-		#														XmpStringPtr registeredPrefix);
-		raise NotImplementedError #TODO: implement()
+		# Register a new namespace to add properties to
+		# This is done automatically when reading the metadata block
+		# @param namespaceURI the namespace URI to register
+		# @param suggestedPrefix the suggested prefix
+		# @param registeredPrefix the really registered prefix. Not necessarily
+		# %suggestedPrefix. 
+		# @return the registered prefix (which is NOT necessarily suggsted_prefix if success, 
+		# None otherwise.
+
+		registered_prefix = _exempi.xmp_string_new()
+		if _exempi.xmp_register_namespace(namespace_uri, suggested_prefix, registered_prefix):
+			return _exempi.xmp_string_cstr(registered_prefix)
+		else:
+			return None
 
 	@staticmethod
 	def get_namespace_prefix( namespace_uri ):
@@ -793,7 +755,7 @@ class XMPMeta(object):
 		raise NotImplementedError("Exempi does not implement this function yet")
 
 	@staticmethod
-	def get_namespaec_uri( namespace_prefix ):
+	def get_namespace_uri( namespace_prefix ):
 		""" 
 		Not Implemented - Exempi does not implement this function yet
 		"""
@@ -840,7 +802,7 @@ class XMPMeta(object):
 	
 class XMPIterator:
 	def __init__( self, xmp_obj, schema_ns=None, prop_name=None, options = 0 ):
-		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.internal_ref, schema_ns, prop_name, options)
+		self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.xmpptr, schema_ns, prop_name, options)
 		_check_for_error()
 		self.schema = schema_ns
 		self.prop_name = prop_name
@@ -856,8 +818,6 @@ class XMPIterator:
 		return self
 		
 	def next(self):		
-		# CHANGED: I figured that out: those uint32 pointers are used to write in bitmasks that identify the kind of the visited node
-
 		prop_value = _XMPString()
 		the_value = None
 		
@@ -865,11 +825,7 @@ class XMPIterator:
 		prop_name = _XMPString()
 		
 		options = c_uint32()
-		
-
-		
-		
-		
+			
 		if _exempi.xmp_iterator_next(self.xmpiteratorptr, schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(), 
 byref(options)):
 			#decode option bits into a human-readable format (that is, a dict)
@@ -899,8 +855,7 @@ byref(options)):
 			return (unicode(schema_ns),unicode(prop_name),unicode(prop_value), opts)
 		else:
 			raise StopIteration
-		
-		
+				
 	def skip( options ):
 		# TODO: define options
 		_exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
