@@ -70,6 +70,15 @@ class XMPMetaTestCase(unittest.TestCase):
 			xmp = xmpfile.get_xmp()
 			self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
 			xmpfile.close_file()
+
+	def test_get_localized_text(self):
+		xmp = XMPMeta()
+		self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+		self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp2" ), "Simple2 value" )
+		self.assertEqual( xmp.get_localized_text( xmpcoverage.NS1, "ArrayProp2", 'x-one', 'x-one' ), "Item2.1 value" )
+		
+		 
+		del xmp
 			
 	def test_parse_str(self):
 		xmp = XMPMeta()
@@ -126,5 +135,5 @@ def test( verbose=2 ):
 	return result, runner
 
 if __name__ == "__main__":
-	test()
-	#unittest.main()
+	#test()
+	unittest.main()
