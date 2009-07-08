@@ -6,7 +6,7 @@ Welcome
 **Authors:**
  * Lars Holm Nielsen <lnielsen@eso.org>
  * Federico Caboni <federico.caboni@me.com>
- * Fabien Chereau <fchereau@eso.org>
+ * Amit Kapadia <akapad@gmail.com>
 
 Documentation
 =============
