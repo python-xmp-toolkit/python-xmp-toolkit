@@ -65,7 +65,7 @@ def file_to_dict(file_path):
 	xmpfile = libxmp.files.XMPFiles()
 	
 	try:
-		xmpfile.open_file(file_path, open_option=libxmp.files.XMP_OPEN_READ)
+		xmpfile.open_file( file_path, open_read=True )
 		xmp = xmpfile.get_xmp()
 	except	libxmp.XMPError:
 		return {}
