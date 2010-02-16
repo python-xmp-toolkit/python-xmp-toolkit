@@ -123,7 +123,14 @@ class XMPMetaTestCase(unittest.TestCase):
 		self.assert_( xmp1 != xmp2, "XMP1 is not equal XMP2" )
 		del xmp1
 		del xmp2
-		
+	
+	def test_text_property_450(self):
+		xmp = XMPFiles( file_path="fixtures/BlueSquare450.tif" )
+		xmp_data = xmp.get_xmp()
+		headline = xmp_data.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
+		self.assertEqual( headline[-5:], "=END="  )
+		self.assert_( len(headline) > 450, "Not all text was extracted from headline property."  )
+				
 		
 class UtilsTestCase(unittest.TestCase):
 	def setUp(self):
@@ -147,7 +154,7 @@ class UtilsTestCase(unittest.TestCase):
 		self.assertRaises( IOError, file_to_dict, "nonexistingfile.ext" )
 		
 	def test_file_to_dict_noxmp(self):
-		self.assertEqual( file_to_dict("empty.txt"), {} )
+		self.assertEqual( file_to_dict("fixtures/empty.txt"), {} )
 		
 	def test_object_to_dict_noxmp(self):
 		self.assertEqual( object_to_dict( [] ), {} )

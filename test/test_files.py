@@ -165,6 +165,17 @@ class XMPFilesTestCase(unittest.TestCase):
 		xmpfile.open_file( '.tempsamples/sig05-002a.xmp', open_forupdate = True )
 		xmp = xmpfile.get_xmp()
 		xmpfile.can_put_xmp( xmp )
+		
+	def test_write_in_readonly(self):
+		# Note, the file should have been opened with "open_forupdate = True"
+		# so let's check if XMPMeta is raising an Exception.
+		xmpfile = XMPFiles()
+		xmpfile.open_file( '.tempsamples/sig05-002a.tif')   
+		xmp_data = xmpfile.get_xmp()
+		xmp_data.set_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline', "Some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times." )
+		self.assertRaises( XMPError, xmpfile.put_xmp, xmp_data )
+		self.assertEqual( xmpfile.can_put_xmp( xmp_data ), False )
+		#xmp = XMPFiles( file_path="/home/clr/ruby/rails/spitzer.caltech.edu/spec/fixtures/test.tif" )
 	
 	
 
