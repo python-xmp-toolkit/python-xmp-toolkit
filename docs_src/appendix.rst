@@ -57,6 +57,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 Changes
 -------
+Release 1.0rc2 (Feburary 16, 2009)
+  * Fixed issue #4, #5 and related to XMPIterator, file_to_dict and object_to_dict. 
+  * Fixed issue in file_to_dict which didn't pass parameters to XMPFiles.open_file() properly.
+  * Fixed issue #9 file_to_dict now raises IOError instead of returning  
+    an empty dictionary for non-existing files. (*backward incompatible*)
+  * Fixed issue #8 - spelling mistake in function call in XMPMeta.append_array_items
+  * Based on Exempi 2.1.1 and Adobe XMP Toolkit 4.4.2
+  * Thanks to olsenpk, pitymushroom, rmarianski, cfarrell1980 for bug reports and patches
 **Release 1.0rc1 (March 6, 2009)**
   * Backwards incompatible with previous releases.
   * Based on Exempi 2.1.0 and Adobe XMP Toolkit 4.4.2
