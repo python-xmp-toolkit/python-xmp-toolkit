@@ -5,7 +5,7 @@ Requirements
 ------------
 
  * Python 2.5+
- * Exempi 2.1
+ * Exempi 2.1.1
  * Linux or OS X (see notes below for Windows)
 
 
@@ -36,10 +36,8 @@ Note Exempi requires boost (http://www.boost.org/) to compile, so on OS X you pr
   ./configure --with-fink 
 
 .. warning::
-	Note, currently Exempi 2.1 does not compile on OS X, due to bugs 
-	in a number of Makefiles. A patched version of Exempi 2.1 that compiles 
-	under OS X can be download at 
-	http://python-xmp-toolkit.googlecode.com/files/exempi-2.1.0-patched.tar.gz.
+	Note, only Exempi 2.1.1 compiles on OS X and Exempi 2.1.1 also fixes an issue over 2.1
+		that could lead to complete crash of the Python interpreter.
 
 Windows 
 -------
