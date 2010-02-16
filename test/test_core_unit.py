@@ -40,6 +40,7 @@ sys.path.append(os.path.pardir)
 from libxmp import *
 from libxmp import XMPIterator
 from libxmp import _exempi
+from libxmp.utils import file_to_dict, object_to_dict
 
 from samples import samplefiles, open_flags, sampledir, make_temp_samples, remove_temp_samples
 import xmpcoverage
@@ -122,6 +123,26 @@ class XMPMetaTestCase(unittest.TestCase):
 		self.assert_( xmp1 != xmp2, "XMP1 is not equal XMP2" )
 		del xmp1
 		del xmp2
+		
+		
+class XMPIteratorTestCase(unittest.TestCase):
+	def setUp(self):
+		make_temp_samples()
+		
+	def tearDown(self):
+		remove_temp_samples()
+		
+	def test_object_to_dict(self):
+		for f,fmt in samplefiles.iteritems():
+			xmpfile = XMPFiles( file_path=f )
+			xmp = xmpfile.get_xmp()
+			self.assert_( object_to_dict( xmp ), "Not an XMPMeta object" )
+			xmpfile.close_file()
+	
+	def test_file_to_dict(self):
+		for f,fmt in samplefiles.iteritems():
+			self.assert_( file_to_dict( f ), "Expected dictionary" )
+		
 		
 def suite():
 	suite = unittest.TestSuite()
