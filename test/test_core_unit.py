@@ -125,7 +125,7 @@ class XMPMetaTestCase(unittest.TestCase):
 		del xmp2
 		
 		
-class XMPIteratorTestCase(unittest.TestCase):
+class UtilsTestCase(unittest.TestCase):
 	def setUp(self):
 		make_temp_samples()
 		
@@ -142,11 +142,21 @@ class XMPIteratorTestCase(unittest.TestCase):
 	def test_file_to_dict(self):
 		for f,fmt in samplefiles.iteritems():
 			self.assert_( file_to_dict( f ), "Expected dictionary" )
+			
+	def test_file_to_dict_nofile(self):
+		self.assertRaises( IOError, file_to_dict, "nonexistingfile.ext" )
+		
+	def test_file_to_dict_noxmp(self):
+		self.assertEqual( file_to_dict("empty.txt"), {} )
+		
+	def test_object_to_dict_noxmp(self):
+		self.assertEqual( object_to_dict( [] ), {} )
 		
 		
 def suite():
 	suite = unittest.TestSuite()
-	suite.addTest(unittest.makeSuite(XMPMetaTestCase))	
+	suite.addTest(unittest.makeSuite(XMPMetaTestCase))
+	suite.addTest(unittest.makeSuite(UtilsTestCase))	
 	return suite
 
 def test( verbose=2 ):

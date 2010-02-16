@@ -31,6 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE
 
 import libxmp
+import os
 
 """
 The `utils` module includes
@@ -44,6 +45,9 @@ def object_to_dict(xmp):
 	Python dictionary.
 	"""
 	d = dict()
+	
+	if not xmp:
+		return {}
 	
 	for x in xmp:           
 		if x[-1]['IS_SCHEMA']:
@@ -62,12 +66,15 @@ def file_to_dict(file_path):
 	:return: An empty dictionary if there's no valid XMP in the file passed as
 		an argument.
 	"""	
+	if not os.path.isfile( os.path.abspath( file_path ) ):
+		raise IOError, "No such file or directory: '%s'" % file_path	
+
 	xmpfile = libxmp.files.XMPFiles()
 	
 	try:
 		xmpfile.open_file( file_path, open_read=True )
 		xmp = xmpfile.get_xmp()
-	except	libxmp.XMPError:
+	except libxmp.XMPError:
 		return {}
 	
 	return object_to_dict(xmp)
