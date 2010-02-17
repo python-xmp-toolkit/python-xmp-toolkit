@@ -19,7 +19,7 @@ Note, in case you haven't installed Exempi you will get an :exc:`ExempiLoadError
 
 Exempi
 ------
-Python XMP Toolkit requires Exempi 2.1 which can be downloaded from
+Python XMP Toolkit requires Exempi 2.1.1 which can be downloaded from
 http://libopenraw.freedesktop.org/wiki/Exempi. To install Exempi, unpack the
 distribution and run::
 
@@ -36,8 +36,13 @@ Note Exempi requires boost (http://www.boost.org/) to compile, so on OS X you pr
   ./configure --with-fink 
 
 .. warning::
-	Note, only Exempi 2.1.1 compiles on OS X and Exempi 2.1.1 also fixes an issue over 2.1
-		that could lead to complete crash of the Python interpreter.
+   Only Exempi 2.1.1 compiles on OS X and Exempi 2.1.1 also fixes an issue over 2.1 that could lead to complete crash of the 
+   Python interpreter.
+   
+.. note::
+   Exempi 2.1.1 uses the Carbon version of QuickTime API. In Mac OS X 10.6 however Carbon support for QuickTime was dropped, so Exempi 2.1.1
+   will no longer compile out-of-the-box on Snow Leopard. If you install Exempi via MacPorts, then a patch for this problem is automatically 
+   fixed.  
 
 Windows 
 -------
