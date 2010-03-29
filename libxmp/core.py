@@ -454,7 +454,7 @@ class XMPMeta(object):
 
 		:return True if the property exists, False otherwise.	
 		"""
-		return bool(_exempi.xmp_has_property(xmp.xmpptr, schema_ns, prop_name))
+		return bool(_exempi.xmp_has_property(self.xmpptr, schema_ns, prop_name))
 		
 	def does_array_item_exist(self, schema_ns, array_name, item ):
 		""" 

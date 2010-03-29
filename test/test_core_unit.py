@@ -130,6 +130,11 @@ class XMPMetaTestCase(unittest.TestCase):
 		headline = xmp_data.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
 		self.assertEqual( headline[-5:], "=END="  )
 		self.assert_( len(headline) > 450, "Not all text was extracted from headline property."  )
+		
+	def test_does_property_exist(self):
+		xmp = XMPFiles( file_path="fixtures/BlueSquare450.tif" )
+		xmp_data = xmp.get_xmp()
+		self.assert_( xmp_data.does_property_exist( "http://ns.adobe.com/photoshop/1.0/", 'Headline' ) )
 				
 		
 class UtilsTestCase(unittest.TestCase):

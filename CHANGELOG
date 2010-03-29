@@ -1,3 +1,6 @@
+Release 1.0rc3 ( ... )
+  * Fixed issue #11 - Typo in does_property_exist.
+  * Thanks to marialaura.clemente for bug reports and patches.  
 Release 1.0rc2 (Feburary 16, 2009)
   * Fixed issue #4, #5 and related to XMPIterator, file_to_dict and object_to_dict. 
   * Fixed issue in file_to_dict which didn't pass parameters to XMPFiles.open_file() properly.
