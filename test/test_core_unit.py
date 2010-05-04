@@ -86,6 +86,12 @@ class XMPMetaTestCase(unittest.TestCase):
 		self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
 		self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp1" ), "Simple1 value" ) 
 		del xmp
+		
+	def test_shorthand_rdf(self):
+		xmp = XMPMeta()
+		self.assert_( xmp.parse_from_str( xmpcoverage.ShorthandRDF, xmpmeta_wrap=True ), "Could not parse valid string." )
+#		self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp1" ), "Simple1 value" ) 
+		del xmp
 
 	def test_serialize_str(self):
 		xmp = XMPMeta()

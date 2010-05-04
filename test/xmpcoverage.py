@@ -235,3 +235,19 @@ DateTimeRDF = """<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#
 
   </rdf:Description>
 </rdf:RDF>"""
+
+
+ShorthandRDF = """
+<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'> 
+<rdf:Description about='' xmlns:tiff='http://ns.adobe.com/tiff/1.0' 
+tiff:Make='Canon' 
+tiff:Model='Canon PowerShot S300' 
+tiff:Orientation='1' 
+tiff:XResolution='180/1' 
+tiff:YResolution='180/1' 
+tiff:ResolutionUnit='2' 
+tiff:DateTime='2001-07-25T20:18:27-07:00' 
+tiff:YCbCrPositioning='1'> 
+</rdf:Description>
+</rdf:RDF>
+"""
