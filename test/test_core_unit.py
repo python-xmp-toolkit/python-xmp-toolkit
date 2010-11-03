@@ -90,7 +90,7 @@ class XMPMetaTestCase(unittest.TestCase):
 	def test_shorthand_rdf(self):
 		xmp = XMPMeta()
 		self.assert_( xmp.parse_from_str( xmpcoverage.ShorthandRDF, xmpmeta_wrap=True ), "Could not parse valid string." )
-#		self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp1" ), "Simple1 value" ) 
+		self.assertEqual( xmp.get_property( "http://ns.adobe.com/tiff/1.0", "Model" ), "Canon PowerShot S300" ) 
 		del xmp
 
 	def test_serialize_str(self):
