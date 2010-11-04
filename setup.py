@@ -34,7 +34,10 @@
 Install script for libxmp.
 """
 
-from distutils.core import setup
+try:
+	from setuptools import setup
+except ImportError:
+	from distutils.core import setup
 import sys
 
 def read_version():
