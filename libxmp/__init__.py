@@ -82,6 +82,29 @@ _XMP_ERROR_CODES = {
 }
 
 #
+# Exceptions
+#
+class ExempiLoadError(StandardError):
+	""" Error signaling that the Exempi library cannot be loaded. """
+	pass
+	
+class XMPError(Exception):
+	""" General XMP Error. """
+	pass
+
+#
+# General private utility functions
+#
+def _check_for_error():
+	"""
+	Check if an error occured when executing last operation. Raise an
+	exception in case of an error.
+	"""
+	err = _exempi.xmp_get_error()
+	if err != 0:
+		raise XMPError( _XMP_ERROR_CODES[err] )
+
+#
 #  Load C library - Exempi must be installed on the system
 #
 try:
@@ -100,32 +123,9 @@ except OSError, e:
 	raise ExempiLoadError('Could not load shared library exempi.')
 
 #
-# Exceptions
-#
-class ExempiLoadError(StandardError):
-	""" Error signaling that the Exempi library cannot be loaded. """
-	pass
-	
-class XMPError(Exception):
-	""" General XMP Error. """
-	pass
-
-#
 # Define return types for exempi functions.
 #
 _exempi.xmp_string_cstr.restype = ctypes.c_char_p
-
-#
-# General private utility functions
-#
-def _check_for_error():
-	"""
-	Check if an error occured when executing last operation. Raise an
-	exception in case of an error.
-	"""
-	err = _exempi.xmp_get_error()
-	if err != 0:
-		raise XMPError( _XMP_ERROR_CODES[err] )
 	
 # Import classes into global namespace
 from core import *
