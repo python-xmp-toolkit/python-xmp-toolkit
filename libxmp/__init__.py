@@ -84,7 +84,7 @@ _XMP_ERROR_CODES = {
 #
 # Exceptions
 #
-class ExempiLoadError(StandardError):
+class ExempiLoadError(Exception):
 	""" Error signaling that the Exempi library cannot be loaded. """
 	pass
 	
@@ -115,17 +115,18 @@ try:
 		else:
 			_exempi = ctypes.WinDLL( lib )
 	else:
-		raise ExempiLoadError('Could not load shared library exempi.')
+		raise Exception('Could not load shared library exempi.')
 	
 	if not _exempi.xmp_init():
 		_check_for_error()
 except OSError, e:
-	raise ExempiLoadError('Could not load shared library exempi.')
+	raise Exception('Could not load shared library exempi.')
 
 #
-# Define return types for exempi functions.
+# Define arg/return types for exempi functions.
 #
-_exempi.xmp_string_cstr.restype = ctypes.c_char_p
+from libxmp.types import define_function_types
+define_function_types( _exempi )
 	
 # Import classes into global namespace
 from core import *

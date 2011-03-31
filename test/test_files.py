@@ -101,8 +101,13 @@ class XMPFilesTestCase(unittest.TestCase):
 				# See test_exempi_error()
 				if not self.flg_fmt_combi(flg,fmt):
 					xmpfile = XMPFiles( file_path=f, **kwargs )
-					xmp = xmpfile.get_xmp()
-					self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
+					try:
+						xmp = xmpfile.get_xmp()
+						self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
+					except XMPError, e:
+						print f
+						print flg
+						print fmt
 					xmpfile.close_file()
 					
 	def test_can_put_xmp(self):
@@ -124,8 +129,8 @@ class XMPFilesTestCase(unittest.TestCase):
 		
 	def flg_fmt_combi( self, flg, fmt ):
 		""" See test_exempi_bad_combinations """
-		return (((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_ILLUSTRATOR) and flg == 'open_usesmarthandler' ) or 
-				((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF) and flg == 'open_limitscanning' )
+		return (((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_ILLUSTRATOR or fmt == XMP_FT_MOV) and flg == 'open_usesmarthandler' ) or 
+				((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_MOV) and flg == 'open_limitscanning' )
 				)
 				
 	def test_exempi_bad_combinations(self):

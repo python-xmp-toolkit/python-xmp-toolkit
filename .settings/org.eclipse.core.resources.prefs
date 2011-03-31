@@ -1,13 +1,14 @@
-#Tue Feb 16 18:20:48 CET 2010
+#Thu Mar 31 11:28:33 CEST 2011
 eclipse.preferences.version=1
-encoding//libxmp/__init__.py=UTF-8
+encoding//libxmp/__init__.py=utf-8
 encoding//libxmp/consts.py=utf-8
 encoding//libxmp/core.py=utf-8
-encoding//libxmp/exceptions.py=UTF-8
+encoding//libxmp/exceptions.py=utf-8
 encoding//libxmp/files.py=utf-8
+encoding//libxmp/types.py=utf-8
 encoding//libxmp/utils.py=utf-8
-encoding//test/samples.py=UTF-8
-encoding//test/test_all.py=UTF-8
+encoding//test/samples.py=utf-8
+encoding//test/test_all.py=utf-8
 encoding//test/test_core.py=utf-8
 encoding//test/test_core_unit.py=utf-8
 encoding//test/test_files.py=utf-8
