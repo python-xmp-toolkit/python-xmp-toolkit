@@ -130,7 +130,8 @@ class XMPFilesTestCase(unittest.TestCase):
 		
 	def flg_fmt_combi( self, flg, fmt ):
 		""" See test_exempi_bad_combinations """	
-		is_snow_leopard = platform.system() =='Darwin' and int(platform.release().split(".")[0]) >= 10  
+		is_snow_leopard = platform.system() =='Darwin' and int(platform.release().split(".")[0]) >= 10
+		# Note, exempi for OS X 10.6 don't have smart handlers for MOV due to large changes in Quicktime from 10.5 to 10.6  
 		
 		return (((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_ILLUSTRATOR or (fmt == XMP_FT_MOV and is_snow_leopard)) and flg == 'open_usesmarthandler' ) or 
 				((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or (fmt == XMP_FT_MOV and is_snow_leopard)) and flg == 'open_limitscanning' )
