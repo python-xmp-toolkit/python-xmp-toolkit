@@ -34,6 +34,7 @@ import unittest
 import sys
 import os
 import os.path
+import platform
 
 sys.path.append(os.path.pardir)
 
@@ -128,9 +129,11 @@ class XMPFilesTestCase(unittest.TestCase):
 		pass
 		
 	def flg_fmt_combi( self, flg, fmt ):
-		""" See test_exempi_bad_combinations """
-		return (((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_ILLUSTRATOR or fmt == XMP_FT_MOV) and flg == 'open_usesmarthandler' ) or 
-				((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_MOV) and flg == 'open_limitscanning' )
+		""" See test_exempi_bad_combinations """	
+		is_snow_leopard = platform.system() =='Darwin' and int(platform.release().split(".")[0]) >= 10  
+		
+		return (((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_ILLUSTRATOR or (fmt == XMP_FT_MOV and is_snow_leopard)) and flg == 'open_usesmarthandler' ) or 
+				((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or (fmt == XMP_FT_MOV and is_snow_leopard)) and flg == 'open_limitscanning' )
 				)
 				
 	def test_exempi_bad_combinations(self):
