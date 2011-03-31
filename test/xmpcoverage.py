@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 # TODO: This is copied from Adobe XMP Toolkit - find out what the license should say about it. The same applies to the sample files.
 
 NS1 = "ns:test1/"
@@ -250,4 +251,153 @@ tiff:DateTime='2001-07-25T20:18:27-07:00'
 tiff:YCbCrPositioning='1'> 
 </rdf:Description>
 </rdf:RDF>
+"""
+
+LongTextProperty = """
+<?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Exempi + XMP Core 4.4.0">
+ <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about=""
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <dc:subject>
+    <rdf:Bag>
+     <rdf:li>XMP</rdf:li>
+     <rdf:li>Blue Square</rdf:li>
+     <rdf:li>test file</rdf:li>
+     <rdf:li>Photoshop</rdf:li>
+     <rdf:li>.psd</rdf:li>
+    </rdf:Bag>
+   </dc:subject>
+   <dc:description>
+    <rdf:Alt>
+     <rdf:li xml:lang="x-default">XMPFiles BlueSquare test file, created in Photoshop CS2, saved as .psd, .jpg, and .tif.</rdf:li>
+    </rdf:Alt>
+   </dc:description>
+   <dc:title>
+    <rdf:Alt>
+     <rdf:li xml:lang="x-default">Blue Square Test File - .psd</rdf:li>
+    </rdf:Alt>
+   </dc:title>
+   <dc:format>image/tiff</dc:format>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+   <xmp:ModifyDate>2010-02-16T17:53:30+01:00</xmp:ModifyDate>
+   <xmp:CreatorTool>Adobe Photoshop CS4 Macintosh</xmp:CreatorTool>
+   <xmp:MetadataDate>2010-02-16T17:53:30+01:00</xmp:MetadataDate>
+   <xmp:CreateDate>2005-09-07T15:01:43-07:00</xmp:CreateDate>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+    xmlns:stRef="http://ns.adobe.com/xap/1.0/sType/ResourceRef#"
+    xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#">
+   <xmpMM:DerivedFrom rdf:parseType="Resource">
+    <stRef:instanceID>xmp.iid:F87F1174072068119D2BDE2E500230D1</stRef:instanceID>
+    <stRef:documentID>uuid:9A3B7F4E214211DAB6308A7391270C13</stRef:documentID>
+    <stRef:originalDocumentID>uuid:9A3B7F4E214211DAB6308A7391270C13</stRef:originalDocumentID>
+   </xmpMM:DerivedFrom>
+   <xmpMM:History>
+    <rdf:Seq>
+     <rdf:li rdf:parseType="Resource">
+      <stEvt:action>saved</stEvt:action>
+      <stEvt:instanceID>xmp.iid:F77F1174072068119D2BDE2E500230D1</stEvt:instanceID>
+      <stEvt:when>2010-02-16T17:46:22+01:00</stEvt:when>
+      <stEvt:softwareAgent>Adobe Photoshop CS4 Macintosh</stEvt:softwareAgent>
+      <stEvt:changed>/</stEvt:changed>
+     </rdf:li>
+     <rdf:li rdf:parseType="Resource">
+      <stEvt:action>saved</stEvt:action>
+      <stEvt:instanceID>xmp.iid:F87F1174072068119D2BDE2E500230D1</stEvt:instanceID>
+      <stEvt:when>2010-02-16T17:53:30+01:00</stEvt:when>
+      <stEvt:softwareAgent>Adobe Photoshop CS4 Macintosh</stEvt:softwareAgent>
+      <stEvt:changed>/</stEvt:changed>
+     </rdf:li>
+     <rdf:li rdf:parseType="Resource">
+      <stEvt:action>converted</stEvt:action>
+      <stEvt:parameters>from application/vnd.adobe.photoshop to image/tiff</stEvt:parameters>
+     </rdf:li>
+     <rdf:li rdf:parseType="Resource">
+      <stEvt:action>derived</stEvt:action>
+      <stEvt:parameters>converted from application/vnd.adobe.photoshop to image/tiff</stEvt:parameters>
+     </rdf:li>
+     <rdf:li rdf:parseType="Resource">
+      <stEvt:action>saved</stEvt:action>
+      <stEvt:instanceID>xmp.iid:F97F1174072068119D2BDE2E500230D1</stEvt:instanceID>
+      <stEvt:when>2010-02-16T17:53:30+01:00</stEvt:when>
+      <stEvt:softwareAgent>Adobe Photoshop CS4 Macintosh</stEvt:softwareAgent>
+      <stEvt:changed>/</stEvt:changed>
+     </rdf:li>
+    </rdf:Seq>
+   </xmpMM:History>
+   <xmpMM:OriginalDocumentID>uuid:9A3B7F4E214211DAB6308A7391270C13</xmpMM:OriginalDocumentID>
+   <xmpMM:InstanceID>xmp.iid:F97F1174072068119D2BDE2E500230D1</xmpMM:InstanceID>
+   <xmpMM:DocumentID>uuid:9A3B7F4E214211DAB6308A7391270C13</xmpMM:DocumentID>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/">
+   <photoshop:Headline>The Crab Nebula is the shattered remnant of a massive star that ended its life in a massive supernova explosion. Nearly a thousand years old, the supernova was noted in the constellation of Taurus by Chinese astronomers in the year 1054 AD. The Crab Nebula is the shattered remnant of a massive star that ended its life in a massive supernova explosion. Nearly a thousand years old, the supernova was noted in the constellation of Taurus by Chinese =END=</photoshop:Headline>
+   <photoshop:ICCProfile>sRGB IEC61966-2.1</photoshop:ICCProfile>
+   <photoshop:ColorMode>3</photoshop:ColorMode>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:tiff="http://ns.adobe.com/tiff/1.0/">
+   <tiff:ResolutionUnit>2</tiff:ResolutionUnit>
+   <tiff:YResolution>720000/10000</tiff:YResolution>
+   <tiff:XResolution>720000/10000</tiff:XResolution>
+   <tiff:PlanarConfiguration>1</tiff:PlanarConfiguration>
+   <tiff:SamplesPerPixel>3</tiff:SamplesPerPixel>
+   <tiff:Orientation>1</tiff:Orientation>
+   <tiff:PhotometricInterpretation>2</tiff:PhotometricInterpretation>
+   <tiff:Compression>5</tiff:Compression>
+   <tiff:BitsPerSample>
+    <rdf:Seq>
+     <rdf:li>8</rdf:li>
+     <rdf:li>8</rdf:li>
+     <rdf:li>8</rdf:li>
+    </rdf:Seq>
+   </tiff:BitsPerSample>
+   <tiff:ImageLength>216</tiff:ImageLength>
+   <tiff:ImageWidth>360</tiff:ImageWidth>
+   <tiff:NativeDigest>256,257,258,259,262,274,277,284,530,531,282,283,296,301,318,319,529,532,306,270,271,272,305,315,33432;46A23B4E8F942E0E03D60BC6E6769870</tiff:NativeDigest>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:exif="http://ns.adobe.com/exif/1.0/">
+   <exif:PixelYDimension>216</exif:PixelYDimension>
+   <exif:PixelXDimension>360</exif:PixelXDimension>
+   <exif:ColorSpace>1</exif:ColorSpace>
+   <exif:NativeDigest>36864,40960,40961,37121,37122,40962,40963,37510,40964,36867,36868,33434,33437,34850,34852,34855,34856,37377,37378,37379,37380,37381,37382,37383,37384,37385,37386,37396,41483,41484,41486,41487,41488,41492,41493,41495,41728,41729,41730,41985,41986,41987,41988,41989,41990,41991,41992,41993,41994,41995,41996,42016,0,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,22,23,24,25,26,27,28,30;76DBD9F0A5E7ED8F62B4CE8EFA6478B4</exif:NativeDigest>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:avm="http://www.communicatingastronomy.org/avm/1.0/">
+   <avm:Spectral.Band>
+    <rdf:Seq/>
+   </avm:Spectral.Band>
+   <avm:Spectral.ColorAssignment>
+    <rdf:Seq/>
+   </avm:Spectral.ColorAssignment>
+  </rdf:Description>
+ </rdf:RDF>
+</x:xmpmeta>
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                           
+<?xpacket end="w"?>
 """

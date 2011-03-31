@@ -130,12 +130,30 @@ class XMPMetaTestCase(unittest.TestCase):
 		del xmp1
 		del xmp2
 	
+	def test_text_property_450_file(self):
+		# Currently fails on OS X 10.6 with Exempi installed from MacPorts
+		files = ["fixtures/BlueSquare450.xmp","fixtures/BlueSquare450.tif"]
+		options = ['open_nooption','open_read','open_forupdate','open_onlyxmp','open_cachetnail','open_strictly','open_usesmarthandler','open_usepacketscanning','open_limitscanning',]
+		for f in files:
+			for o in options:
+				try:
+					xmpfile = XMPFiles( file_path=f, ** { o : True } )
+					xmp_data = xmpfile.get_xmp()
+					headline = xmp_data.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
+					
+					self.assertEqual( headline[-5:], "=END="  )
+					self.assert_( len(headline) > 450, "Not all text was extracted from headline property."  )
+				except XMPError, e:
+					pass
+					
+		
 	def test_text_property_450(self):
-		xmp = XMPFiles( file_path="fixtures/BlueSquare450.tif" )
-		xmp_data = xmp.get_xmp()
-		headline = xmp_data.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
+		xmp = XMPMeta()
+		self.assert_( xmp.parse_from_str( xmpcoverage.LongTextProperty, xmpmeta_wrap=True ), "Could not parse valid string." )
+		headline = xmp.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
 		self.assertEqual( headline[-5:], "=END="  )
 		self.assert_( len(headline) > 450, "Not all text was extracted from headline property."  )
+		
 		
 	def test_does_property_exist(self):
 		xmp = XMPFiles( file_path="fixtures/BlueSquare450.tif" )
