@@ -1,6 +1,14 @@
 Appendix
 ========
 
+Known Issues
+------------
+ * The TIFF smart handler have troubles reading the XMP packet correctly - this is either due
+   to Exempi 2.1.1 being installed via MacPorts or it is a 64-bit issue. To circumvent the problem,
+   please use packet scanning when opening a TIFF file::
+   
+     xmp = XMPFiles(file_path="../test.tif", open_usepacketscanning=True )
+
 Resources
 ---------
  * Project website -- http://code.google.com/p/python-xmp-toolkit/
@@ -57,7 +65,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 Changes
 -------
-Release 1.0rc2 (Feburary 16, 2009)
+Release 1.0 ( March 31, 2010 )
+  * Known issue #7 documented - issue with TIFF smart handler.
+  * Fixed issue #15 - 64-bit issues on Linux and Mac.
+  * Fixed issue #11 - Typo in does_property_exist.
+  * Thanks to marialaura.clemente for bug reports and patches.
+Release 1.0rc2 (Feburary 16, 2010)
   * Fixed issue #4, #5 and related to XMPIterator, file_to_dict and object_to_dict. 
   * Fixed issue in file_to_dict which didn't pass parameters to XMPFiles.open_file() properly.
   * Fixed issue #9 file_to_dict now raises IOError instead of returning  
