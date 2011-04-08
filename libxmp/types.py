@@ -32,7 +32,10 @@
 import ctypes
 import sys
 
-is_64 = sys.maxsize > 2**32
+try:
+	is_64 = sys.maxsize > 2**32
+except AttributeError:
+	is_64 = False
 
 __all__ = ['define_function_types']
 
