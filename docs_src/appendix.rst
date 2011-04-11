@@ -65,6 +65,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 Changes
 -------
+Release 1.0.1 ( April 11, 2011 )
+  * Fixed issue on 32-bit systems.
 Release 1.0 ( March 31, 2010 )
   * Known issue #7 documented - issue with TIFF smart handler.
   * Fixed issue #15 - 64-bit issues on Linux and Mac.
