@@ -120,7 +120,7 @@ _typeconv = {
 	'int64_t *' : ctypes.c_void_p,	
 	'double' : ctypes.c_double,
 	'double *' : ctypes.c_void_p,
-	'bool' : ctypes.c_bool,
+	'bool' : ctypes.c_int, # c_bool only defined in 2.6+
 	'bool *' : ctypes.c_void_p,
 }
 
