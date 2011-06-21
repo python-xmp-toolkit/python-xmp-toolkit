@@ -65,6 +65,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 Changes
 -------
+Release 1.0.2 ( June 21, 2011 )
+  * Fixed python 2.5 issue (ctypes.c_bool are not available in 2.5, so it was changed to ctypes.c_int).
 Release 1.0.1 ( April 11, 2011 )
   * Fixed issue on 32-bit systems.
 Release 1.0 ( March 31, 2010 )
