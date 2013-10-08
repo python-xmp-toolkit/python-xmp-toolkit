@@ -37,15 +37,15 @@ Install script for libxmp.
 """
 
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
-    from distutils.core import setup
+    from distutils.core import setup, find_packages
 import sys
 
 def read_version():
     try:
         return open('VERSION', 'r').readline().strip()
-    except IOError, e:
+    except IOError as e:
         raise SystemExit(
             "Error: you must run setup from the root directory (%s)" % str(e))
 
@@ -62,7 +62,7 @@ setup(
     author_email='lnielsen@eso.org,federico.caboni@me.com,akapad@gmail.com',
     url='http://code.google.com/p/python-xmp-toolkit/',
     download_url='http://code.google.com/p/python-xmp-toolkit/downloads/list',
-    long_description=long_desc
+    long_description=long_desc,
     license='New BSD License',
-    packages=['libxmp', 'libxmp.test'],
+    packages=find_packages(exclude=["*test*"])
 )
