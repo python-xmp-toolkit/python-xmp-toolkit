@@ -37,9 +37,9 @@ Install script for libxmp.
 """
 
 try:
-	from setuptools import setup
+    from setuptools import setup
 except ImportError:
-	from distutils.core import setup
+    from distutils.core import setup
 import sys
 
 def read_version():
@@ -49,15 +49,20 @@ def read_version():
         raise SystemExit(
             "Error: you must run setup from the root directory (%s)" % str(e))
 
+long_desc = "Python XMP Toolkit is a library for working with XMP metadata, "
+long_desc += "as well as reading/writing XMP metadata stored in many "
+long_desc += "different file formats."
+
+
 setup(
-	name='python-xmp-toolkit',
-	version=read_version(),
-	description='Python XMP Toolkit for working with metadata.',
-	author='Lars Holm Nielsen, Federico Caboni & Amit Kapadia',
-	author_email='lnielsen@eso.org,federico.caboni@me.com,akapad@gmail.com',
-	url='http://code.google.com/p/python-xmp-toolkit/',
-	download_url='http://code.google.com/p/python-xmp-toolkit/downloads/list',
-	long_description='Python XMP Toolkit is a library for working with XMP metadata, as well as reading/writing XMP metadata stored in many different file formats.',
-	license='New BSD License',
-	packages=['libxmp'],
+    name='python-xmp-toolkit',
+    version=read_version(),
+    description='Python XMP Toolkit for working with metadata.',
+    author='Lars Holm Nielsen, Federico Caboni & Amit Kapadia',
+    author_email='lnielsen@eso.org,federico.caboni@me.com,akapad@gmail.com',
+    url='http://code.google.com/p/python-xmp-toolkit/',
+    download_url='http://code.google.com/p/python-xmp-toolkit/downloads/list',
+    long_description=long_desc
+    license='New BSD License',
+    packages=['libxmp', 'libxmp.test'],
 )
