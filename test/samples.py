@@ -40,9 +40,6 @@ sys.path.append(os.path.pardir)
 
 import libxmp
 
-#
-#
-#
 open_flags = [
     'open_nooption',
     'open_read',
@@ -88,7 +85,7 @@ samplefiles = files
 
 def make_temp_samples():
     global sampledir
-    if os.path.exists( sampledir ):
+    if os.path.exists(sampledir):
         remove_temp_samples()
 
     shutil.copytree('samples', sampledir)

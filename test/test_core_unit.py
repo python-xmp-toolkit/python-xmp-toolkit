@@ -36,6 +36,9 @@ import unittest
 import sys
 import os
 import os.path
+import pkg_resources
+import shutil
+import tempfile
 
 sys.path.append(os.path.pardir)
 
@@ -44,19 +47,49 @@ from libxmp import XMPIterator
 from libxmp import _exempi
 from libxmp.utils import file_to_dict, object_to_dict
 
-from samples import samplefiles, open_flags, sampledir, make_temp_samples, remove_temp_samples
+from samples import open_flags
 import xmpcoverage
+
+samplefiles = [
+    'sig05-002a.tif',
+    'sig05-002a.xmp',
+    'BlueSquare.ai',
+    'BlueSquare.avi',
+    'BlueSquare.eps',
+    'BlueSquare.gif',
+    'BlueSquare.indd',
+    'BlueSquare.jpg',
+    'BlueSquare.mov',
+    'BlueSquare.mp3',
+    'BlueSquare.pdf',
+    'BlueSquare.png',
+    'BlueSquare.psd',
+    'BlueSquare.tif',
+    'BlueSquare.wav',
+]
 
 class TestClass(object):
     def __unicode__(self):
         return xmpcoverage.RDFCoverage
 
+def setup_sample_files(dirname):
+    copied_samplefiles = []
+    for samplefile in samplefiles:
+        relsrc = os.path.join('samples', samplefile)
+        full_source_file = pkg_resources.resource_filename(__name__, relsrc)
+        dest_file = os.path.join(dirname, samplefile)
+        shutil.copyfile(full_source_file, dest_file)
+        copied_samplefiles.append(dest_file)
+    return copied_samplefiles
+
 class XMPMetaTestCase(unittest.TestCase):
     def setUp(self):
-        make_temp_samples()
+        # TODO:  change this for 3.3
+        self.tempdir = tempfile.mkdtemp()
+        self.samplefiles = setup_sample_files(self.tempdir)
 
     def tearDown(self):
-        remove_temp_samples()
+        shutil.rmtree(self.tempdir)
 
     def test_init_del(self):
         xmp = XMPMeta()
@@ -64,11 +97,11 @@ class XMPMetaTestCase(unittest.TestCase):
         del xmp
 
     def test_test_files(self):
-        for f in samplefiles.iterkeys():
+        for f in self.samplefiles:
             self.assert_( os.path.exists(f), "Test file does not exists." )
 
     def test_get_xmp(self):
-        for f,fmt in samplefiles.iteritems():
+        for f in self.samplefiles:
             xmpfile = XMPFiles( file_path=f )
             xmp = xmpfile.get_xmp()
             self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
@@ -158,34 +191,39 @@ class XMPMetaTestCase(unittest.TestCase):
 
 
     def test_does_property_exist(self):
-        xmp = XMPFiles( file_path="fixtures/BlueSquare450.tif" )
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "fixtures/BlueSquare450.tif")
+        xmp = XMPFiles(file_path=filename)
         xmp_data = xmp.get_xmp()
         self.assert_( xmp_data.does_property_exist( "http://ns.adobe.com/photoshop/1.0/", 'Headline' ) )
 
 
 class UtilsTestCase(unittest.TestCase):
     def setUp(self):
-        make_temp_samples()
+        self.tempdir = tempfile.mkdtemp()
+        self.samplefiles = setup_sample_files(self.tempdir)
 
     def tearDown(self):
-        remove_temp_samples()
+        shutil.rmtree(self.tempdir)
 
     def test_object_to_dict(self):
-        for f,fmt in samplefiles.iteritems():
+        for f in self.samplefiles:
             xmpfile = XMPFiles( file_path=f )
             xmp = xmpfile.get_xmp()
             self.assert_( object_to_dict( xmp ), "Not an XMPMeta object" )
             xmpfile.close_file()
 
     def test_file_to_dict(self):
-        for f,fmt in samplefiles.iteritems():
+        for f in self.samplefiles:
             self.assert_( file_to_dict( f ), "Expected dictionary" )
 
     def test_file_to_dict_nofile(self):
         self.assertRaises( IOError, file_to_dict, "nonexistingfile.ext" )
 
     def test_file_to_dict_noxmp(self):
-        self.assertEqual( file_to_dict("fixtures/empty.txt"), {} )
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "fixtures/empty.txt")
+        self.assertEqual( file_to_dict(filename), {} )
 
     def test_object_to_dict_noxmp(self):
         self.assertEqual( object_to_dict( [] ), {} )
