@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008-2009, European Space Agency & European Southern Observatory (ESA/ESO)
-# Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
+# Copyright (c) 2008-2009, European Space Agency & European Southern
+# Observatory (ESA/ESO)
+# Copyright (c) 2008-2009, CRS4 - Centre for Advanced Studies, Research and
+# Development in Sardinia
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -15,27 +17,28 @@
 #       documentation and/or other materials provided with the distribution.
 #
 #     * Neither the name of the European Space Agency, European Southern
-#       Observatory, CRS4 nor the names of its contributors may be used to endorse or
-#       promote products derived from this software without specific prior
-#       written permission.
+#       Observatory, CRS4 nor the names of its contributors may be used to
+#       endorse or promote products derived from this software without specific
+#       prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY ESA/ESO AND CRS4 ``AS IS'' AND ANY EXPRESS OR IMPLIED
-# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# THIS SOFTWARE IS PROVIDED BY ESA/ESO AND CRS4 ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 # MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
 # EVENT SHALL ESA/ESO BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
 # EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER # IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
 """
-The Files module provides support for locating the XMP in a file, adding XMP to a file,
-or updating the XMP in a file. It returns the entire XMP packet, the core pacakage can
-then be used to manipulate the individual XMP properties. :class:`XMPFiles` contains a number of
-"smart" file handlers that know how to efficiently access the XMP in specific file formats. It also
-includes a fallback packet scanner that can be used for unknown file formats.
+The Files module provides support for locating the XMP in a file, adding XMP to
+a file, or updating the XMP in a file. It returns the entire XMP packet, the
+core pacakage can then be used to manipulate the individual XMP properties.
+:class:`XMPFiles` contains a number of "smart" file handlers that know how to
+efficiently access the XMP in specific file formats. It also includes a
+fallback packet scanner that can be used for unknown file formats.
 """
 
 from libxmp import XMPError, XMPMeta
@@ -47,16 +50,16 @@ import os
 
 __all__ = ['XMPFiles']
 
-class XMPFiles:
-    """
-    API for access to the "main" metadata in a file.
-    XMPFiles provides the API for the Exempi's File Handler component.
-    This provides convenient access to the main, or document level, XMP for a
-    file. The general model is to open a file, read and write the metadata, then
+class XMPFiles(object):
+    """API for access to the "main" metadata in a file.
+
+    XMPFiles provides the API for the Exempi's File Handler component.  This
+    provides convenient access to the main, or document level, XMP for a file.
+    The general model is to open a file, read and write the metadata, then
     close the file. While open, portions of the file might be maintained in RAM
-    data structures. Memory usage can vary considerably depending on file format
-    and access options. The file may be opened for read-only or read-write access,
-    with typical exclusion for both modes.
+    data structures. Memory usage can vary considerably depending on file
+    format and access options. The file may be opened for read-only or
+    read-write access, with typical exclusion for both modes.
 
     Errors result in raising of an :exc:`libxmp.XMPError` exception.
 
@@ -95,7 +98,10 @@ class XMPFiles:
         .. todo::
             Change signature into using kwargs to set option flag
         """
-        open_flags = options_mask( XMP_OPEN_OPTIONS, **kwargs ) if kwargs else XMP_OPEN_NOOPTION
+        if kwargs:
+            open_flags = options_mask( XMP_OPEN_OPTIONS, **kwargs )
+        else:
+            open_flags = XMP_OPEN_NOOPTION
 
         if self._file_path != None:
             raise XMPError('A file is already open - close it first.')
@@ -155,11 +161,13 @@ class XMPFiles:
                 _check_for_error()
 
     def can_put_xmp( self, xmp_obj ):
-        """
-        Determines if a given :class:`libxmp.core.XMPMeta` objet can be written in the file.
+        """Determine if XMP can be written into the file.
+
+        Determines if a given :class:`libxmp.core.XMPMeta` object can be
+        written into the file.
 
         :param xmp_obj: An :class:`libxmp.core.XMPMeta` object
-        :return:  true if :class:`libxmp.core.XMPMeta` object can be written in file.
+        :return:  true if :class:`libxmp.core.XMPMeta` object writeable to file.
         :rtype: bool
         """
         if not isinstance( xmp_obj, XMPMeta ):
