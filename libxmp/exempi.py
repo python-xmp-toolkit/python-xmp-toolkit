@@ -16,7 +16,7 @@ class ErrorCodes(IntEnum):
     unavailable        =   -2
     bad_object         =   -3
     bad_param          =   -4
-    Bad_value          =   -5
+    bad_value          =   -5
     assert_failure     =   -6
     enforce_failure    =   -7
     unimplemented      =   -8
@@ -48,6 +48,44 @@ class ErrorCodes(IntEnum):
     bad_psir           = -209
     bad_iptc           = -210
     bad_mpeg           = -211
+
+_error_message = { ErrorCodes.unknown:            "unknown error",
+                   ErrorCodes.tbd:                "TBD",
+                   ErrorCodes.unavailable:        "unavailable",
+                   ErrorCodes.bad_object:         "bad object",
+                   ErrorCodes.bad_param:          "bad parameter",
+                   ErrorCodes.bad_value:          "bad value",
+                   ErrorCodes.assert_failure:     "assert failure",
+                   ErrorCodes.enforce_failure:    "enforce failure",
+                   ErrorCodes.unimplemented:      "unimplemented",
+                   ErrorCodes.internal_failure:   "internal failure",
+                   ErrorCodes.deprecated:         "deprecated",
+                   ErrorCodes.external_failure:   "external failure",
+                   ErrorCodes.user_abort:         "user abort",
+                   ErrorCodes.std_exception:      "std exception",
+                   ErrorCodes.unknown_exception:  "unknown exception",
+                   ErrorCodes.no_memory:          "no memory",
+                   ErrorCodes.bad_schema:         "bad schema",
+                   ErrorCodes.bad_xpath:          "bad XPath",
+                   ErrorCodes.bad_options:        "bad options",
+                   ErrorCodes.bad_index:          "bad index",
+                   ErrorCodes.bad_iter_position:  "bad iter position",
+                   ErrorCodes.bad_parse:          "bad parse",
+                   ErrorCodes.bad_serialize:      "bad serialize",
+                   ErrorCodes.bad_file_format:    "bad file format",
+                   ErrorCodes.no_file_handler:    "no file handler",
+                   ErrorCodes.too_large_for_jpeg: "too large for JPEG",
+                   ErrorCodes.bad_xml:            "bad XML",
+                   ErrorCodes.bad_rdf:            "bad RDF",
+                   ErrorCodes.bad_xmp:            "bad XMP",
+                   ErrorCodes.empty_iterator:     "empty iterator",
+                   ErrorCodes.bad_unicode:        "bad unicode",
+                   ErrorCodes.bad_tiff:           "bad TIFF",
+                   ErrorCodes.bad_jpeg:           "bad JPEG",
+                   ErrorCodes.bad_psd:            "bad PSD",
+                   ErrorCodes.bad_psir:           "bad PSIR",
+                   ErrorCodes.bad_iptc:           "bad IPTC",
+                   ErrorCodes.bad_mpeg:           "bad MPEG" }
 
 class OpenFileOptions(IntEnum):
     """Option bits for xmp_files_open."""
@@ -1578,10 +1616,9 @@ def check_error(status):
     for error status in each wrapping function and an exception will always be
     appropriately raised.
     """
-    error_code = EXEMPI.xmp_get_error()
     if status != 1:
-        msg = "Exempi function failure (error code={0})."
-        msg = msg.format(error_code)
+        error_msg = _error_message[EXEMPI.xmp_get_error()]
+        msg = 'Exempi function failure ("{0}").'.format(error_msg)
         raise IOError(msg)
 
 
