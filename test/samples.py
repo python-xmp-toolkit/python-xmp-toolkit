@@ -79,7 +79,7 @@ samplefiles = {
 }
 
 files = {}
-for k,v in samplefiles.iteritems():
+for k,v in samplefiles.items():
     files[sampledir + k] = v
 samplefiles = files
 

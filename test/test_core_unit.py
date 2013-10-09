@@ -48,8 +48,8 @@ from libxmp import _exempi
 from libxmp.utils import file_to_dict, object_to_dict
 
 from .common_fixtures import setup_sample_files
-from samples import open_flags
-import xmpcoverage
+from .samples import open_flags
+from . import xmpcoverage
 
 class TestClass(object):
     def __unicode__(self):
@@ -151,7 +151,7 @@ class XMPMetaTestCase(unittest.TestCase):
 
                     self.assertEqual( headline[-5:], "=END="  )
                     self.assert_( len(headline) > 450, "Not all text was extracted from headline property."  )
-                except XMPError, e:
+                except XMPError as e:
                     pass
 
 

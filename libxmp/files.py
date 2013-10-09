@@ -72,7 +72,7 @@ class XMPFiles(object):
         self._file_path = None
         self.xmpfileptr = _exempi.xmp_files_new()
 
-        if kwargs.has_key( 'file_path' ):
+        if 'file_path' in kwargs:
             file_path = kwargs['file_path']
             del kwargs['file_path']
 

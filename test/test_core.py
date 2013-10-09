@@ -54,9 +54,9 @@ def main():
 #
 
 
-    print utils.object_to_dict(xmp)
-    print "---"
-    print xmp.register_namespace('http://purl.org/dc/elements/1.1/','dc')
+    print(utils.object_to_dict(xmp))
+    print("---")
+    print(xmp.register_namespace('http://purl.org/dc/elements/1.1/','dc'))
 #    xmpfile.close_file()
 #
 #
@@ -65,8 +65,8 @@ def main():
 #    xmp = xmpfile.get_xmp()
 
 
-    print xmp.get_prefix_for_namespace('http://purl.org/dc/elements/1.1/')
-    print xmp.get_namespace_for_prefix('dc:')
+    print(xmp.get_prefix_for_namespace('http://purl.org/dc/elements/1.1/'))
+    print(xmp.get_namespace_for_prefix('dc:'))
 
 if __name__ == "__main__":
     main()

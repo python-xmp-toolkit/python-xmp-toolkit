@@ -60,114 +60,114 @@ XMP_CLOSE_SAFEUPDATE    = 0x0001 #< Write into a temporary file and swap for cra
 #
 # File formats
 #
-XMP_FT_PDF      = 0x50444620L  #  'PDF '
-XMP_FT_PS       = 0x50532020L  #  'PS  ' general PostScript following DSC conventions.
-XMP_FT_EPS      = 0x45505320L  #  'EPS ' encapsulated PostScript.
-XMP_FT_JPEG     = 0x4A504547L  #  'JPEG'
-XMP_FT_JPEG2K   = 0x4A505820L  #  'JPX ' ISO 15444-1
-XMP_FT_TIFF     = 0x54494646L  #  'TIFF'
-XMP_FT_GIF      = 0x47494620L  #  'GIF '
-XMP_FT_PNG      = 0x504E4720L  #  'PNG '
-XMP_FT_SWF      = 0x53574620L  #  'SWF '
-XMP_FT_FLA      = 0x464C4120L  #  'FLA '
-XMP_FT_FLV      = 0x464C5620L  #  'FLV '
-XMP_FT_MOV      = 0x4D4F5620L  #  'MOV ' Quicktime
-XMP_FT_AVI      = 0x41564920L  #  'AVI '
-XMP_FT_CIN      = 0x43494E20L  #  'CIN ' Cineon
-XMP_FT_WAV      = 0x57415620L  #  'WAV '
-XMP_FT_MP3      = 0x4D503320L  #  'MP3 '
-XMP_FT_SES      = 0x53455320L  #  'SES ' Audition session
-XMP_FT_CEL      = 0x43454C20L  #  'CEL ' Audition loop
-XMP_FT_MPEG     = 0x4D504547L  #  'MPEG'
-XMP_FT_MPEG2    = 0x4D503220L  #  'MP2 '
-XMP_FT_MPEG4    = 0x4D503420L  #  'MP4 ' ISO 14494-12 and -14
-XMP_FT_WMAV     = 0x574D4156L  #  'WMAV' Windows Media Audio and Video
-XMP_FT_AIFF     = 0x41494646L  #  'AIFF'
-XMP_FT_HTML     = 0x48544D4CL  #  'HTML'
-XMP_FT_XML      = 0x584D4C20L  #  'XML '
-XMP_FT_TEXT     = 0x74657874L  #  'text'
+XMP_FT_PDF      = 0x50444620  #  'PDF '
+XMP_FT_PS       = 0x50532020  #  'PS  ' general PostScript following DSC conventions.
+XMP_FT_EPS      = 0x45505320  #  'EPS ' encapsulated PostScript.
+XMP_FT_JPEG     = 0x4A504547  #  'JPEG'
+XMP_FT_JPEG2K   = 0x4A505820  #  'JPX ' ISO 15444-1
+XMP_FT_TIFF     = 0x54494646  #  'TIFF'
+XMP_FT_GIF      = 0x47494620  #  'GIF '
+XMP_FT_PNG      = 0x504E4720  #  'PNG '
+XMP_FT_SWF      = 0x53574620  #  'SWF '
+XMP_FT_FLA      = 0x464C4120  #  'FLA '
+XMP_FT_FLV      = 0x464C5620  #  'FLV '
+XMP_FT_MOV      = 0x4D4F5620  #  'MOV ' Quicktime
+XMP_FT_AVI      = 0x41564920  #  'AVI '
+XMP_FT_CIN      = 0x43494E20  #  'CIN ' Cineon
+XMP_FT_WAV      = 0x57415620  #  'WAV '
+XMP_FT_MP3      = 0x4D503320  #  'MP3 '
+XMP_FT_SES      = 0x53455320  #  'SES ' Audition session
+XMP_FT_CEL      = 0x43454C20  #  'CEL ' Audition loop
+XMP_FT_MPEG     = 0x4D504547  #  'MPEG'
+XMP_FT_MPEG2    = 0x4D503220  #  'MP2 '
+XMP_FT_MPEG4    = 0x4D503420  #  'MP4 ' ISO 14494-12 and -14
+XMP_FT_WMAV     = 0x574D4156  #  'WMAV' Windows Media Audio and Video
+XMP_FT_AIFF     = 0x41494646  #  'AIFF'
+XMP_FT_HTML     = 0x48544D4C  #  'HTML'
+XMP_FT_XML      = 0x584D4C20  #  'XML '
+XMP_FT_TEXT     = 0x74657874  #  'text'
 #  Adobe application file formats.
-XMP_FT_PHOTOSHOP       = 0x50534420L  #  'PSD '
-XMP_FT_ILLUSTRATOR     = 0x41492020L  #  'AI  '
-XMP_FT_INDESIGN        = 0x494E4444L  #  'INDD'
-XMP_FT_AEPROJECT       = 0x41455020L  #  'AEP '
-XMP_FT_AEPROJTEMPLATE  = 0x41455420L  #  'AET ' After Effects Project Template
-XMP_FT_AEFILTERPRESET  = 0x46465820L  #  'FFX '
-XMP_FT_ENCOREPROJECT   = 0x4E434F52L  #  'NCOR'
-XMP_FT_PREMIEREPROJECT = 0x5052504AL  #  'PRPJ'
-XMP_FT_PREMIERETITLE   = 0x5052544CL  #  'PRTL'
+XMP_FT_PHOTOSHOP       = 0x50534420  #  'PSD '
+XMP_FT_ILLUSTRATOR     = 0x41492020  #  'AI  '
+XMP_FT_INDESIGN        = 0x494E4444  #  'INDD'
+XMP_FT_AEPROJECT       = 0x41455020  #  'AEP '
+XMP_FT_AEPROJTEMPLATE  = 0x41455420  #  'AET ' After Effects Project Template
+XMP_FT_AEFILTERPRESET  = 0x46465820  #  'FFX '
+XMP_FT_ENCOREPROJECT   = 0x4E434F52  #  'NCOR'
+XMP_FT_PREMIEREPROJECT = 0x5052504A  #  'PRPJ'
+XMP_FT_PREMIERETITLE   = 0x5052544C  #  'PRTL'
 # Catch all
-XMP_FT_UNKNOWN  = 0x20202020L
+XMP_FT_UNKNOWN  = 0x20202020
 
 ### XMP CORE
 #
 # Serialize Options
 #
-XMP_SERIAL_OMITPACKETWRAPPER   = 0x0010L  # Do not include an XML packet wrapper.
-XMP_SERIAL_READONLYPACKET      = 0x0020L  # Create a read-only XML packet wapper.
-XMP_SERIAL_USECOMPACTFORMAT    = 0x0040L  # Use a highly compact RDF syntax and layout.
-XMP_SERIAL_INCLUDETHUMBNAILPAD = 0x0100L  # Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
-XMP_SERIAL_EXACTPACKETLENGTH   = 0x0200L  # The padding parameter provides the overall packet length.
-XMP_SERIAL_WRITEALIASCOMMENTS  = 0x0400L  # Include XML comments for aliases.
-XMP_SERIAL_OMITALLFORMATTING   = 0x0800L  # Omit all formatting whitespace.
+XMP_SERIAL_OMITPACKETWRAPPER   = 0x0010  # Do not include an XML packet wrapper.
+XMP_SERIAL_READONLYPACKET      = 0x0020  # Create a read-only XML packet wapper.
+XMP_SERIAL_USECOMPACTFORMAT    = 0x0040  # Use a highly compact RDF syntax and layout.
+XMP_SERIAL_INCLUDETHUMBNAILPAD = 0x0100  # Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
+XMP_SERIAL_EXACTPACKETLENGTH   = 0x0200  # The padding parameter provides the overall packet length.
+XMP_SERIAL_WRITEALIASCOMMENTS  = 0x0400  # Include XML comments for aliases.
+XMP_SERIAL_OMITALLFORMATTING   = 0x0800  # Omit all formatting whitespace.
 
 #
 # XMPIterator Options
 #
-XMP_ITER_CLASSMASK      = 0x00FFL   # The low 8 bits are an enum of what data structure to iterate.
-XMP_ITER_PROPERTIES     = 0x0000L   # Iterate the property tree of a TXMPMeta object.
-XMP_ITER_ALIASES        = 0x0001L   # Iterate the global alias table. - XMP Toolkit and Exempi don't implement this option yet
-XMP_ITER_NAMESPACES     = 0x0002L   # Iterate the global namespace table. - XMP Toolkit and Exempi don't implement this option yet
-XMP_ITER_JUSTCHILDREN   = 0x0100L   # Just do the immediate children of the root, default is subtree.
-XMP_ITER_JUSTLEAFNODES  = 0x0200L   # Just do the leaf nodes, default is all nodes in the subtree.
-XMP_ITER_JUSTLEAFNAME   = 0x0400L   # Return just the leaf part of the path, default is the full path.
-XMP_ITER_INCLUDEALIASES = 0x0800L   # Include aliases, default is just actual properties.
-XMP_ITER_OMITQUALIFIERS = 0x1000L   # Omit all qualifiers.
+XMP_ITER_CLASSMASK      = 0x00FF   # The low 8 bits are an enum of what data structure to iterate.
+XMP_ITER_PROPERTIES     = 0x0000   # Iterate the property tree of a TXMPMeta object.
+XMP_ITER_ALIASES        = 0x0001   # Iterate the global alias table. - XMP Toolkit and Exempi don't implement this option yet
+XMP_ITER_NAMESPACES     = 0x0002   # Iterate the global namespace table. - XMP Toolkit and Exempi don't implement this option yet
+XMP_ITER_JUSTCHILDREN   = 0x0100   # Just do the immediate children of the root, default is subtree.
+XMP_ITER_JUSTLEAFNODES  = 0x0200   # Just do the leaf nodes, default is all nodes in the subtree.
+XMP_ITER_JUSTLEAFNAME   = 0x0400   # Return just the leaf part of the path, default is the full path.
+XMP_ITER_INCLUDEALIASES = 0x0800   # Include aliases, default is just actual properties.
+XMP_ITER_OMITQUALIFIERS = 0x1000   # Omit all qualifiers.
 
 #
 # XMPIterator Skip Options
 #
-XMP_ITER_SKIPSUBTREE   = 0x0001L  # Skip the subtree below the current node.
-XMP_ITER_SKIPSIBLINGS  = 0x0002L   # Skip the subtree below and remaining siblings of the current node.
+XMP_ITER_SKIPSUBTREE   = 0x0001  # Skip the subtree below the current node.
+XMP_ITER_SKIPSIBLINGS  = 0x0002   # Skip the subtree below and remaining siblings of the current node.
 
 #
 # PropBits
 #
-XMP_PROP_VALUE_IS_URI     = 0x00000002L # The value is a URI, use rdf:resource attribute.  DISCOURAGED
+XMP_PROP_VALUE_IS_URI     = 0x00000002 # The value is a URI, use rdf:resource attribute.  DISCOURAGED
 # Options relating to qualifiers attached to a property.
-XMP_PROP_HAS_QUALIFIERS   = 0x00000010L # The property has qualifiers,includes rdf:type and  xml:lang.
-XMP_PROP_IS_QUALIFIER     = 0x00000020L # This is a qualifier, includes rdf:type and xml:lang. */
-XMP_PROP_HAS_LANG         = 0x00000040L # Implies XMP_PropHasQualifiers,  property has xml:lang.
-XMP_PROP_HAS_TYPE         = 0x00000080L # Implies XMP_PropHasQualifiers,  property has rdf:type.
+XMP_PROP_HAS_QUALIFIERS   = 0x00000010 # The property has qualifiers,includes rdf:type and  xml:lang.
+XMP_PROP_IS_QUALIFIER     = 0x00000020 # This is a qualifier, includes rdf:type and xml:lang. */
+XMP_PROP_HAS_LANG         = 0x00000040 # Implies XMP_PropHasQualifiers,  property has xml:lang.
+XMP_PROP_HAS_TYPE         = 0x00000080 # Implies XMP_PropHasQualifiers,  property has rdf:type.
 
 # Options relating to the data structure form.
-XMP_PROP_VALUE_IS_STRUCT = 0x00000100L  # The value is a structure with nested fields.
-XMP_PROP_VALUE_IS_ARRAY  = 0x00000200L  # The value is an array (RDF alt/bag/seq).
+XMP_PROP_VALUE_IS_STRUCT = 0x00000100  # The value is a structure with nested fields.
+XMP_PROP_VALUE_IS_ARRAY  = 0x00000200  # The value is an array (RDF alt/bag/seq).
 XMP_PROP_ARRAY_IS_UNORDERED = XMP_PROP_VALUE_IS_ARRAY  # The item order does not matter.
-XMP_PROP_ARRAY_IS_ORDERED = 0x00000400L # Implies XMP_PropValueIsArray,item order matters.
-XMP_PROP_ARRAY_IS_ALT    = 0x00000800L  # Implies XMP_PropArrayIsOrdered,items are alternates.
+XMP_PROP_ARRAY_IS_ORDERED = 0x00000400 # Implies XMP_PropValueIsArray,item order matters.
+XMP_PROP_ARRAY_IS_ALT    = 0x00000800  # Implies XMP_PropArrayIsOrdered,items are alternates.
 
 
 # Additional struct and array options.
-XMP_PROP_ARRAY_IS_ALTTEXT = 0x00001000L  # Implies kXMP_PropArrayIsAlternate,items are localized text.
+XMP_PROP_ARRAY_IS_ALTTEXT = 0x00001000  # Implies kXMP_PropArrayIsAlternate,items are localized text.
 # kXMP_InsertBeforeItem  = 0x00004000L  ! Used by SetXyz functions. */
 # kXMP_InsertAfterItem   = 0x00008000L  ! Used by SetXyz functions. */
 
 # Other miscellaneous options
-XMP_PROP_IS_ALIAS         = 0x00010000L #This property is an alias name for another property.
-XMP_PROP_HAS_ALIASES      = 0x00020000L #This property is the base value for a set of aliases.
-XMP_PROP_IS_INTERNAL      = 0x00040000L #This property is an "internal" property, owned by applications.
-XMP_PROP_IS_STABLE        = 0x00100000L #This property is not derived from the document content.
-XMP_PROP_IS_DERIVED       = 0x00200000L #This property is derived from the document content.
+XMP_PROP_IS_ALIAS         = 0x00010000 #This property is an alias name for another property.
+XMP_PROP_HAS_ALIASES      = 0x00020000 #This property is the base value for a set of aliases.
+XMP_PROP_IS_INTERNAL      = 0x00040000 #This property is an "internal" property, owned by applications.
+XMP_PROP_IS_STABLE        = 0x00100000 #This property is not derived from the document content.
+XMP_PROP_IS_DERIVED       = 0x00200000 #This property is derived from the document content.
 # kXMPUtil_AllowCommas   = 0x10000000L  ! Used by TXMPUtils::CatenateArrayItems and ::SeparateArrayItems.
 # kXMP_DeleteExisting    = 0x20000000L  ! Used by TXMPMeta::SetXyz functions to delete any pre-existing property.
-XMP_IS_SCHEMA            = 0x80000000L  #Returned by iterators - #define to avoid warnings - Not defined by Exempi
-XMP_PROP_IS_SCHEMA            = 0x80000000L  #Returned by iterators - #define to avoid warnings - Not defined by Exempi
+XMP_IS_SCHEMA            = 0x80000000  #Returned by iterators - #define to avoid warnings - Not defined by Exempi
+XMP_PROP_IS_SCHEMA            = 0x80000000  #Returned by iterators - #define to avoid warnings - Not defined by Exempi
 
 # Multiple flag masks
 XMP_PROP_ARRAY_FORM_MASK  = XMP_PROP_VALUE_IS_ARRAY    | XMP_PROP_ARRAY_IS_ORDERED | XMP_PROP_ARRAY_IS_ALT | XMP_PROP_ARRAY_IS_ALTTEXT
 XMP_PROP_COMPOSITE_MASK   = XMP_PROP_VALUE_IS_STRUCT | XMP_PROP_ARRAY_FORM_MASK  #Is it simple or composite (array or struct)?
-XMP_IMPL_RESERVED_MASK    = 0x70000000L   # Reserved for transient use by the implementation.
+XMP_IMPL_RESERVED_MASK    = 0x70000000   # Reserved for transient use by the implementation.
 
 #####################
 # Common Namespaces #
@@ -336,9 +336,9 @@ def options_mask( xmp_options, **kwargs ):
 
       opt = consts.options_mask( consts.XMP_SERIAL_OPTIONS, omit_packet_wrapper=True )
     """
-    bitmask = 0x0L
+    bitmask = 0x0
 
-    for const_name,const_value in kwargs.iteritems():
+    for const_name, const_value in kwargs.items():
         if const_value and const_name in xmp_options:
             bitmask |= xmp_options[const_name]
 

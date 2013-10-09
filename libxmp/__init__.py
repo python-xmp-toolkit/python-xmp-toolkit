@@ -119,7 +119,7 @@ try:
 
     if not _exempi.xmp_init():
         _check_for_error()
-except OSError, e:
+except OSError:
     raise Exception('Could not load shared library exempi.')
 
 #
@@ -129,6 +129,6 @@ from libxmp.types import define_function_types
 define_function_types( _exempi )
 
 # Import classes into global namespace
-from core import *
-from files import *
-from utils import *
+from .core import *
+from .files import *
+from .utils import *

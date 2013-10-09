@@ -39,6 +39,7 @@ no knowledge of files. The core API is provided by the :class:`XMPMeta` and :cla
 
 from ctypes import *
 import datetime
+import sys
 
 from libxmp import XMPError
 from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
@@ -83,6 +84,10 @@ def _encode_as_utf8( obj, input_encoding=None ):
     If obj is not a string, it will try to convert the object into a unicode
     string and thereafter encode as UTF-8.
     """
+    if sys.hexversion >= 0x03000000:
+        obj = obj.encode().decode('utf-8')
+        return obj
+
     if isinstance( obj, unicode ):
         return obj.encode('utf-8')
     elif isinstance( obj, str ):
@@ -212,7 +217,7 @@ class XMPMeta(object):
         if _exempi.xmp_get_array_item( self.xmpptr, schema_ns, array_name, item_index, the_prop, byref(options)): #we're never returning options
             return {_exempi.xmp_string_cstr(the_prop):options.value}
         else:
-            raise Exception, "Array's over"
+            raise Exception("Array's over")
 
 
     # -------------------------------------

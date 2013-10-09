@@ -69,7 +69,7 @@ def file_to_dict(file_path):
         an argument.
     """
     if not os.path.isfile( os.path.abspath( file_path ) ):
-        raise IOError, "No such file or directory: '%s'" % file_path
+        raise IOError("No such file or directory: '%s'" % file_path)
 
     xmpfile = libxmp.files.XMPFiles()
 
