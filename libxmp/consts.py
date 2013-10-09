@@ -257,67 +257,67 @@ XMP_NS_AVM = "http://www.communicatingastronomy.org/avm/1.0/"
 # Definition of serialization options names.
 #
 XMP_SERIAL_OPTIONS = {
-    'omit_packet_wrapper' : XMP_SERIAL_OMITPACKETWRAPPER,
-    'read_only_packet' : XMP_SERIAL_READONLYPACKET,
-    'use_compact_format' : XMP_SERIAL_USECOMPACTFORMAT,
+    'omit_packet_wrapper'   : XMP_SERIAL_OMITPACKETWRAPPER,
+    'read_only_packet'      : XMP_SERIAL_READONLYPACKET,
+    'use_compact_format'    : XMP_SERIAL_USECOMPACTFORMAT,
     'include_thumbnail_pad' : XMP_SERIAL_INCLUDETHUMBNAILPAD,
-    'exact_packet_length' : XMP_SERIAL_EXACTPACKETLENGTH,
-    'write_alias_comments' : XMP_SERIAL_WRITEALIASCOMMENTS,
-    'omit_all_formatting' : XMP_SERIAL_OMITALLFORMATTING,
+    'exact_packet_length'   : XMP_SERIAL_EXACTPACKETLENGTH,
+    'write_alias_comments'  : XMP_SERIAL_WRITEALIASCOMMENTS,
+    'omit_all_formatting'   : XMP_SERIAL_OMITALLFORMATTING,
 }
 
 
 # Definition of property option names
 XMP_PROP_OPTIONS = {
-    'prop_value_is_uri' : XMP_PROP_VALUE_IS_URI,
-    'prop_has_qualifiers' : XMP_PROP_HAS_QUALIFIERS,
-    'prop_is_qualifier' : XMP_PROP_IS_QUALIFIER,
-    'prop_has_lang' : XMP_PROP_HAS_LANG,
-    'prop_has_type' : XMP_PROP_HAS_TYPE,
-    'prop_value_is_struct' : XMP_PROP_VALUE_IS_STRUCT,
-    'prop_value_is_array' : XMP_PROP_VALUE_IS_ARRAY,
+    'prop_value_is_uri'       : XMP_PROP_VALUE_IS_URI,
+    'prop_has_qualifiers'     : XMP_PROP_HAS_QUALIFIERS,
+    'prop_is_qualifier'       : XMP_PROP_IS_QUALIFIER,
+    'prop_has_lang'           : XMP_PROP_HAS_LANG,
+    'prop_has_type'           : XMP_PROP_HAS_TYPE,
+    'prop_value_is_struct'    : XMP_PROP_VALUE_IS_STRUCT,
+    'prop_value_is_array'     : XMP_PROP_VALUE_IS_ARRAY,
     'prop_array_is_unordered' : XMP_PROP_ARRAY_IS_UNORDERED,
-    'prop_array_is_ordered' : XMP_PROP_ARRAY_IS_ORDERED,
-    'prop_array_is_alt' : XMP_PROP_ARRAY_IS_ALT,
-    'prop_array_is_alttext' : XMP_PROP_ARRAY_IS_ALTTEXT,
-    'prop_is_alias' : XMP_PROP_IS_ALIAS,
-    'prop_has_aliases' : XMP_PROP_HAS_ALIASES,
-    'prop_is_internal' : XMP_PROP_IS_INTERNAL,
-    'prop_is_stable' : XMP_PROP_IS_STABLE,
-    'prop_is_deriver' : XMP_PROP_IS_DERIVED,
-    'prop_is_schema' : XMP_PROP_IS_SCHEMA,
+    'prop_array_is_ordered'   : XMP_PROP_ARRAY_IS_ORDERED,
+    'prop_array_is_alt'       : XMP_PROP_ARRAY_IS_ALT,
+    'prop_array_is_alttext'   : XMP_PROP_ARRAY_IS_ALTTEXT,
+    'prop_is_alias'           : XMP_PROP_IS_ALIAS,
+    'prop_has_aliases'        : XMP_PROP_HAS_ALIASES,
+    'prop_is_internal'        : XMP_PROP_IS_INTERNAL,
+    'prop_is_stable'          : XMP_PROP_IS_STABLE,
+    'prop_is_deriver'         : XMP_PROP_IS_DERIVED,
+    'prop_is_schema'          : XMP_PROP_IS_SCHEMA,
 }
 
 # Definition of iterator's option names
 XMP_ITERATOR_OPTIONS = {
-    'iter_classmask': XMP_ITER_CLASSMASK,
-    'iter_properties': XMP_ITER_PROPERTIES,
-    'iter_aliases': XMP_ITER_ALIASES,
-    'iter_namespaces' : XMP_ITER_NAMESPACES,
-    'iter_justchildren' : XMP_ITER_JUSTCHILDREN,
-    'iter_justleafnodes' : XMP_ITER_JUSTLEAFNODES,
-    'iter_justleafname' : XMP_ITER_JUSTLEAFNAME,
+    'iter_classmask'      : XMP_ITER_CLASSMASK,
+    'iter_properties'     : XMP_ITER_PROPERTIES,
+    'iter_aliases'        : XMP_ITER_ALIASES,
+    'iter_namespaces'     : XMP_ITER_NAMESPACES,
+    'iter_justchildren'   : XMP_ITER_JUSTCHILDREN,
+    'iter_justleafnodes'  : XMP_ITER_JUSTLEAFNODES,
+    'iter_justleafname'   : XMP_ITER_JUSTLEAFNAME,
     'iter_includealiases' : XMP_ITER_INCLUDEALIASES,
     'iter_omitqualifiers' : XMP_ITER_OMITQUALIFIERS
 }
 
 # Definition of open options names
 XMP_OPEN_OPTIONS = {
-    'open_nooption' : XMP_OPEN_NOOPTION,
-    'open_read' : XMP_OPEN_READ,
-    'open_forupdate' : XMP_OPEN_FORUPDATE,
-    'open_onlyxmp' : XMP_OPEN_ONLYXMP,
-    'open_cachetnail' : XMP_OPEN_CACHETNAIL,
-    'open_strictly' : XMP_OPEN_STRICTLY,
-    'open_usesmarthandler' : XMP_OPEN_USESMARTHANDLER,
+    'open_nooption'          : XMP_OPEN_NOOPTION,
+    'open_read'              : XMP_OPEN_READ,
+    'open_forupdate'         : XMP_OPEN_FORUPDATE,
+    'open_onlyxmp'           : XMP_OPEN_ONLYXMP,
+    'open_cachetnail'        : XMP_OPEN_CACHETNAIL,
+    'open_strictly'          : XMP_OPEN_STRICTLY,
+    'open_usesmarthandler'   : XMP_OPEN_USESMARTHANDLER,
     'open_usepacketscanning' : XMP_OPEN_USEPACKETSCANNING,
-    'open_limitscanning' : XMP_OPEN_LIMITSCANNING,
-    'open_inbackground' : XMP_OPEN_INBACKGROUND,
+    'open_limitscanning'     : XMP_OPEN_LIMITSCANNING,
+    'open_inbackground'      : XMP_OPEN_INBACKGROUND,
 }
 
 # Definition of XMPIterator.skip()'s option names
 XMP_SKIP_OPTIONS = {
-    'iter_skipsubtree' : XMP_ITER_SKIPSUBTREE,
+    'iter_skipsubtree'  : XMP_ITER_SKIPSUBTREE,
     'iter_skipsiblings' : XMP_ITER_SKIPSIBLINGS
 }
 
@@ -326,7 +326,7 @@ def has_option ( xmp_option, bitmask ):
 
 def options_mask( xmp_options, **kwargs ):
     """
-    Internal function for creating the options bit mask to parse into exempi C functions.
+    Creates the options bit mask for consumption by exempi C functions.
 
     Example::
 
