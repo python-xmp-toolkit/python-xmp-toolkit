@@ -564,8 +564,8 @@ def files_get_file_info(xfptr):
 
     Returns
     -------
-    file_path : XmpStringPtr
-        the file path object to store the path in. Pass NULL if not needed.
+    file_path : str
+        the file path object to store the path in.
     options : XmpOpenFileOptions
         the options for open.
     file_format : XmpFileType
@@ -579,16 +579,19 @@ def files_get_file_info(xfptr):
                                                ctypes.POINTER(ctypes.c_int32),
                                                ctypes.POINTER(ctypes.c_int32),
                                                ctypes.POINTER(ctypes.c_int32)]
-    file_path = string_new()
+    _file_path = _string_new()
     options = ctypes.c_int32(0)
     file_format = ctypes.c_int32(0)
     handler_flags = ctypes.c_int32(0)
 
     EXEMPI.xmp_files_get_file_info(xfptr,
-                                   file_path,
+                                   _file_path,
                                    ctypes.byref(options),
                                    ctypes.byref(file_format),
                                    ctypes.byref(handler_flags))
+
+    file_path = string_cstr(_file_path)
+    _string_free(_file_path)
 
     options = OpenFileOptions[options.value]
     file_format = FileType[file_format.value]
@@ -689,7 +692,7 @@ def get_array_item(xmp, schema, name, index):
 
     Returns
     -------
-    item : exempi XmpStringPtr
+    item : str
         The value of the property.
     property_bits : unsigned int
         The property bits
@@ -701,15 +704,19 @@ def get_array_item(xmp, schema, name, index):
                                           ctypes.c_int32,
                                           ctypes.c_void_p,
                                           ctypes.POINTER(ctypes.c_uint32)]
-    item = string_new()
+    _item = _string_new()
     property_bits = ctypes.c_uint32(0)
 
     EXEMPI.xmp_get_array_item(xmp,
                               schema.encode(),
                               name.encode(),
                               ctypes.c_int32(index),
-                              item,
+                              _item,
                               ctypes.byref(property_bits))
+
+    item = string_cstr(_item)
+    _string_free(_item)
+
     return item, property_bits.value
 
 def get_localized_text(xmp, schema, name, generic_lang, specific_lang):
@@ -732,8 +739,8 @@ def get_localized_text(xmp, schema, name, generic_lang, specific_lang):
 
     Returns
     -------
-    item : xmp string pointer
-        Opaque pointer to an XMP string.
+    item : str
+        The localized text.
     prop_bits : unsigned int
         option bit mask
     actual_lang : str
@@ -752,17 +759,23 @@ def get_localized_text(xmp, schema, name, generic_lang, specific_lang):
     if generic_lang is not None:
         generic_lang = generic_lang.encode()
 
-    item = string_new()
+    _item = _string_new()
     prop_bits = ctypes.c_uint32(0)
-    actual_lang = string_new()
+    _actual_lang = _string_new()
 
     EXEMPI.xmp_get_localized_text(xmp,
                                   schema.encode(),
                                   name.encode(),
                                   generic_lang,
                                   specific_lang.encode(),
-                                  actual_lang, item,
+                                  _actual_lang, _item,
                                   ctypes.byref(prop_bits))
+
+    item = string_cstr(_item)
+    _string_free(_item)
+
+    actual_lang = string_cstr(_actual_lang)
+    _string_free(_actual_lang)
 
     return item, prop_bits.value, actual_lang
 
@@ -781,9 +794,8 @@ def get_property(xmp, schema, name):
 
     Returns
     -------
-    prop : xmp string pointer
-        Opaque pointer to an XMP string.  It is your responsibility to dispose
-        of this string when you are finished with it.
+    prop : str
+        Property value as a string.
     prop_bits : unsigned int
         option bit mask
     """
@@ -795,14 +807,18 @@ def get_property(xmp, schema, name):
                                         ctypes.c_void_p,
                                         ctypes.POINTER(ctypes.c_uint32)]
 
-    newstr = string_new()
+    _value = _string_new()
     prop_bits = ctypes.c_uint32(0)
 
     EXEMPI.xmp_get_property(xmp,
                             ctypes.c_char_p(schema.encode()),
                             ctypes.c_char_p(name.encode()),
-                            newstr, ctypes.byref(prop_bits))
-    return newstr, prop_bits.value
+                            _value, ctypes.byref(prop_bits))
+
+    value = string_cstr(_value)
+    _string_free(_value)
+
+    return value, prop_bits.value
 
 
 def get_property_bool(xmp, schema, name):
@@ -1067,9 +1083,8 @@ def iterator_next(iterator):
 
     Returns
     -------
-    schema, propname, value : XmpStringPtr
-        The schema, name, and value of the property.  These values should be
-        properly disposed of with the string_free function.
+    schema, propname, value : str
+        The schema, name, and value of the property as strings.
     options : unsigned integer
         The options for the property.
 
@@ -1085,16 +1100,28 @@ def iterator_next(iterator):
                                          ctypes.POINTER(ctypes.c_uint32)]
     EXEMPI.xmp_iterator_next.restype = ctypes.c_bool
 
-    schema = string_new()
-    propname = string_new()
-    propvalue = string_new()
+    _schema = _string_new()
+    _propname = _string_new()
+    _propvalue = _string_new()
     options = ctypes.c_uint32(0)
 
-    success = EXEMPI.xmp_iterator_next(iterator, schema, propname, propvalue,
+    success = EXEMPI.xmp_iterator_next(iterator, _schema, _propname, _propvalue,
                                    ctypes.byref(options))
 
     if not success:
+        _string_free(_schema)
+        _string_free(_propname)
+        _string_free(_propvalue)
         raise StopIteration()
+
+    schema = string_cstr(_schema)
+    _string_free(_schema)
+
+    propname = string_cstr(_propname)
+    _string_free(_propname)
+
+    propvalue = string_cstr(_propvalue)
+    _string_free(_propvalue)
 
     return schema, propname, propvalue, options
 
@@ -1134,7 +1161,7 @@ def iterator_new(xmp, schema, propname, options):
 
 
 def namespace_prefix(namespace):
-    """Retuns a prefix associated with a namespace.
+    """Returns a prefix associated with a namespace.
 
     Wrapper for xmp_namespace_prefix library routine.
 
@@ -1142,16 +1169,21 @@ def namespace_prefix(namespace):
     ----------
     namespace : str
         The namespace associated if registered.  May pass None.
+        TODO:  check this
 
     Returns
     -------
-    prefix : xmp pointer
-        The prefix to check.
+    prefix : str
+        The prefix associated with the namespace.
     """
     EXEMPI.xmp_namespace_prefix.restype = check_error
     EXEMPI.xmp_namespace_prefix.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
-    prefix = string_new()
-    EXEMPI.xmp_namespace_prefix(namespace.encode(), prefix)
+    _prefix = _string_new()
+    EXEMPI.xmp_namespace_prefix(namespace.encode(), _prefix)
+
+    prefix = string_cstr(_prefix)
+    _string_free(_prefix)
+
     return prefix
 
 
@@ -1205,13 +1237,17 @@ def prefix_namespace_uri(prefix):
     Returns
     -------
     namespace : str
-        The namespace associated if registered.  May pass None.
+        The namespace associated if registered.
     """
     EXEMPI.xmp_prefix_namespace_uri.restype = check_error
     EXEMPI.xmp_prefix_namespace_uri.argtypes = [ctypes.c_char_p]
 
-    namespace = string_new()
-    EXEMPI.xmp_prefix_namespace_uri(prefix.encode(), namespace)
+    _namespace = _string_new()
+    EXEMPI.xmp_prefix_namespace_uri(prefix.encode(), _namespace)
+
+    namespace = string_cstr(_namespace)
+    _string_free(_namespace)
+
     return namespace
 
 
@@ -1229,8 +1265,7 @@ def register_namespace(namespace_uri, prefix):
 
     Returns
     -------
-    registered_prefix : xmp pointer
-        # TODO harmonize these descriptions.
+    registered_prefix : str
         The really registered prefix.
     """
     # TODO Needs a raises part.
@@ -1239,10 +1274,13 @@ def register_namespace(namespace_uri, prefix):
                                               ctypes.c_char_p,
                                               ctypes.c_void_p]
 
-    registered_prefix = string_new()
+    _registered_prefix = _string_new()
     EXEMPI.xmp_register_namespace(namespace_uri.encode(),
                                   prefix.encode(),
-                                  registered_prefix)
+                                  _registered_prefix)
+
+    registered_prefix = string_cstr(_registered_prefix)
+    _string_free(_registered_prefix)
 
     return registered_prefix
 
@@ -1263,6 +1301,11 @@ def serialize_and_format(xmp, options, padding, newline, tab, indent):
         Characters to specify the newline and tabbing.
     indent : int
         The initial indentation level.
+
+    Returns
+    -------
+    item : str
+        The formatted XMP.
     """
     EXEMPI.xmp_serialize_and_format.restype = check_error
     EXEMPI.xmp_serialize_and_format.argtypes = [ctypes.c_void_p,
@@ -1272,9 +1315,13 @@ def serialize_and_format(xmp, options, padding, newline, tab, indent):
                                                 ctypes.c_char_p,
                                                 ctypes.c_char_p,
                                                 ctypes.c_int32]
-    item = string_new()
-    EXEMPI.xmp_serialize_and_format(xmp, item, options, padding,
+    _item = _string_new()
+    EXEMPI.xmp_serialize_and_format(xmp, _item, options, padding,
                                     newline.encode(), tab.encode(), indent)
+
+    item = string_cstr(_item)
+    _string_free(_item)
+
     return item
 
 
@@ -1577,22 +1624,24 @@ def string_cstr(xmpstr):
         return cstr.decode('utf-8')
 
 
-def string_free(xmp_string):
+def _string_free(xmp_string):
     """Free an XmpStringPtr.
 
-    Wrapper for xmp_string_free library routine.
+    Wrapper for xmp_string_free library routine.  You should not need to call
+    this function.
 
     Parameters
     ----------
     xmp_string : exempi XmpStringPtr
-        The string to free.
+        The resource to free.
     """
     EXEMPI.xmp_string_free.argtypes = [ctypes.c_void_p]
     EXEMPI.xmp_string_free(xmp_string)
 
 
-def string_new():
-    """Wrapper for xmp_string_new library routine.
+def _string_new():
+    """Wrapper for xmp_string_new library routine.  You should not need to call
+    this function.
 
     Returns
     -------

@@ -97,13 +97,9 @@ class TestExempi(unittest.TestCase):
             try:
                 schema, path, prop, _ = exempi.iterator_next(iterator)
 
-                schemas.append(exempi.string_cstr(schema))
-                paths.append(exempi.string_cstr(path))
-                props.append(exempi.string_cstr(prop))
-
-                exempi.string_free(schema)
-                exempi.string_free(path)
-                exempi.string_free(prop)
+                schemas.append(schema)
+                paths.append(path)
+                props.append(prop)
 
             except StopIteration:
                 break
@@ -130,18 +126,15 @@ class TestExempi(unittest.TestCase):
                                              'Foo'))
 
         prop, mask = exempi.get_property(xmp, exempi.NS_TIFF, 'Make')
-        prop = exempi.string_cstr(prop)
         self.assertEqual(prop, "Canon")
 
         exempi.set_property(xmp, exempi.NS_TIFF, "Make", "Leica", 0)
         prop, mask = exempi.get_property(xmp, exempi.NS_TIFF, 'Make')
-        prop = exempi.string_cstr(prop)
         self.assertEqual(prop, "Leica")
 
         # Retrieves xml:lang attribute value of 1st rights element
         prop, mask = exempi.get_property(xmp, exempi.NS_DC,
                                          "rights[1]/?xml:lang")
-        prop = exempi.string_cstr(prop)
         self.assertTrue(mask & exempi.XmpPropsBits.is_qualifier)
 
         prop, mask = exempi.get_property(xmp, exempi.NS_DC, "rights[1]")
@@ -151,8 +144,8 @@ class TestExempi(unittest.TestCase):
                                                             exempi.NS_DC,
                                                             "rights",
                                                             None, "x-default")
-        self.assertEqual(exempi.string_cstr(item), "2006, Hubert Figuiere")
-        self.assertEqual(exempi.string_cstr(actual_lang), "x-default")
+        self.assertEqual(item, "2006, Hubert Figuiere")
+        self.assertEqual(actual_lang, "x-default")
 
         exempi.set_localized_text(xmp, exempi.NS_DC, "rights",
                                   "en", "en-CA", "Foo bar", 0)
@@ -162,10 +155,10 @@ class TestExempi(unittest.TestCase):
                                                             "rights",
                                                             "en", "en-US")
         # And we only got the "en-CA" as the only "en"
-        self.assertNotEqual(exempi.string_cstr(actual_lang), "en-US")
-        self.assertEqual(exempi.string_cstr(actual_lang), "en-CA")
+        self.assertNotEqual(actual_lang, "en-US")
+        self.assertEqual(actual_lang, "en-CA")
         # Check its value
-        self.assertEqual(exempi.string_cstr(item), "Foo bar")
+        self.assertEqual(item, "Foo bar")
 
         # Remove the property x-default.
         exempi.delete_localized_text(xmp, exempi.NS_DC, "rights",
@@ -173,29 +166,23 @@ class TestExempi(unittest.TestCase):
         self.assertFalse(exempi.has_property(xmp, exempi.NS_DC, "rights[1]"))
         self.assertFalse(exempi.has_property(xmp, exempi.NS_DC, "rights[1]"))
 
-        exempi.string_free(actual_lang)
-
         exempi.set_array_item(xmp, exempi.NS_DC, "creator", 2, "foo", 0)
         the_prop, bits = exempi.get_array_item(xmp, exempi.NS_DC,
                                                "creator", 2)
         self.assertTrue(exempi.is_prop_simple(bits))
-        exempi.string_free(the_prop)
 
         exempi.append_array_item(xmp, exempi.NS_DC, "creator", 0, "bar", 0)
         the_prop, bits = exempi.get_array_item(xmp, exempi.NS_DC,
                                                "creator", 3)
         self.assertTrue(exempi.is_prop_simple(bits))
-        self.assertEqual(exempi.string_cstr(the_prop), "bar")
-        exempi.string_free(the_prop)
+        self.assertEqual(the_prop, "bar")
 
         exempi.delete_property(xmp, exempi.NS_DC, "creator[3]")
         self.assertFalse(exempi.has_property(xmp, exempi.NS_DC, "creator[3]"))
 
         the_prop, _ = exempi.get_property(xmp, exempi.NS_EXIF,
                                           "DateTimeOriginal")
-        self.assertEqual(exempi.string_cstr(the_prop),
-                         "2006-12-07T23:20:43-05:00")
-        exempi.string_free(the_prop)
+        self.assertEqual(the_prop, "2006-12-07T23:20:43-05:00")
 
         the_prop, _ = exempi.get_property_date(xmp, exempi.NS_EXIF,
                                                "DateTimeOriginal")
@@ -204,8 +191,7 @@ class TestExempi(unittest.TestCase):
         self.assertEqual(the_prop.tzSign, exempi.TimeSign.west)
 
         the_prop, _ = exempi.get_property(xmp, exempi.NS_XAP, "Rating")
-        self.assertEqual(exempi.string_cstr(the_prop), "3")
-        exempi.string_free(the_prop)
+        self.assertEqual(the_prop, "3")
 
         # testing float get set
         the_prop, _ = exempi.get_property_float(xmp,
@@ -280,8 +266,7 @@ class TestExempi(unittest.TestCase):
             xmp = exempi.files_get_new_xmp(xfptr)
             the_prop, _ = exempi.get_property(xmp, exempi.NS_PHOTOSHOP,
                                               "ICCProfile")
-            self.assertEqual("foo", exempi.string_cstr(the_prop))
-            exempi.string_free(the_prop)
+            self.assertEqual("foo", the_prop)
 
             exempi.free(xmp)
             exempi.files_close(xfptr, exempi.CloseFileOptions.no_option)
@@ -310,13 +295,10 @@ class TestSerialize(unittest.TestCase):
         self.assertFalse(exempi.get_error())
 
         options = exempi.Serialize.omit_packet_wrapper
-        xmp_output = exempi.serialize_and_format(xmp, options, 0, '\n', ' ', 0)
+        # TODO:  test this somehow.
+        output = exempi.serialize_and_format(xmp, options, 0, '\n', ' ', 0)
         self.assertFalse(exempi.get_error())
 
-        # TODO:  test this somehow.
-        output = exempi.string_cstr(xmp_output)
-
-        exempi.string_free(xmp_output)
         exempi.free(xmp)
 
         exempi.terminate()
@@ -370,21 +352,17 @@ class TestWriteNewProperty(unittest.TestCase):
         self.assertFalse(exempi.get_error())
 
         reg_prefix = exempi.register_namespace(exempi.NS_CC, "cc")
-        self.assertEqual("cc:", exempi.string_cstr(reg_prefix))
-        exempi.string_free(reg_prefix)
+        self.assertEqual("cc:", reg_prefix)
 
         reg_prefix = exempi.prefix_namespace_uri("cc")
-        self.assertEqual(exempi.NS_CC, exempi.string_cstr(reg_prefix))
-        exempi.string_free(reg_prefix)
+        self.assertEqual(exempi.NS_CC, reg_prefix)
 
         reg_prefix = exempi.namespace_prefix(exempi.NS_CC)
-        self.assertEqual("cc:", exempi.string_cstr(reg_prefix))
-        exempi.string_free(reg_prefix)
+        self.assertEqual("cc:", reg_prefix)
 
         exempi.set_property(xmp, exempi.NS_CC, "License", "Foo", 0)
         the_prop, _ = exempi.get_property(xmp, exempi.NS_CC, "License")
-        self.assertEqual(exempi.string_cstr(the_prop), "Foo")
-        exempi.string_free(the_prop)
+        self.assertEqual(the_prop, "Foo")
 
         the_dt = exempi.XmpDateTime()
         the_dt.year = 2005
@@ -402,8 +380,7 @@ class TestWriteNewProperty(unittest.TestCase):
                                  the_dt, 0)
         the_prop, _ = exempi.get_property(xmp, exempi.NS_EXIF,
                                           "DateTimeOriginal")
-        self.assertEqual("2005-12-25T12:42:42", exempi.string_cstr(the_prop))
-        exempi.string_free(the_prop)
+        self.assertEqual("2005-12-25T12:42:42", the_prop)
 
         the_prop, _ = exempi.get_property_date(xmp, exempi.NS_EXIF,
                                                "DateTimeOriginal")
@@ -448,8 +425,7 @@ class TestWriteNewProperty(unittest.TestCase):
                                  the_dt, 0)
         the_prop, _ = exempi.get_property(xmp, exempi.NS_EXIF,
                                           "DateTimeOriginal")
-        self.assertEqual("2005-12-25T12:42:42", exempi.string_cstr(the_prop))
-        exempi.string_free(the_prop)
+        self.assertEqual("2005-12-25T12:42:42", the_prop)
 
         the_prop, _ = exempi.get_property_date(xmp, exempi.NS_EXIF,
                                                "DateTimeOriginal")
@@ -482,14 +458,12 @@ class TestXmpFiles(unittest.TestCase):
         self.assertEqual(options, exempi.OpenFileOptions.read)
         self.assertEqual(file_format, exempi.FileType.jpeg)
         self.assertEqual(flags, 0x27f)  # 0x27f?
-        self.assertEqual(filename, exempi.string_cstr(file_path))
-        exempi.string_free(file_path)
+        self.assertEqual(filename, file_path)
 
         xmp = exempi.files_get_xmp(xfptr)
         the_prop, _ = exempi.get_property(xmp, exempi.NS_PHOTOSHOP,
                                           "ICCProfile")
-        self.assertEqual(exempi.string_cstr(the_prop), "sRGB IEC61966-2.1")
-        exempi.string_free(the_prop)
+        self.assertEqual(the_prop, "sRGB IEC61966-2.1")
         exempi.files_free(xfptr)
 
         exempi.terminate()
