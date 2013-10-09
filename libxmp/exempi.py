@@ -10,6 +10,45 @@ from flufl.enum import IntEnum
 # Handle for the library.
 EXEMPI = ctypes.CDLL(find_library('exempi'))
 
+class ErrorCodes(IntEnum):
+    unknown            =    0
+    tbd                =   -1
+    unavailable        =   -2
+    bad_object         =   -3
+    bad_param          =   -4
+    Bad_value          =   -5
+    assert_failure     =   -6
+    enforce_failure    =   -7
+    unimplemented      =   -8
+    internal_failure   =   -9
+    deprecated         =  -10
+    external_failure   =  -11
+    user_abort         =  -12
+    std_exception      =  -13
+    unknown_exception  =  -14
+    no_memory          =  -15
+    bad_schema         = -101
+    bad_xpath          = -102
+    bad_options        = -103
+    bad_index          = -104
+    bad_iter_position  = -105
+    bad_parse          = -106
+    bad_serialize      = -107
+    bad_file_format    = -108
+    no_file_handler    = -109
+    too_large_for_jpeg = -110
+    bad_xml            = -201
+    bad_rdf            = -202
+    bad_xmp            = -203
+    empty_iterator     = -204
+    bad_unicode        = -205
+    bad_tiff           = -206
+    bad_jpeg           = -207
+    bad_psd            = -208
+    bad_psir           = -209
+    bad_iptc           = -210
+    bad_mpeg           = -211
+
 class OpenFileOptions(IntEnum):
     """Option bits for xmp_files_open."""
     # No open option.
