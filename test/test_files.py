@@ -51,6 +51,7 @@ from .samples import open_flags
 class XMPFilesTestCase(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
+        # TODO:  rework to return two lists, not a dictionary.
         self.samplefiles = setup_sample_files(self.tempdir)
 
     def tearDown(self):
