@@ -20,30 +20,12 @@ import libxmp
 from libxmp import exempi
 
 
-class TestBgo(unittest.TestCase):
-    """Corresponds to test-bgo.cpp"""
-    @unittest.skip("unresolved failure")
-    def test_init(self):
-        """
-        TODO:  fill in the doc string
-        """
-        exempi.init()
-
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/fdo18635.jpg")
-        exempi.init()
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
-        self.assertNotEqual(xfptr, 0)
-
-        xmp = exempi.files_get_new_xmp(xfptr)
-        exempi.free(xmp)
-        exempi.files_free(xfptr)
-
-        exempi.terminate()
-
-
 class TestInit(unittest.TestCase):
-    """Corresponds to testinit.cpp"""
+    """Corresponds to testinit.cpp.
+
+    Run this test separately because it makes multiple calls to xmp_init and
+    xmp_terminate.
+    """
     def test_init(self):
         """TODO:  fill in the docstring"""
         filename = pkg_resources.resource_filename(__name__,
@@ -67,6 +49,25 @@ class TestInit(unittest.TestCase):
         exempi.terminate()
         self.assertTrue(True)
 
+class TestPythonXmpToolkit(unittest.TestCase):
+    """
+    Test suite for cases added by python xmp toolkit devs.
+    """
+    def test_file_not_there_open_new(self):
+        """
+        The library does not catch comfortably, so we have to.
+        """
+        with self.assertRaises(IOError):
+            xfptr = exempi.files_open_new('notthere.xmp',
+                                          exempi.OpenFileOptions.read)
+
+    def test_file_not_there_check_file_format(self):
+        """
+        The library does not catch comfortably, so we have to.
+        """
+        with self.assertRaises(IOError):
+            exempi.files_check_file_format('notthere.xmp')
+
 class TestExempi(unittest.TestCase):
     """
     Test suite for libexempi routine wrappers.
@@ -76,6 +77,74 @@ class TestExempi(unittest.TestCase):
 
     def tearDown(self):
         exempi.terminate()
+
+    def test_bgo(self):
+        """Corresponds to test-bgo.cpp
+        TODO:  test for non-existing file.
+        """
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/fdo18635.jpg")
+        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xmp = exempi.files_get_new_xmp(xfptr)
+        exempi.free(xmp)
+        exempi.files_free(xfptr)
+        self.assertTrue(True)
+
+    @unittest.skip("unresolved failure")
+    def test_write_new_property(self):
+        """Corresponds to test-write-new-property.cpp"""
+
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+
+        xmp = exempi.new_empty()
+        self.assertFalse(exempi.get_error())
+
+        exempi.parse(xmp, strbuffer)
+        self.assertFalse(exempi.get_error())
+
+        reg_prefix = exempi.register_namespace(exempi.NS_CC, "cc")
+        self.assertEqual("cc:", reg_prefix)
+
+        reg_prefix = exempi.prefix_namespace_uri("cc")
+        self.assertEqual(exempi.NS_CC, reg_prefix)
+
+        reg_prefix = exempi.namespace_prefix(exempi.NS_CC)
+        self.assertEqual("cc:", reg_prefix)
+
+        exempi.set_property(xmp, exempi.NS_CC, "License", "Foo", 0)
+        the_prop, _ = exempi.get_property(xmp, exempi.NS_CC, "License")
+        self.assertEqual(the_prop, "Foo")
+
+        the_dt = exempi.XmpDateTime()
+        the_dt.year = 2005
+        the_dt.month = 12
+        the_dt.day = 25
+        the_dt.hour = 12
+        the_dt.minute = 42
+        the_dt.second = 42
+        the_dt.tzSign = exempi.TimeSign.utc
+        the_dt.tzHour = 0
+        the_dt.tzMinute = 0
+        the_dt.nanoSecond = 0
+
+        exempi.set_property_date(xmp, exempi.NS_EXIF, "DateTimeOriginal",
+                                 the_dt, 0)
+        the_prop, _ = exempi.get_property(xmp, exempi.NS_EXIF,
+                                          "DateTimeOriginal")
+        self.assertEqual("2005-12-25T12:42:42", the_prop)
+
+        the_prop, _ = exempi.get_property_date(xmp, exempi.NS_EXIF,
+                                               "DateTimeOriginal")
+        self.assertEqual(the_prop.year, 2005)
+        self.assertEqual(the_prop.minute, 42)
+        self.assertEqual(the_prop.tzSign, exempi.TimeSign.utc)
+
+        exempi.free(xmp)
+
 
     def test_3(self):
         """Corresponds to test3.cpp"""
@@ -273,19 +342,13 @@ class TestExempi(unittest.TestCase):
             exempi.files_free(xfptr)
 
 
-
-class TestSerialize(unittest.TestCase):
-    """Corresponds to test-serialize.cpp"""
     def test_serialize(self):
-        """
-        TODO:  fill in the doc string
-        """
+        """Corresponds to test-serialize.cpp"""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
 
-        exempi.init()
         self.assertFalse(exempi.get_error())
 
         xmp = exempi.new_empty()
@@ -301,22 +364,15 @@ class TestSerialize(unittest.TestCase):
 
         exempi.free(xmp)
 
-        exempi.terminate()
 
-
-class TestTiffLeak(unittest.TestCase):
-    """Corresponds to test-tiff-leak.cpp"""
     def test_tiff_leak(self):
-        """
-        TODO:  fill in the doc string
-        """
+        """Corresponds to test-tiff-leak.cpp"""
         orig_file = pkg_resources.resource_filename(__name__,
                                                     "samples/BlueSquare.tif")
 
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
             shutil.copyfile(orig_file, tfile.name)
 
-            exempi.init()
             xfptr = exempi.files_open_new(tfile.name,
                                           exempi.OpenFileOptions.for_update)
 
@@ -327,70 +383,8 @@ class TestTiffLeak(unittest.TestCase):
             exempi.files_close(xfptr, exempi.CloseFileOptions.no_option)
             exempi.free(xmp)
             exempi.files_free(xfptr)
-            exempi.terminate()
         self.assertTrue(True)
 
-
-class TestWriteNewProperty(unittest.TestCase):
-    """Corresponds to test-write-new-property.cpp"""
-    @unittest.skip("unresolved failure")
-    def test_write_new_property(self):
-        """
-        TODO:  fill in the doc string
-        """
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-
-        exempi.init()
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
-
-        xmp = exempi.new_empty()
-        self.assertFalse(exempi.get_error())
-
-        exempi.parse(xmp, strbuffer)
-        self.assertFalse(exempi.get_error())
-
-        reg_prefix = exempi.register_namespace(exempi.NS_CC, "cc")
-        self.assertEqual("cc:", reg_prefix)
-
-        reg_prefix = exempi.prefix_namespace_uri("cc")
-        self.assertEqual(exempi.NS_CC, reg_prefix)
-
-        reg_prefix = exempi.namespace_prefix(exempi.NS_CC)
-        self.assertEqual("cc:", reg_prefix)
-
-        exempi.set_property(xmp, exempi.NS_CC, "License", "Foo", 0)
-        the_prop, _ = exempi.get_property(xmp, exempi.NS_CC, "License")
-        self.assertEqual(the_prop, "Foo")
-
-        the_dt = exempi.XmpDateTime()
-        the_dt.year = 2005
-        the_dt.month = 12
-        the_dt.day = 25
-        the_dt.hour = 12
-        the_dt.minute = 42
-        the_dt.second = 42
-        the_dt.tzSign = exempi.TimeSign.utc
-        the_dt.tzHour = 0
-        the_dt.tzMinute = 0
-        the_dt.nanoSecond = 0
-
-        exempi.set_property_date(xmp, exempi.NS_EXIF, "DateTimeOriginal",
-                                 the_dt, 0)
-        the_prop, _ = exempi.get_property(xmp, exempi.NS_EXIF,
-                                          "DateTimeOriginal")
-        self.assertEqual("2005-12-25T12:42:42", the_prop)
-
-        the_prop, _ = exempi.get_property_date(xmp, exempi.NS_EXIF,
-                                               "DateTimeOriginal")
-        self.assertEqual(the_prop.year, 2005)
-        self.assertEqual(the_prop.minute, 42)
-        self.assertEqual(the_prop.tzSign, exempi.TimeSign.utc)
-
-        exempi.free(xmp)
-
-        exempi.terminate()
 
     def test_write_new_date_property(self):
         """
@@ -399,7 +393,6 @@ class TestWriteNewProperty(unittest.TestCase):
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
 
-        exempi.init()
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
 
@@ -435,21 +428,14 @@ class TestWriteNewProperty(unittest.TestCase):
 
         exempi.free(xmp)
 
-        exempi.terminate()
 
 
-
-class TestXmpFiles(unittest.TestCase):
-    """Corresponds to test_xmp_files"""
     def test_xmp_files(self):
-        """
-        Returns basic information about an XMP file.
-        """
+        """Corresponds to test_xmp_files.cpp"""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.jpg")
 
         xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
-        exempi.init()
 
         fmt = exempi.files_check_file_format(filename)
         self.assertEqual(fmt, exempi.FileType.jpeg)
@@ -466,39 +452,3 @@ class TestXmpFiles(unittest.TestCase):
         self.assertEqual(the_prop, "sRGB IEC61966-2.1")
         exempi.files_free(xfptr)
 
-        exempi.terminate()
-
-
-class TestFloat(unittest.TestCase):
-    """
-    Test suite for libexempi routine wrappers.
-    """
-    def setUp(self):
-        exempi.init()
-
-    def tearDown(self):
-        exempi.terminate()
-
-    def test_exempi_core(self):
-        """According to test-exempi-core.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
-        xmp = exempi.new_empty()
-        exempi.parse(xmp, strbuffer)
-
-        # testing float get set
-        the_prop, _ = exempi.get_property_float(xmp,
-                                                exempi.NS_CAMERA_RAW_SETTINGS,
-                                                "SharpenRadius")
-        self.assertEqual(the_prop, 1.0)
-        exempi.set_property_float(xmp, exempi.NS_CAMERA_RAW_SETTINGS,
-                                  "SharpenRadius", 2.5, 0)
-        the_prop, _ = exempi.get_property_float(xmp,
-                                                exempi.NS_CAMERA_RAW_SETTINGS,
-                                                "SharpenRadius")
-        self.assertEqual(the_prop, 2.5)
-
-        exempi.free(xmp)
-        self.assertTrue(True)

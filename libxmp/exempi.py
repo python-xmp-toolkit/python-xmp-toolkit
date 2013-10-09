@@ -3,6 +3,7 @@ Wrapper functions for individual exempi library routines.
 """
 import ctypes
 from ctypes.util import find_library
+import os
 import sys
 
 from flufl.enum import IntEnum
@@ -460,6 +461,8 @@ def files_check_file_format(filename):
     filename : str
         Path to file.
     """
+    if not os.path.exists(filename):
+        raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_check_file_format.restype = FileType
     EXEMPI.xmp_files_check_file_format.argtypes = [ctypes.c_char_p]
     fmt = EXEMPI.xmp_files_check_file_format(filename.encode())
@@ -653,9 +656,12 @@ def files_open_new(filename, options):
     xfptr : ctypes pointer
         File pointer.
     """
+    if not os.path.exists(filename) and options & OpenFileOptions.read:
+        raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open_new.restype = ctypes.c_void_p
     EXEMPI.xmp_files_open_new.argtypes = [ctypes.c_void_p, ctypes.c_int32]
     xfptr = EXEMPI.xmp_files_open_new(filename.encode(), options)
+
     return xfptr
 
 
