@@ -85,7 +85,7 @@ def _encode_as_utf8( obj, input_encoding=None ):
     string and thereafter encode as UTF-8.
     """
     if sys.hexversion >= 0x03000000:
-        obj = obj.encode().decode('utf-8')
+        obj = obj.encode()
         return obj
 
     if isinstance( obj, unicode ):
@@ -194,10 +194,17 @@ class XMPMeta(object):
         value = None
         the_prop = _exempi.xmp_string_new()
 
+        if sys.hexversion >= 0x030000:
+            schema_ns = schema_ns.encode()
+            prop_name = prop_name.encode()
+
         if _exempi.xmp_get_property( self.xmpptr, schema_ns, prop_name, the_prop, 0 ): #we're never returning options
             value = _exempi.xmp_string_cstr(the_prop)
 
         _exempi.xmp_string_free(the_prop)
+
+        if sys.hexversion >= 0x030000:
+            value = value.decode('utf-8')
         return value
 
 
@@ -374,6 +381,12 @@ class XMPMeta(object):
         actual_lang = _exempi.xmp_string_new()
         options = c_int32()
 
+        if sys.hexversion >= 0x03000000:
+            schema_ns = schema_ns.encode()
+            alt_text_name = alt_text_name.encode()
+            generic_lang = generic_lang.encode()
+            specific_lang = specific_lang.encode()
+
         if _exempi.xmp_get_localized_text( self.xmpptr, schema_ns, alt_text_name, generic_lang, specific_lang, actual_lang, the_prop, byref(options) ):
             value = _exempi.xmp_string_cstr(the_prop)
             value_lang = _exempi.xmp_string_cstr(actual_lang)
@@ -381,6 +394,8 @@ class XMPMeta(object):
         _exempi.xmp_string_free(the_prop)
         _exempi.xmp_string_free(actual_lang)
 
+        if sys.hexversion >= 0x03000000:
+            value = value.decode('utf-8')
         return value
 
     def set_property_bool(self, schema_ns, prop_name, prop_value, **kwargs ):
@@ -461,6 +476,10 @@ class XMPMeta(object):
 
         :return True if the property exists, False otherwise.
         """
+        if sys.hexversion >= 0x03000000:
+            schema_ns = schema_ns.encode()
+            prop_name = prop_name.encode()
+
         return bool(_exempi.xmp_has_property(self.xmpptr, schema_ns, prop_name))
 
     def does_array_item_exist(self, schema_ns, array_name, item ):
@@ -500,10 +519,11 @@ class XMPMeta(object):
         :return:  true if :class:`libxmp.core.XMPMeta` object can be written in file.
         :rtype: bool
         """
-        xmp_packet_str = _encode_as_utf8( xmp_packet_str, input_encoding )
 
         if xmpmeta_wrap:
             xmp_packet_str = "<x:xmpmeta xmlns:x='adobe:ns:meta/'>%s</x:xmpmeta>" % xmp_packet_str
+
+        xmp_packet_str = _encode_as_utf8( xmp_packet_str, input_encoding )
 
         l = len(xmp_packet_str)
         res = _exempi.xmp_parse(self.xmpptr, xmp_packet_str, l )
@@ -537,8 +557,13 @@ class XMPMeta(object):
         # Ensure padding is an int.
         padding = int(padding)
         indent = int(indent)
-        tabchr = str(tabchr)
-        newlinechr = str(newlinechr)
+
+        if sys.hexversion <= 0x03000000:
+            tabchr = str(tabchr)
+            newlinechr = str(newlinechr)
+        else:
+            tabchr = tabchr.encode()
+            newlinechr = newlinechr.encode()
 
         # Define options bitmask
         options = options_mask( XMP_SERIAL_OPTIONS, **kwargs )
@@ -551,6 +576,11 @@ class XMPMeta(object):
         # Get string
         if res:
             res_str = xmpstring.__str__()
+
+        if sys.hexversion >= 0x03000000:
+            res_str = res_str.decode('utf-8')
+        else:
+            res_str = _encode_as_utf8(res_str)
 
         del xmpstring
         return res_str
@@ -577,7 +607,11 @@ class XMPMeta(object):
         """
         tmp =  self.serialize_to_str( **kwargs )
 
-        return (tmp.decode('utf-8') if tmp else None)
+        if sys.hexversion >= 0x03000000:
+            # already there.
+            return tmp
+        else:
+            return (tmp.decode('utf-8') if tmp else None)
 
 
     def serialize_to_str( self, padding = 0, **kwargs ):
@@ -611,6 +645,9 @@ class XMPMeta(object):
         # Get string
         if res:
             res_str = xmpstring.__str__()
+
+        if sys.hexversion >= 0x03000000:
+            res_str = res_str.decode('utf-8')
 
         del xmpstring
         return res_str

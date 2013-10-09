@@ -82,9 +82,16 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_get_localized_text(self):
         xmp = XMPMeta()
-        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp2" ), "Simple2 value" )
-        self.assertEqual( xmp.get_localized_text( xmpcoverage.NS1, "ArrayProp2", 'x-one', 'x-one' ), "Item2.1 value" )
+        self.assertTrue(xmp.parse_from_str(xmpcoverage.RDFCoverage,
+                                           xmpmeta_wrap=True ),
+                        "Could not parse valid string." )
+
+        prop = xmp.get_property(xmpcoverage.NS1, "SimpleProp2" )
+        self.assertEqual(prop, "Simple2 value" )
+
+        ltext = xmp.get_localized_text(xmpcoverage.NS1,
+                                       "ArrayProp2", 'x-one', 'x-one' )
+        self.assertEqual(ltext, "Item2.1 value" )
 
 
         del xmp
@@ -112,20 +119,56 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_serialize_unicode(self):
         xmp = XMPMeta()
-        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assertTrue( isinstance( xmp.serialize_to_unicode(use_compact_format=True, omit_packet_wrapper=False), unicode ), "Result is not a unicode string" )
-        self.assertRaises( XMPError, xmp.serialize_to_unicode, read_only_packet=True, omit_packet_wrapper=True )
-        self.assertRaises( XMPError, xmp.serialize_to_unicode, include_thumbnail_pad=True, omit_packet_wrapper=True )
-        self.assertRaises( XMPError, xmp.serialize_to_unicode, exact_packet_length=True, omit_packet_wrapper=True )
+        self.assertTrue(xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True),
+                        "Could not parse valid string." )
+        if sys.hexversion >= 0x03000000:
+            the_unicode_type = str
+        else:
+            the_unicode_type = unicode
+
+        obj = xmp.serialize_to_unicode(use_compact_format=True,
+                                       omit_packet_wrapper=False)
+        self.assertTrue(isinstance(obj, the_unicode_type ),
+                        "Result is not a unicode string" )
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_to_unicode(read_only_packet=True,
+                                     omit_packet_wrapper=True)
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_to_unicode(include_thumbnail_pad=True,
+                                     omit_packet_wrapper=True )
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_to_unicode(exact_packet_length=True,
+                                     omit_packet_wrapper=True )
+
         del xmp
 
     def test_serialize_and_format(self):
         xmp = XMPMeta()
-        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assertTrue( isinstance( xmp.serialize_and_format( padding=0, newlinechr='NEWLINE', tabchr = 'TAB', indent=6 ), str ), "Result is not a 8-bit string" )
-        self.assertRaises( XMPError, xmp.serialize_and_format, read_only_packet=True, omit_packet_wrapper=True )
-        self.assertRaises( XMPError, xmp.serialize_and_format, include_thumbnail_pad=True, omit_packet_wrapper=True )
-        self.assertRaises( XMPError, xmp.serialize_and_format, exact_packet_length=True, omit_packet_wrapper=True )
+        self.assertTrue(xmp.parse_from_str(xmpcoverage.RDFCoverage,xmpmeta_wrap=True),
+                        "Could not parse valid string." )
+
+        obj = xmp.serialize_and_format(padding=0,
+                                       newlinechr='NEWLINE',
+                                       tabchr = 'TAB',
+                                       indent=6 )
+        self.assertTrue(isinstance(obj, str),
+                        "Result is not a 8-bit string" )
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_and_format(read_only_packet=True,
+                                     omit_packet_wrapper=True)
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_and_format(include_thumbnail_pad=True,
+                                     omit_packet_wrapper=True)
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_and_format(exact_packet_length=True,
+                                     omit_packet_wrapper=True )
+
         del xmp
 
     def test_clone(self):
