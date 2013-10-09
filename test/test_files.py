@@ -58,12 +58,12 @@ class XMPFilesTestCase(unittest.TestCase):
 
     def test_init_del(self):
         xmpfile = XMPFiles()
-        self.failUnless( xmpfile.xmpfileptr )
+        self.assertTrue( xmpfile.xmpfileptr )
         del xmpfile
 
     def test_test_files(self):
         for f in self.samplefiles.keys():
-            self.assert_( os.path.exists(f), "Test file does not exists." )
+            self.assertTrue( os.path.exists(f), "Test file does not exists." )
 
     def test_open_file(self):
         # Non-existing file.
@@ -110,10 +110,10 @@ class XMPFilesTestCase(unittest.TestCase):
                     try:
                         xmp = xmpfile.get_xmp()
                         self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
-                    except XMPError, e:
-                        print f
-                        print flg
-                        print fmt
+                    except XMPError as e:
+                        print(f)
+                        print(flg)
+                        print(fmt)
                     xmpfile.close_file()
 
     def test_can_put_xmp(self):

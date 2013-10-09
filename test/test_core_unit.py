@@ -66,23 +66,23 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_init_del(self):
         xmp = XMPMeta()
-        self.failUnless( xmp.xmpptr )
+        self.assertTrue( xmp.xmpptr )
         del xmp
 
     def test_test_files(self):
         for f in self.samplefiles:
-            self.assert_( os.path.exists(f), "Test file does not exists." )
+            self.assertTrue( os.path.exists(f), "Test file does not exists." )
 
     def test_get_xmp(self):
         for f in self.samplefiles.keys():
             xmpfile = XMPFiles( file_path=f )
             xmp = xmpfile.get_xmp()
-            self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
+            self.assertTrue( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
             xmpfile.close_file()
 
     def test_get_localized_text(self):
         xmp = XMPMeta()
-        self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
         self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp2" ), "Simple2 value" )
         self.assertEqual( xmp.get_localized_text( xmpcoverage.NS1, "ArrayProp2", 'x-one', 'x-one' ), "Item2.1 value" )
 
@@ -91,20 +91,20 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_parse_str(self):
         xmp = XMPMeta()
-        self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
         self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp1" ), "Simple1 value" )
         del xmp
 
     def test_shorthand_rdf(self):
         xmp = XMPMeta()
-        self.assert_( xmp.parse_from_str( xmpcoverage.ShorthandRDF, xmpmeta_wrap=True ), "Could not parse valid string." )
+        self.assertTrue( xmp.parse_from_str( xmpcoverage.ShorthandRDF, xmpmeta_wrap=True ), "Could not parse valid string." )
         self.assertEqual( xmp.get_property( "http://ns.adobe.com/tiff/1.0", "Model" ), "Canon PowerShot S300" )
         del xmp
 
     def test_serialize_str(self):
         xmp = XMPMeta()
-        self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assert_( isinstance( xmp.serialize_to_str(use_compact_format=True, omit_packet_wrapper=True), str ), "Result is not a 8-bit string" )
+        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+        self.assertTrue( isinstance( xmp.serialize_to_str(use_compact_format=True, omit_packet_wrapper=True), str ), "Result is not a 8-bit string" )
         self.assertRaises( XMPError, xmp.serialize_to_str, read_only_packet=True, omit_packet_wrapper=True )
         self.assertRaises( XMPError, xmp.serialize_to_str, include_thumbnail_pad=True, omit_packet_wrapper=True )
         self.assertRaises( XMPError, xmp.serialize_to_str, exact_packet_length=True, omit_packet_wrapper=True )
@@ -112,8 +112,8 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_serialize_unicode(self):
         xmp = XMPMeta()
-        self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assert_( isinstance( xmp.serialize_to_unicode(use_compact_format=True, omit_packet_wrapper=False), unicode ), "Result is not a unicode string" )
+        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+        self.assertTrue( isinstance( xmp.serialize_to_unicode(use_compact_format=True, omit_packet_wrapper=False), unicode ), "Result is not a unicode string" )
         self.assertRaises( XMPError, xmp.serialize_to_unicode, read_only_packet=True, omit_packet_wrapper=True )
         self.assertRaises( XMPError, xmp.serialize_to_unicode, include_thumbnail_pad=True, omit_packet_wrapper=True )
         self.assertRaises( XMPError, xmp.serialize_to_unicode, exact_packet_length=True, omit_packet_wrapper=True )
@@ -121,8 +121,8 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_serialize_and_format(self):
         xmp = XMPMeta()
-        self.assert_( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assert_( isinstance( xmp.serialize_and_format( padding=0, newlinechr='NEWLINE', tabchr = 'TAB', indent=6 ), str ), "Result is not a 8-bit string" )
+        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
+        self.assertTrue( isinstance( xmp.serialize_and_format( padding=0, newlinechr='NEWLINE', tabchr = 'TAB', indent=6 ), str ), "Result is not a 8-bit string" )
         self.assertRaises( XMPError, xmp.serialize_and_format, read_only_packet=True, omit_packet_wrapper=True )
         self.assertRaises( XMPError, xmp.serialize_and_format, include_thumbnail_pad=True, omit_packet_wrapper=True )
         self.assertRaises( XMPError, xmp.serialize_and_format, exact_packet_length=True, omit_packet_wrapper=True )
@@ -130,11 +130,11 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_clone(self):
         xmp1 = XMPMeta()
-        self.assert_( xmp1 == xmp1, "XMP1 not equal it self" )
-        self.failIf( xmp1 != xmp1, "XMP1 is equal it self" )
+        self.assertTrue( xmp1 == xmp1, "XMP1 not equal it self" )
+        self.assertFalse( xmp1 != xmp1, "XMP1 is equal it self" )
         xmp2 = xmp1.clone()
-        self.failIf( xmp1 == xmp2, "XMP1 is not equal XMP2" )
-        self.assert_( xmp1 != xmp2, "XMP1 is not equal XMP2" )
+        self.assertFalse( xmp1 == xmp2, "XMP1 is not equal XMP2" )
+        self.assertTrue( xmp1 != xmp2, "XMP1 is not equal XMP2" )
         del xmp1
         del xmp2
 
@@ -150,17 +150,17 @@ class XMPMetaTestCase(unittest.TestCase):
                     headline = xmp_data.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
 
                     self.assertEqual( headline[-5:], "=END="  )
-                    self.assert_( len(headline) > 450, "Not all text was extracted from headline property."  )
+                    self.assertTrue( len(headline) > 450, "Not all text was extracted from headline property."  )
                 except XMPError as e:
                     pass
 
 
     def test_text_property_450(self):
         xmp = XMPMeta()
-        self.assert_( xmp.parse_from_str( xmpcoverage.LongTextProperty, xmpmeta_wrap=True ), "Could not parse valid string." )
+        self.assertTrue( xmp.parse_from_str( xmpcoverage.LongTextProperty, xmpmeta_wrap=True ), "Could not parse valid string." )
         headline = xmp.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
         self.assertEqual( headline[-5:], "=END="  )
-        self.assert_( len(headline) > 450, "Not all text was extracted from headline property."  )
+        self.assertTrue( len(headline) > 450, "Not all text was extracted from headline property."  )
 
 
     def test_does_property_exist(self):
@@ -168,7 +168,7 @@ class XMPMetaTestCase(unittest.TestCase):
                                                    "fixtures/BlueSquare450.tif")
         xmp = XMPFiles(file_path=filename)
         xmp_data = xmp.get_xmp()
-        self.assert_( xmp_data.does_property_exist( "http://ns.adobe.com/photoshop/1.0/", 'Headline' ) )
+        self.assertTrue( xmp_data.does_property_exist( "http://ns.adobe.com/photoshop/1.0/", 'Headline' ) )
 
 
 class UtilsTestCase(unittest.TestCase):
@@ -183,12 +183,12 @@ class UtilsTestCase(unittest.TestCase):
         for f in self.samplefiles:
             xmpfile = XMPFiles( file_path=f )
             xmp = xmpfile.get_xmp()
-            self.assert_( object_to_dict( xmp ), "Not an XMPMeta object" )
+            self.assertTrue( object_to_dict( xmp ), "Not an XMPMeta object" )
             xmpfile.close_file()
 
     def test_file_to_dict(self):
         for f in self.samplefiles:
-            self.assert_( file_to_dict( f ), "Expected dictionary" )
+            self.assertTrue( file_to_dict( f ), "Expected dictionary" )
 
     def test_file_to_dict_nofile(self):
         self.assertRaises( IOError, file_to_dict, "nonexistingfile.ext" )

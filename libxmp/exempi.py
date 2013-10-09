@@ -50,43 +50,43 @@ class ErrorCodes(IntEnum):
     bad_iptc           = -210
     bad_mpeg           = -211
 
-_error_message = { ErrorCodes.unknown:            "unknown error",
-                   ErrorCodes.tbd:                "TBD",
-                   ErrorCodes.unavailable:        "unavailable",
-                   ErrorCodes.bad_object:         "bad object",
-                   ErrorCodes.bad_param:          "bad parameter",
-                   ErrorCodes.bad_value:          "bad value",
-                   ErrorCodes.assert_failure:     "assert failure",
-                   ErrorCodes.enforce_failure:    "enforce failure",
-                   ErrorCodes.unimplemented:      "unimplemented",
-                   ErrorCodes.internal_failure:   "internal failure",
-                   ErrorCodes.deprecated:         "deprecated",
-                   ErrorCodes.external_failure:   "external failure",
-                   ErrorCodes.user_abort:         "user abort",
-                   ErrorCodes.std_exception:      "std exception",
-                   ErrorCodes.unknown_exception:  "unknown exception",
-                   ErrorCodes.no_memory:          "no memory",
-                   ErrorCodes.bad_schema:         "bad schema",
-                   ErrorCodes.bad_xpath:          "bad XPath",
-                   ErrorCodes.bad_options:        "bad options",
-                   ErrorCodes.bad_index:          "bad index",
-                   ErrorCodes.bad_iter_position:  "bad iter position",
-                   ErrorCodes.bad_parse:          "bad parse",
-                   ErrorCodes.bad_serialize:      "bad serialize",
-                   ErrorCodes.bad_file_format:    "bad file format",
-                   ErrorCodes.no_file_handler:    "no file handler",
-                   ErrorCodes.too_large_for_jpeg: "too large for JPEG",
-                   ErrorCodes.bad_xml:            "bad XML",
-                   ErrorCodes.bad_rdf:            "bad RDF",
-                   ErrorCodes.bad_xmp:            "bad XMP",
-                   ErrorCodes.empty_iterator:     "empty iterator",
-                   ErrorCodes.bad_unicode:        "bad unicode",
-                   ErrorCodes.bad_tiff:           "bad TIFF",
-                   ErrorCodes.bad_jpeg:           "bad JPEG",
-                   ErrorCodes.bad_psd:            "bad PSD",
-                   ErrorCodes.bad_psir:           "bad PSIR",
-                   ErrorCodes.bad_iptc:           "bad IPTC",
-                   ErrorCodes.bad_mpeg:           "bad MPEG" }
+_error_message = { int(ErrorCodes.unknown):            "unknown error",
+                   int(ErrorCodes.tbd):                "TBD",
+                   int(ErrorCodes.unavailable):        "unavailable",
+                   int(ErrorCodes.bad_object):         "bad object",
+                   int(ErrorCodes.bad_param):          "bad parameter",
+                   int(ErrorCodes.bad_value):          "bad value",
+                   int(ErrorCodes.assert_failure):     "assert failure",
+                   int(ErrorCodes.enforce_failure):    "enforce failure",
+                   int(ErrorCodes.unimplemented):      "unimplemented",
+                   int(ErrorCodes.internal_failure):   "internal failure",
+                   int(ErrorCodes.deprecated):         "deprecated",
+                   int(ErrorCodes.external_failure):   "external failure",
+                   int(ErrorCodes.user_abort):         "user abort",
+                   int(ErrorCodes.std_exception):      "std exception",
+                   int(ErrorCodes.unknown_exception):  "unknown exception",
+                   int(ErrorCodes.no_memory):          "no memory",
+                   int(ErrorCodes.bad_schema):         "bad schema",
+                   int(ErrorCodes.bad_xpath):          "bad XPath",
+                   int(ErrorCodes.bad_options):        "bad options",
+                   int(ErrorCodes.bad_index):          "bad index",
+                   int(ErrorCodes.bad_iter_position):  "bad iter position",
+                   int(ErrorCodes.bad_parse):          "bad parse",
+                   int(ErrorCodes.bad_serialize):      "bad serialize",
+                   int(ErrorCodes.bad_file_format):    "bad file format",
+                   int(ErrorCodes.no_file_handler):    "no file handler",
+                   int(ErrorCodes.too_large_for_jpeg): "too large for JPEG",
+                   int(ErrorCodes.bad_xml):            "bad XML",
+                   int(ErrorCodes.bad_rdf):            "bad RDF",
+                   int(ErrorCodes.bad_xmp):            "bad XMP",
+                   int(ErrorCodes.empty_iterator):     "empty iterator",
+                   int(ErrorCodes.bad_unicode):        "bad unicode",
+                   int(ErrorCodes.bad_tiff):           "bad TIFF",
+                   int(ErrorCodes.bad_jpeg):           "bad JPEG",
+                   int(ErrorCodes.bad_psd):            "bad PSD",
+                   int(ErrorCodes.bad_psir):           "bad PSIR",
+                   int(ErrorCodes.bad_iptc):           "bad IPTC",
+                   int(ErrorCodes.bad_mpeg):           "bad MPEG" }
 
 class OpenFileOptions(IntEnum):
     """Option bits for xmp_files_open."""
@@ -463,10 +463,10 @@ def files_check_file_format(filename):
     """
     if not os.path.exists(filename):
         raise IOError("{0} does not exist.".format(filename))
-    EXEMPI.xmp_files_check_file_format.restype = FileType
+    EXEMPI.xmp_files_check_file_format.restype = ctypes.c_int32
     EXEMPI.xmp_files_check_file_format.argtypes = [ctypes.c_char_p]
     fmt = EXEMPI.xmp_files_check_file_format(filename.encode())
-    return fmt
+    return FileType[fmt]
 
 
 def delete_localized_text(xmp, schema, name, generic_lang, specific_lang):
@@ -998,23 +998,11 @@ def get_property_float(xmp, schema, name):
     prop_bits : unsigned int
         option bit mask
     """
-    # Use a function callback instead of returning a boolean value.
-    EXEMPI.xmp_get_property_float.restype = check_error
-    EXEMPI.xmp_get_property_float.argtypes = [ctypes.c_void_p,
-                                              ctypes.c_char_p,
-                                              ctypes.c_char_p,
-                                              ctypes.POINTER(ctypes.c_double),
-                                              ctypes.POINTER(ctypes.c_uint32)]
-
-    double_value = ctypes.c_double(0)
-    prop_bits = ctypes.c_uint32(0)
-
-    EXEMPI.xmp_get_property_float(xmp,
-                                  schema.encode(),
-                                  name.encode(),
-                                  ctypes.byref(double_value),
-                                  ctypes.byref(prop_bits))
-    return double_value.value, prop_bits.value
+    # EXEMPI has trouble parsing some floats such as "+1.0", so let python
+    # do it instead.
+    value, prop_bits = get_property(xmp, schema, name)
+    value = float(value)
+    return value, prop_bits
 
 
 def free(xmp):
