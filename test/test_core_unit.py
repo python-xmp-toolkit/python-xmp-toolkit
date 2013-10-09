@@ -32,8 +32,11 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-import unittest
 import sys
+if sys.hexversion < 0x02070000:
+    import unittest2 as unittest
+else:
+    import unittest
 import os
 import os.path
 import pkg_resources
@@ -57,9 +60,8 @@ class TestClass(object):
 
 class XMPMetaTestCase(unittest.TestCase):
     def setUp(self):
-        # TODO:  change this for 3.3
         self.tempdir = tempfile.mkdtemp()
-        self.samplefiles = setup_sample_files(self.tempdir)
+        self.samplefiles, self.formats = setup_sample_files(self.tempdir)
 
     def tearDown(self):
         shutil.rmtree(self.tempdir)
@@ -74,7 +76,7 @@ class XMPMetaTestCase(unittest.TestCase):
             self.assertTrue( os.path.exists(f), "Test file does not exists." )
 
     def test_get_xmp(self):
-        for f in self.samplefiles.keys():
+        for f in self.samplefiles:
             xmpfile = XMPFiles( file_path=f )
             xmp = xmpfile.get_xmp()
             self.assertTrue( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
@@ -117,6 +119,8 @@ class XMPMetaTestCase(unittest.TestCase):
         self.assertRaises( XMPError, xmp.serialize_to_str, exact_packet_length=True, omit_packet_wrapper=True )
         del xmp
 
+    #@unittest.skipIf(sys.hexversion < 0x02070000,
+    #                 "Testing infrastructure requires 2.7 or better.")
     def test_serialize_unicode(self):
         xmp = XMPMeta()
         self.assertTrue(xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True),
@@ -145,6 +149,8 @@ class XMPMetaTestCase(unittest.TestCase):
 
         del xmp
 
+    #@unittest.skipIf(sys.hexversion < 0x02070000,
+    #                 "Testing infrastructure requires 2.7 or better.")
     def test_serialize_and_format(self):
         xmp = XMPMeta()
         self.assertTrue(xmp.parse_from_str(xmpcoverage.RDFCoverage,xmpmeta_wrap=True),
@@ -217,7 +223,7 @@ class XMPMetaTestCase(unittest.TestCase):
 class UtilsTestCase(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
-        self.samplefiles = setup_sample_files(self.tempdir)
+        self.samplefiles, self.formats = setup_sample_files(self.tempdir)
 
     def tearDown(self):
         shutil.rmtree(self.tempdir)

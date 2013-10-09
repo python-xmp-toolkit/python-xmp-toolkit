@@ -245,6 +245,10 @@ class XMPMeta(object):
         :return True if the property was set correctly, False otherwise.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
+        if sys.hexversion >= 0x03000000:
+            schema_ns = schema_ns.encode()
+            prop_name = prop_name.encode()
+            prop_value = prop_value.encode()
         return bool(_exempi.xmp_set_property(self.xmpptr, schema_ns, prop_name, prop_value, options))
 
     def set_array_item( self, schema_ns, array_name, item_index, item_value, **kwargs ):
@@ -760,7 +764,19 @@ class XMPIterator:
     def __iter__(self):
         return self
 
+    def __next__(self):
+        """
+        Implements iterator protocol for 3.X
+        """
+        return self._next_common()
+
     def next(self):
+        """
+        Implements iterator protocol for 2.X
+        """
+        return self._next_common()
+
+    def _next_common(self):
         prop_value = _XMPString()
         the_value = None
 
@@ -795,7 +811,18 @@ byref(options)):
                 if has_option(options.value, getattr(consts,'XMP_PROP_'+opt)):
                     opts[opt] = True
 
-            return (unicode(schema_ns),unicode(prop_name),unicode(prop_value), opts)
+            if sys.hexversion < 0x03000000:
+                return (unicode(schema_ns),
+                        unicode(prop_name),
+                        unicode(prop_value),
+                        opts)
+            else:
+                return (schema_ns.__unicode__(),
+                        prop_name.__unicode__(),
+                        prop_value.__unicode__(),
+                        opts)
+
+                
         else:
             raise StopIteration
 

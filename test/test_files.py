@@ -51,8 +51,7 @@ from .samples import open_flags
 class XMPFilesTestCase(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()
-        # TODO:  rework to return two lists, not a dictionary.
-        self.samplefiles = setup_sample_files(self.tempdir)
+        self.samplefiles, self.formats = setup_sample_files(self.tempdir)
 
     def tearDown(self):
         shutil.rmtree(self.tempdir)
@@ -63,7 +62,7 @@ class XMPFilesTestCase(unittest.TestCase):
         del xmpfile
 
     def test_test_files(self):
-        for f in self.samplefiles.keys():
+        for f in self.samplefiles:
             self.assertTrue( os.path.exists(f), "Test file does not exists." )
 
     def test_open_file(self):
@@ -72,39 +71,39 @@ class XMPFilesTestCase(unittest.TestCase):
         self.assertRaises( XMPError, xmpfile.open_file, '' )
 
         xmpfile = XMPFiles()
-        xmpfile.open_file( self.samplefiles.keys()[0] )
-        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles.keys()[0] )
-        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles.keys()[1] )
+        xmpfile.open_file( self.samplefiles[0] )
+        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles[0] )
+        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles[1] )
         xmpfile.close_file()
-        xmpfile.open_file( self.samplefiles.keys()[1] )
-        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles.keys()[0] )
+        xmpfile.open_file( self.samplefiles[1] )
+        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles[0] )
 
         # Open all sample files.
-        for f in self.samplefiles.keys():
+        for f in self.samplefiles:
             xmpfile = XMPFiles()
             xmpfile.open_file( f )
 
         # Try using init
-        for f in self.samplefiles.keys():
+        for f in self.samplefiles:
             xmpfile = XMPFiles( file_path=f )
 
         # Try all open options
         for flg in open_flags:
             kwargs = { flg: True }
 
-            for f in self.samplefiles.keys():
+            for f in self.samplefiles:
                 xmpfile = XMPFiles()
                 xmpfile.open_file( f, **kwargs )
 
     def test_close_file(self):
-        for f in self.samplefiles.keys():
+        for f in self.samplefiles:
             xmpfile = XMPFiles( file_path=f )
             xmpfile.close_file()
 
     def test_get_xmp(self):
         for flg in open_flags:
             kwargs = { flg: True }
-            for f,fmt in self.samplefiles.items():
+            for f, fmt in zip(self.samplefiles, self.formats):
                 # See test_exempi_error()
                 if not self.flg_fmt_combi(flg,fmt):
                     xmpfile = XMPFiles( file_path=f, **kwargs )
@@ -120,7 +119,7 @@ class XMPFilesTestCase(unittest.TestCase):
     def test_can_put_xmp(self):
         for flg in open_flags:
             kwargs = { flg: True }
-            for f,fmt in self.samplefiles.items():
+            for f, fmt in zip(self.samplefiles, self.formats):
                 # See test_exempi_error()
                 if not self.flg_fmt_combi(flg,fmt) and not self.exempi_problem(flg, fmt):
                     xmpfile = XMPFiles()
@@ -149,7 +148,7 @@ class XMPFilesTestCase(unittest.TestCase):
         """
         for flg in open_flags:
             kwargs = { flg: True }
-            for f,fmt in self.samplefiles.items():
+            for f, fmt in zip(self.samplefiles, self.formats):
                 if not self.flg_fmt_combi(flg,fmt):
                     xmpfile = XMPFiles()
                     xmpfile.open_file( f, **kwargs )

@@ -67,7 +67,7 @@ def setup_sample_files(dirname):
 
     Returns
     -------
-    Dictionary of fully-qualified filenames mapping to the file format.
+    Tuple of fully-qualified filenames and their formats.
     """
     copied_samplefiles = []
     fmts = []
@@ -78,5 +78,5 @@ def setup_sample_files(dirname):
         shutil.copyfile(full_source_file, dest_file)
         copied_samplefiles.append(dest_file)
         fmts.append(fmt)
-    return dict(zip(copied_samplefiles, fmts))
+    return copied_samplefiles, fmts
 
