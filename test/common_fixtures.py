@@ -32,44 +32,51 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-import unittest
-import sys
 import os
-import os.path
+import pkg_resources
+import shutil
 
-sys.path.append(os.path.pardir)
+import libxmp
 
-from libxmp import *
-from libxmp import _exempi
+samplefiles = {
+    'sig05-002a.tif'  : libxmp.files.XMP_FT_TIFF,
+    'sig05-002a.xmp'  : libxmp.files.XMP_FT_TEXT,
+    'BlueSquare.ai'   : libxmp.files.XMP_FT_ILLUSTRATOR,
+    'BlueSquare.avi'  : libxmp.files.XMP_FT_AVI,
+    'BlueSquare.eps'  : libxmp.files.XMP_FT_EPS,
+    'BlueSquare.gif'  : libxmp.files.XMP_FT_GIF,
+    'BlueSquare.indd' : libxmp.files.XMP_FT_INDESIGN,
+    'BlueSquare.jpg'  : libxmp.files.XMP_FT_JPEG,
+    'BlueSquare.mov'  : libxmp.files.XMP_FT_MOV,
+    'BlueSquare.mp3'  : libxmp.files.XMP_FT_MP3,
+    'BlueSquare.pdf'  : libxmp.files.XMP_FT_PDF,
+    'BlueSquare.png'  : libxmp.files.XMP_FT_PNG,
+    'BlueSquare.psd'  : libxmp.files.XMP_FT_PHOTOSHOP,
+    'BlueSquare.tif'  : libxmp.files.XMP_FT_TIFF,
+    'BlueSquare.wav'  : libxmp.files.XMP_FT_WAV,
+}
 
-from samples import samplefiles, open_flags, sampledir, make_temp_samples, remove_temp_samples
+def setup_sample_files(dirname):
+    """
+    Copy test files so that we are free to write to them.
 
-import test_files
-import test_core_unit
+    Parameters
+    ----------
+    dirname : str
+        Destination directory, should be temporary.
 
-class LibXMPTestCase(unittest.TestCase):
-    def setUp(self):
-        make_temp_samples()
+    Returns
+    -------
+    Dictionary of fully-qualified filenames mapping to the file format.
+    """
+    copied_samplefiles = []
+    fmts = []
+    for samplefile, fmt in samplefiles.items():
+        relsrc = os.path.join('samples', samplefile)
+        full_source_file = pkg_resources.resource_filename(__name__, relsrc)
+        dest_file = os.path.join(dirname, samplefile)
+        shutil.copyfile(full_source_file, dest_file)
+        copied_samplefiles.append(dest_file)
+        fmts.append(fmt)
+    return dict(zip(copied_samplefiles, fmts))
 
-    def tearDown(self):
-        remove_temp_samples()
-
-    def test_full(self):
-        pass
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTests(test_files.suite())
-    suite.addTests(test_core_unit.suite())
-    suite.addTest(unittest.makeSuite(LibXMPTestCase))
-    return suite
-
-def test( verbose=2 ):
-    all_tests = suite()
-    runner = unittest.TextTestRunner(verbosity=verbose)
-    result = runner.run(all_tests)
-    return result, runner
-
-if __name__ == "__main__":
-    test()

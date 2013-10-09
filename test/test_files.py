@@ -37,21 +37,24 @@ import sys
 import os
 import os.path
 import platform
+import shutil
+import tempfile
 
 sys.path.append(os.path.pardir)
 
 from libxmp import *
 from libxmp.consts import *
 from libxmp import _exempi
-
-from samples import samplefiles, open_flags, sampledir, make_temp_samples, remove_temp_samples
+from .common_fixtures import setup_sample_files
+from .samples import open_flags
 
 class XMPFilesTestCase(unittest.TestCase):
     def setUp(self):
-        make_temp_samples()
+        self.tempdir = tempfile.mkdtemp()
+        self.samplefiles = setup_sample_files(self.tempdir)
 
     def tearDown(self):
-        remove_temp_samples()
+        shutil.rmtree(self.tempdir)
 
     def test_init_del(self):
         xmpfile = XMPFiles()
@@ -59,7 +62,7 @@ class XMPFilesTestCase(unittest.TestCase):
         del xmpfile
 
     def test_test_files(self):
-        for f in samplefiles.iterkeys():
+        for f in self.samplefiles.keys():
             self.assert_( os.path.exists(f), "Test file does not exists." )
 
     def test_open_file(self):
@@ -68,39 +71,39 @@ class XMPFilesTestCase(unittest.TestCase):
         self.assertRaises( XMPError, xmpfile.open_file, '' )
 
         xmpfile = XMPFiles()
-        xmpfile.open_file( samplefiles.keys()[0] )
-        self.assertRaises( XMPError, xmpfile.open_file, samplefiles.keys()[0] )
-        self.assertRaises( XMPError, xmpfile.open_file, samplefiles.keys()[1] )
+        xmpfile.open_file( self.samplefiles.keys()[0] )
+        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles.keys()[0] )
+        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles.keys()[1] )
         xmpfile.close_file()
-        xmpfile.open_file( samplefiles.keys()[1] )
-        self.assertRaises( XMPError, xmpfile.open_file, samplefiles.keys()[0] )
+        xmpfile.open_file( self.samplefiles.keys()[1] )
+        self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles.keys()[0] )
 
         # Open all sample files.
-        for f in samplefiles.iterkeys():
+        for f in self.samplefiles.keys():
             xmpfile = XMPFiles()
             xmpfile.open_file( f )
 
         # Try using init
-        for f,fmt in samplefiles.iteritems():
+        for f in self.samplefiles.keys():
             xmpfile = XMPFiles( file_path=f )
 
         # Try all open options
         for flg in open_flags:
             kwargs = { flg: True }
 
-            for f,fmt in samplefiles.iteritems():
+            for f in self.samplefiles.keys():
                 xmpfile = XMPFiles()
                 xmpfile.open_file( f, **kwargs )
 
     def test_close_file(self):
-        for f,fmt in samplefiles.iteritems():
+        for f in self.samplefiles.keys():
             xmpfile = XMPFiles( file_path=f )
             xmpfile.close_file()
 
     def test_get_xmp(self):
         for flg in open_flags:
             kwargs = { flg: True }
-            for f,fmt in samplefiles.iteritems():
+            for f,fmt in self.samplefiles.items():
                 # See test_exempi_error()
                 if not self.flg_fmt_combi(flg,fmt):
                     xmpfile = XMPFiles( file_path=f, **kwargs )
@@ -116,7 +119,7 @@ class XMPFilesTestCase(unittest.TestCase):
     def test_can_put_xmp(self):
         for flg in open_flags:
             kwargs = { flg: True }
-            for f,fmt in samplefiles.iteritems():
+            for f,fmt in self.samplefiles.items():
                 # See test_exempi_error()
                 if not self.flg_fmt_combi(flg,fmt) and not self.exempi_problem(flg, fmt):
                     xmpfile = XMPFiles()
@@ -145,7 +148,7 @@ class XMPFilesTestCase(unittest.TestCase):
         """
         for flg in open_flags:
             kwargs = { flg: True }
-            for f,fmt in samplefiles.iteritems():
+            for f,fmt in self.samplefiles.items():
                 if not self.flg_fmt_combi(flg,fmt):
                     xmpfile = XMPFiles()
                     xmpfile.open_file( f, **kwargs )
@@ -181,7 +184,8 @@ class XMPFilesTestCase(unittest.TestCase):
         # Note, the file should have been opened with "open_forupdate = True"
         # so let's check if XMPMeta is raising an Exception.
         xmpfile = XMPFiles()
-        xmpfile.open_file( '.tempsamples/sig05-002a.tif')
+        filename = os.path.join(self.tempdir, 'sig05-002a.tif')
+        xmpfile.open_file(filename)
         xmp_data = xmpfile.get_xmp()
         xmp_data.set_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline', "Some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times." )
         self.assertRaises( XMPError, xmpfile.put_xmp, xmp_data )

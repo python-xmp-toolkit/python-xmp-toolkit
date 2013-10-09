@@ -47,40 +47,13 @@ from libxmp import XMPIterator
 from libxmp import _exempi
 from libxmp.utils import file_to_dict, object_to_dict
 
+from .common_fixtures import setup_sample_files
 from samples import open_flags
 import xmpcoverage
-
-samplefiles = [
-    'sig05-002a.tif',
-    'sig05-002a.xmp',
-    'BlueSquare.ai',
-    'BlueSquare.avi',
-    'BlueSquare.eps',
-    'BlueSquare.gif',
-    'BlueSquare.indd',
-    'BlueSquare.jpg',
-    'BlueSquare.mov',
-    'BlueSquare.mp3',
-    'BlueSquare.pdf',
-    'BlueSquare.png',
-    'BlueSquare.psd',
-    'BlueSquare.tif',
-    'BlueSquare.wav',
-]
 
 class TestClass(object):
     def __unicode__(self):
         return xmpcoverage.RDFCoverage
-
-def setup_sample_files(dirname):
-    copied_samplefiles = []
-    for samplefile in samplefiles:
-        relsrc = os.path.join('samples', samplefile)
-        full_source_file = pkg_resources.resource_filename(__name__, relsrc)
-        dest_file = os.path.join(dirname, samplefile)
-        shutil.copyfile(full_source_file, dest_file)
-        copied_samplefiles.append(dest_file)
-    return copied_samplefiles
 
 class XMPMetaTestCase(unittest.TestCase):
     def setUp(self):
@@ -101,7 +74,7 @@ class XMPMetaTestCase(unittest.TestCase):
             self.assert_( os.path.exists(f), "Test file does not exists." )
 
     def test_get_xmp(self):
-        for f in self.samplefiles:
+        for f in self.samplefiles.keys():
             xmpfile = XMPFiles( file_path=f )
             xmp = xmpfile.get_xmp()
             self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
