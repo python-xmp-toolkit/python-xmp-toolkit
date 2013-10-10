@@ -180,17 +180,25 @@ class XMPMeta(object):
     # Functions for getting property values
     # -------------------------------------
     def get_property(self, schema_ns, prop_name):
-        """
-        get_property() reports whether a property exists, and retrieves its value.
+        """Retrieves property value.
 
-        This is the simplest property accessor: use this to retrieve the values of top-level simple properties.
+        This is the simplest property accessor: use this to retrieve the values
+        of top-level simple properties.
 
-        :param schema_ns     The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
-        :param prop_name     The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace.
+        :param str schema_ns: The namespace URI for the property; can be null or
+            the empty string if the first component of the prop_name path
+            contains a namespace prefix.
+        :param str prop_name: The name of the property. Can be a general path
+            expression, must not be null or the empty string. The first
+            component can be a namespace prefix; if present without a schema_ns
+            value, the prefix specifies the namespace.
 
-        :return: The property's value if the property exists, None otherwise.
+        :returns: The property's value if the property exists.
 
-        .. todo:: Make get_property optionally return keywords describing property's options
+        :raises: IOError if exempi library routine fails.
+
+        .. todo:: Make get_property optionally return keywords describing
+            property's options
         """
         value, _ = _cexempi.get_property(self.xmpptr, schema_ns, prop_name)
         return value
