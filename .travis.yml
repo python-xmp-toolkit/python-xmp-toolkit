@@ -7,15 +7,18 @@ python:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq libexempi3
-  - if [ "${TRAVIS_PYTHON_VERSION::1}" == 3 ]; then export TEST_PKG=unittest2py3k; else export TEST_PKG=unittest2; fi
 
 # command to install dependencies
 install:
-  - pip install $TEST_PKG
-  - pip install -r travis-requirements.txt --use-mirrors
+  - if [ $TRAVIS_PYTHON_VERSION == '2.6' ]; then pip install --user-mirrors flufl.enum unittest2; fi
+  - if [ $TRAVIS_PYTHON_VERSION == '2.7' ]; then pip install --user-mirrors flufl.enum; fi
+  - if [ $TRAVIS_PYTHON_VERSION == '3.3' ]; then pip install --user-mirrors flufl.enum; fi
 
 # command to run tests
-script: "unit2 discover"
+script:
+  - if [ $TRAVIS_PYTHON_VERSION == '2.6' ]; then unit2 discover; fi
+  - if [ $TRAVIS_PYTHON_VERSION == '2.7' ]; then python -m unittest discover; fi
+  - if [ $TRAVIS_PYTHON_VERSION == '3.3' ]; then python -m unittest discover; fi
 
 notifications:
   email: "john.g.evans.ne@gmail.com"
