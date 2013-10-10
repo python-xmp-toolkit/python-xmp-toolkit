@@ -33,8 +33,9 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
 """
-A module for parsing, manipulating, and serializing XMP data. The core module has
-no knowledge of files. The core API is provided by the :class:`XMPMeta` and :class:`XMPIterator` classes.
+A module for parsing, manipulating, and serializing XMP data. The core module
+has no knowledge of files. The core API is provided by the :class:`XMPMeta` and
+:class:`XMPIterator` classes.
 """
 
 from ctypes import *
@@ -504,31 +505,31 @@ class XMPMeta(object):
     # -------------------------------------
     # Functions for parsing and serializing
     # -------------------------------------
-    # These functions support parsing serialized RDF into an XMP object, and serailizing an XMP object into RDF.
-    # Serialization is always as UTF-8.
-    def parse_from_str( self, xmp_packet_str, xmpmeta_wrap = False, input_encoding = None ):
-        """
-        Parses RDF from a string into a XMP object. The input for parsing may be any valid
-        Unicode encoding. ISO Latin-1 is also recognized, but its use is strongly discouraged.
+    # These functions support parsing serialized RDF into an XMP object, and
+    # serializing an XMP object into RDF.  Serialization is always as UTF-8.
+    def parse_from_str(self, xmp_packet_str, xmpmeta_wrap=False,
+                       input_encoding=None ):
+        """Parses RDF from a string into a XMP object.
+        
+        The input for parsing may be any valid Unicode encoding. ISO Latin-1 is
+        also recognized, but its use is strongly discouraged.
 
         Note RDF string must contain an outermost <x:xmpmeta> object.
 
-        :param xmp_packet_str: String to parse.
-        :param xmpmeta_wrap: Optional - If True, the string will be wrapped in an <x:xmpmeta> element.
-        :param input_encoding: Optional - If `xmp_packet_str` is a 8-bit string, it will by default be assumed to be UTF-8 encoded.
-        :return:  true if :class:`libxmp.core.XMPMeta` object can be written in file.
-        :rtype: bool
+        :param str xmp_packet_str: String to parse.
+        :param bool xmpmeta_wrap: Optional - If True, the string will be wrapped
+            in an <x:xmpmeta> element.
+        :param str input_encoding: Optional - If `xmp_packet_str` is a 8-bit
+            string, it will by default be assumed to be UTF-8 encoded.
+        :raises: IOError if operation fails.
         """
 
         if xmpmeta_wrap:
             xmp_packet_str = "<x:xmpmeta xmlns:x='adobe:ns:meta/'>%s</x:xmpmeta>" % xmp_packet_str
 
         xmp_packet_str = _encode_as_utf8( xmp_packet_str, input_encoding )
+        res = _cexempi.parse(self.xmpptr, xmp_packet_str)
 
-        l = len(xmp_packet_str)
-        res = _exempi.xmp_parse(self.xmpptr, xmp_packet_str, l )
-        _check_for_error()
-        return res
 
     def serialize_and_format( self, padding=0, newlinechr='\n', tabchr = '\t', indent=0, **kwargs ):
         """

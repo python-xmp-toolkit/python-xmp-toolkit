@@ -84,9 +84,7 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_get_localized_text(self):
         xmp = XMPMeta()
-        self.assertTrue(xmp.parse_from_str(xmpcoverage.RDFCoverage,
-                                           xmpmeta_wrap=True ),
-                        "Could not parse valid string." )
+        xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True )
 
         prop = xmp.get_property(xmpcoverage.NS1, "SimpleProp2" )
         self.assertEqual(prop, "Simple2 value" )
@@ -100,31 +98,46 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_parse_str(self):
         xmp = XMPMeta()
-        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assertEqual( xmp.get_property( xmpcoverage.NS1, "SimpleProp1" ), "Simple1 value" )
+        xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True )
+        prop = xmp.get_property( xmpcoverage.NS1, "SimpleProp1" )
+        self.assertEqual(prop, "Simple1 value" )
+        self.assertEqual(prop, u"Simple1 value" )
         del xmp
 
     def test_shorthand_rdf(self):
+        """
+        Tests pass so long as no error is issued.
+        """
         xmp = XMPMeta()
-        self.assertTrue( xmp.parse_from_str( xmpcoverage.ShorthandRDF, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assertEqual( xmp.get_property( "http://ns.adobe.com/tiff/1.0", "Model" ), "Canon PowerShot S300" )
+        xmp.parse_from_str( xmpcoverage.ShorthandRDF, xmpmeta_wrap=True )
+        prop = xmp.get_property( "http://ns.adobe.com/tiff/1.0", "Model" )
+        self.assertEqual(prop, "Canon PowerShot S300" )
         del xmp
 
     def test_serialize_str(self):
         xmp = XMPMeta()
-        self.assertTrue( xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True ), "Could not parse valid string." )
-        self.assertTrue( isinstance( xmp.serialize_to_str(use_compact_format=True, omit_packet_wrapper=True), str ), "Result is not a 8-bit string" )
-        self.assertRaises( XMPError, xmp.serialize_to_str, read_only_packet=True, omit_packet_wrapper=True )
-        self.assertRaises( XMPError, xmp.serialize_to_str, include_thumbnail_pad=True, omit_packet_wrapper=True )
-        self.assertRaises( XMPError, xmp.serialize_to_str, exact_packet_length=True, omit_packet_wrapper=True )
+        xmp.parse_from_str( xmpcoverage.RDFCoverage, xmpmeta_wrap=True )
+
+        obj = xmp.serialize_to_str(use_compact_format=True,
+                                   omit_packet_wrapper=True)
+        self.assertTrue( isinstance(obj, str ), "Result is not a 8-bit string")
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_to_str(read_only_packet=True,
+                                 omit_packet_wrapper=True)
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_to_str(include_thumbnail_pad=True,
+                                 omit_packet_wrapper=True)
+
+        with self.assertRaises(XMPError):
+            xmp.serialize_to_str(exact_packet_length=True,
+                                 omit_packet_wrapper=True)
         del xmp
 
-    #@unittest.skipIf(sys.hexversion < 0x02070000,
-    #                 "Testing infrastructure requires 2.7 or better.")
     def test_serialize_unicode(self):
         xmp = XMPMeta()
-        self.assertTrue(xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True),
-                        "Could not parse valid string." )
+        xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True)
         if sys.hexversion >= 0x03000000:
             the_unicode_type = str
         else:
@@ -149,12 +162,9 @@ class XMPMetaTestCase(unittest.TestCase):
 
         del xmp
 
-    #@unittest.skipIf(sys.hexversion < 0x02070000,
-    #                 "Testing infrastructure requires 2.7 or better.")
     def test_serialize_and_format(self):
         xmp = XMPMeta()
-        self.assertTrue(xmp.parse_from_str(xmpcoverage.RDFCoverage,xmpmeta_wrap=True),
-                        "Could not parse valid string." )
+        xmp.parse_from_str(xmpcoverage.RDFCoverage,xmpmeta_wrap=True)
 
         obj = xmp.serialize_and_format(padding=0,
                                        newlinechr='NEWLINE',
@@ -206,10 +216,12 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_text_property_450(self):
         xmp = XMPMeta()
-        self.assertTrue( xmp.parse_from_str( xmpcoverage.LongTextProperty, xmpmeta_wrap=True ), "Could not parse valid string." )
-        headline = xmp.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
+        xmp.parse_from_str( xmpcoverage.LongTextProperty, xmpmeta_wrap=True )
+        headline = xmp.get_property("http://ns.adobe.com/photoshop/1.0/",
+                                    'Headline' )
         self.assertEqual( headline[-5:], "=END="  )
-        self.assertTrue( len(headline) > 450, "Not all text was extracted from headline property."  )
+        self.assertTrue(len(headline) > 450,
+                        "Not all text was extracted from headline property.")
 
 
     def test_does_property_exist(self):
@@ -249,6 +261,27 @@ class UtilsTestCase(unittest.TestCase):
 
     def test_object_to_dict_noxmp(self):
         self.assertEqual( object_to_dict( [] ), {} )
+
+
+class UnicodeTestCase(unittest.TestCase):
+
+    # TODO:  need a latin-1 case, both positive and negative.
+    def test_get_localized_text(self):
+        """
+        Verify that unicode string literals are properly interpreted.
+        """
+        xmp = XMPMeta()
+        xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True )
+
+        prop = xmp.get_property(xmpcoverage.NS1, "SimpleProp2" )
+        self.assertEqual(prop, u'Simple2 value' )
+
+        ltext = xmp.get_localized_text(xmpcoverage.NS1,
+                                       "ArrayProp2", 'x-one', 'x-one' )
+        self.assertEqual(ltext, u'Item2.1 value' )
+
+
+        del xmp
 
 
 def suite():
