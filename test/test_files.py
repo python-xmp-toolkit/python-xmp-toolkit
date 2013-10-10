@@ -109,7 +109,7 @@ class XMPFilesTestCase(unittest.TestCase):
                     xmpfile = XMPFiles( file_path=f, **kwargs )
                     try:
                         xmp = xmpfile.get_xmp()
-                        self.assert_( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
+                        self.assertTrue( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
                     except XMPError as e:
                         print(f)
                         print(flg)
@@ -126,9 +126,9 @@ class XMPFilesTestCase(unittest.TestCase):
                     xmpfile.open_file( f, **kwargs )
                     xmp = xmpfile.get_xmp()
                     if flg == 'open_forupdate':
-                        self.assert_( xmpfile.can_put_xmp( xmp ) )
+                        self.assertTrue( xmpfile.can_put_xmp( xmp ) )
                     else:
-                        self.failIf( xmpfile.can_put_xmp( xmp ) )
+                        self.assertFalse( xmpfile.can_put_xmp( xmp ) )
 
     def test_put_xmp(self):
         pass
