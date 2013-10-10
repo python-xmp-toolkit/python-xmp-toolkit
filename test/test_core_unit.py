@@ -266,6 +266,17 @@ class UtilsTestCase(unittest.TestCase):
 
 
 
+class NegativeTestCases(unittest.TestCase):
+
+    def test_delete_property(self):
+        """
+        Verify the deleting a phony property does not raise an exception.
+        """
+        xmp = XMPMeta()
+        xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True )
+        xmp.delete_property(xmpcoverage.NS1, "NotReallyThere" )
+
+
 class UnicodeTestCase(unittest.TestCase):
 
     # TODO:  need a latin-1 case, both positive and negative.

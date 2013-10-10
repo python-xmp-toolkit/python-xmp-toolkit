@@ -439,34 +439,72 @@ class XMPMeta(object):
 
 
     def set_property_bool(self, schema_ns, prop_name, prop_value, **kwargs ):
-        """
-        set_property_bool is just like set_property(), but it's only to be used to set boolean properties
+        """Set a boolean property.
+
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str prop_name: The name of the property. Can be a general path 
+            expression, must not be null or the empty string; see
+            get_property() for namespace prefix usage.
+        :param bool prop_value: The new item value.
+        :param **kwargs: Optional keyword arguments describing the options;
+            must much an already existing option from consts.XMP_PROP_OPTIONS
+
+        :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        prop_value = int(prop_value)
-        return bool(_exempi.xmp_set_property_bool(self.xmpptr, schema_ns, prop_name, prop_value, options))
+        _cexempi.set_property_bool(self.xmpptr, schema_ns, prop_name,
+                                   bool(prop_value), options)
 
     def set_property_int(self, schema_ns, prop_name, prop_value, **kwargs ):
-        """
-        set_property_int is just like set_property(), but it's only to be used to set integer properties
+        """Set an integer property.
+
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str prop_name: The name of the property. Can be a general path 
+            expression, must not be null or the empty string; see
+            get_property() for namespace prefix usage.
+        :param int prop_value: The new item value.
+        :param **kwargs: Optional keyword arguments describing the options;
+            must much an already existing option from consts.XMP_PROP_OPTIONS
+
+        :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        return bool(_exempi.xmp_set_property_int32(self.xmpptr, schema_ns, prop_name, prop_value,options))
+        _cexempi.set_property_int32(self.xmpptr, schema_ns, prop_name,
+                                    int(prop_value), options)
 
     def set_property_long(self, schema_ns, prop_name, prop_value, **kwargs ):
-        """
-        set_property_long is just like set_property(), but it's only to be used to set long integer properties
+        """Set a long integer (int64) property.
+
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str prop_name: The name of the property. Can be a general path 
+            expression, must not be null or the empty string; see
+            get_property() for namespace prefix usage.
+        :param long prop_value: The new item value.
+        :param **kwargs: Optional keyword arguments describing the options;
+            must much an already existing option from consts.XMP_PROP_OPTIONS
+
+        :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        return bool(_exempi.xmp_set_property_int64(self.xmpptr, schema_ns, prop_name, prop_value, options))
+        _cexempi.set_property_int64(self.xmpptr, schema_ns, prop_name,
+                                    long(prop_value), options)
 
     def set_property_float(self, schema_ns, prop_name, prop_value, **kwargs ):
-        """
-        set_property_float is just like set_property(), but it's only to be used to set float properties
+        """Set a floating point property.
+
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str prop_name: The name of the property. Can be a general path 
+            expression, must not be null or the empty string; see
+            get_property() for namespace prefix usage.
+        :param float prop_value: The new item value.
+        :param **kwargs: Optional keyword arguments describing the options;
+            must much an already existing option from consts.XMP_PROP_OPTIONS
+
+        :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        prop_value = c_float(prop_value)
-        return bool(_exempi.xmp_set_property_float(self.xmpptr, schema_ns, prop_name, prop_value, options))
+        _cexempi.xmp_set_property_float(self.xmpptr, schema_ns, prop_name,
+                                        float(prop_value), options)
 
 
     def set_property_datetime(self, schema_ns, prop_name, prop_value, **kwargs ):
@@ -479,48 +517,57 @@ class XMPMeta(object):
         d = _XmpDateTime(prop_value.year, prop_value.month, prop_value.day, prop_value.hour, prop_value.minute, prop_value.second,0,0,0)
         return bool(_exempi.xmp_set_property_date(self.xmpptr, schema_ns, prop_name, byref(d), options))
 
-    def set_localized_text(self, schema_ns, alt_text_name, generic_lang, specific_lang, prop_value, **kwargs):
-        """
-        set_localized_text() creates or sets a localized text value.
+    def set_localized_text(self, schema_ns, alt_text_name, generic_lang,
+                           specific_lang, prop_value, **kwargs):
+        """Creates or sets a localized text value.
 
-        :param schema_ns:    The namespace URI; see get_property().
-        :param alt_text_name:    The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix.
-        :param generic_lang:    A valid generic language tag from RFC 3066 specification (i.e. en for English).  Passing "x" for a generic language is allow, but considered poor practice.  An empty string may be specified.
-        :param specific_lang:    A specific language tag from RFC 3066 specification (i.e en-US for US English).
-        :param prop_value:    Item value
-        :param **kwargs:    Optional keyword arguments describing the options; must much an already existing option from consts.XMP_PROP_OPTIONS
+        :param str schema_ns:     The namespace URI; see get_property().
+        :param str alt_text_name: The name of the property. Can be a general
+            path expression, must not be null or the empty string. The first
+            component can be a namespace prefix.
+        :param str generic_lang:  A valid generic language tag from RFC 3066
+            specification (i.e. en for English).  Passing "x" for a generic
+            language is allowed, but considered poor practice.  An empty string
+            may be specified.
+        :param str specific_lang: A specific language tag from RFC 3066
+            specification (i.e en-US for US English).
+        :param str prop_value:    Item value
+        :param **kwargs:          Optional keyword arguments describing the
+            options; must much an already existing option from
+            consts.XMP_PROP_OPTIONS
 
-        :return True if the property was set correctly, False otherwise.
+        :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        return bool(_exempi.xmp_set_localized_text(self.xmpptr, schema_ns, alt_text_name, generic_lang, specific_lang, prop_value, options))
+        _cexempi.set_localized_text(self.xmpptr, schema_ns, alt_text_name,
+                                    generic_lang, specific_lang, prop_value,
+                                    options)
 
 
     # ------------------------------------------------
     # Functions for deleting and detecting properties.
     # ------------------------------------------------
     def delete_property(self, schema_ns, prop_name ):
-        """
-        delete_property() deletes an XMP subtree rooted at a given property.
-        It is not an error if the property does not exist.
+        """Delete a property from XMP packet.
+
+        Deletes an XMP subtree rooted at a given property.  It is not an error
+        if the property does not exist.
+
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str prop_name: The name of the property; see get_property().
         """
         _exempi.xmp_delete_property(self.xmpptr, schema_ns, prop_name);
-        return None
 
     def does_property_exist(self, schema_ns, prop_name ):
+        """Queries for existence of a property.
+
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str prop_name: The name of the property; see get_property().
+
+        :returns: True if the property exists, False otherwise.
         """
-        does_property_exist() reports whether a property currently exists.
+        return _cexempi.has_property(self.xmpptr, schema_ns, prop_name)
 
-        :param schema_ns    The namespace URI for the property; see get_property().
-        :param prop_name     The name of the property; see get_property().
-
-        :return True if the property exists, False otherwise.
-        """
-        if sys.hexversion >= 0x03000000:
-            schema_ns = schema_ns.encode()
-            prop_name = prop_name.encode()
-
-        return bool(_exempi.xmp_has_property(self.xmpptr, schema_ns, prop_name))
 
     def does_array_item_exist(self, schema_ns, array_name, item ):
         """
@@ -861,4 +908,4 @@ class XMPIterator:
         :rtype: NoneType
         """
         options = options_mask(consts.XMP_SKIP_OPTIONS, **kwargs) if kwargs else 0
-        _exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
+        _exempi.xmp_iterator_skip( self.xmpiteratorptr, options )
