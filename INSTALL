@@ -4,8 +4,8 @@ Installation
 Requirements
 ------------
 
- * Python 2.5+
- * Exempi 2.1.1
+ * Python 2.6+
+ * Exempi 2.1.1+
  * Linux or OS X (see notes below for Windows)
 
 
@@ -20,14 +20,17 @@ Note, in case you haven't installed Exempi you will get an
 
 Exempi
 ------
-Python XMP Toolkit requires Exempi 2.1 which can be downloaded from
-http://libopenraw.freedesktop.org/wiki/Exempi. To install Exempi, unpack the
-distribution and run::
+Python XMP Toolkit requires Exempi 2.1.1 or higher which can be downloaded from
+http://libopenraw.freedesktop.org/wiki/Exempi.  It is probably already
+installed if you are working on linux.
+
+To install Exempi, unpack the distribution and run::
 
   ./configure
   make
   sudo make install
 
+Version 2.1.0 is known not to work.
 
 Mac OS X 
 --------

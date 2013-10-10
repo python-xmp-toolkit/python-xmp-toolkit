@@ -1,0 +1,255 @@
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Public XMP Toolkit Core 3.5">
+ <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about=""
+    xmlns:tiff="http://ns.adobe.com/tiff/1.0/">
+   <tiff:Make>Canon</tiff:Make>
+   <tiff:Model>Canon EOS 20D</tiff:Model>
+   <tiff:Orientation>1</tiff:Orientation>
+   <tiff:ImageWidth>3504</tiff:ImageWidth>
+   <tiff:ImageLength>2336</tiff:ImageLength>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:exif="http://ns.adobe.com/exif/1.0/">
+   <exif:ExifVersion>0221</exif:ExifVersion>
+   <exif:ExposureTime>15/1</exif:ExposureTime>
+   <exif:ShutterSpeedValue>-3906891/1000000</exif:ShutterSpeedValue>
+   <exif:FNumber>8/1</exif:FNumber>
+   <exif:ApertureValue>6/1</exif:ApertureValue>
+   <exif:ExposureProgram>1</exif:ExposureProgram>
+   <exif:DateTimeOriginal>2006-12-07T23:20:43-05:00</exif:DateTimeOriginal>
+   <exif:DateTimeDigitized>2006-12-07T23:20:43-05:00</exif:DateTimeDigitized>
+   <exif:ExposureBiasValue>0/2</exif:ExposureBiasValue>
+   <exif:MaxApertureValue>3625/1000</exif:MaxApertureValue>
+   <exif:MeteringMode>5</exif:MeteringMode>
+   <exif:FocalLength>32/1</exif:FocalLength>
+   <exif:CustomRendered>0</exif:CustomRendered>
+   <exif:ExposureMode>1</exif:ExposureMode>
+   <exif:WhiteBalance>0</exif:WhiteBalance>
+   <exif:SceneCaptureType>0</exif:SceneCaptureType>
+   <exif:FocalPlaneXResolution>3504000/885</exif:FocalPlaneXResolution>
+   <exif:FocalPlaneYResolution>2336000/590</exif:FocalPlaneYResolution>
+   <exif:FocalPlaneResolutionUnit>2</exif:FocalPlaneResolutionUnit>
+   <exif:ISOSpeedRatings>
+    <rdf:Seq>
+     <rdf:li>100</rdf:li>
+    </rdf:Seq>
+   </exif:ISOSpeedRatings>
+   <exif:Flash rdf:parseType="Resource">
+    <exif:Fired>False</exif:Fired>
+    <exif:Return>0</exif:Return>
+    <exif:Mode>2</exif:Mode>
+    <exif:Function>False</exif:Function>
+    <exif:RedEyeMode>False</exif:RedEyeMode>
+   </exif:Flash>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:xap="http://ns.adobe.com/xap/1.0/">
+   <xap:ModifyDate>2006-12-07T23:20:43-05:00</xap:ModifyDate>
+   <xap:Rating>3</xap:Rating>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <dc:creator>
+    <rdf:Seq>
+     <rdf:li>unknown</rdf:li>
+    </rdf:Seq>
+   </dc:creator>
+   <dc:rights>
+    <rdf:Alt>
+     <rdf:li xml:lang="x-default">2006, Hubert Figuiere</rdf:li>
+    </rdf:Alt>
+   </dc:rights>
+   <dc:subject>
+    <rdf:Bag>
+     <rdf:li>night</rdf:li>
+     <rdf:li>ontario</rdf:li>
+     <rdf:li>ottawa</rdf:li>
+     <rdf:li>parliament of canada</rdf:li>
+    </rdf:Bag>
+   </dc:subject>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:aux="http://ns.adobe.com/exif/1.0/aux/">
+   <aux:SerialNumber>420103070</aux:SerialNumber>
+   <aux:LensInfo>24/1 85/1 0/0 0/0</aux:LensInfo>
+   <aux:Lens>24.0-85.0 mm</aux:Lens>
+   <aux:ImageNumber>176</aux:ImageNumber>
+   <aux:FlashCompensation>-2/1</aux:FlashCompensation>
+   <aux:OwnerName>unknown</aux:OwnerName>
+   <aux:Firmware>1.1.0</aux:Firmware>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/">
+       <crs:AlreadyApplied>False</crs:AlreadyApplied>
+       <crs:WhiteBalance>As Shot</crs:WhiteBalance>
+       <crs:Exposure>0.00</crs:Exposure>
+       <crs:Shadows>5</crs:Shadows>
+       <crs:Brightness>+50</crs:Brightness>
+       <crs:Contrast>+25</crs:Contrast>
+       <crs:Saturation>0</crs:Saturation>
+       <crs:Sharpness>25</crs:Sharpness>
+       <crs:LuminanceSmoothing>0</crs:LuminanceSmoothing>
+       <crs:ColorNoiseReduction>25</crs:ColorNoiseReduction>
+       <crs:ChromaticAberrationR>0</crs:ChromaticAberrationR>
+       <crs:ChromaticAberrationB>0</crs:ChromaticAberrationB>
+       <crs:VignetteAmount>0</crs:VignetteAmount>
+       <crs:ShadowTint>0</crs:ShadowTint>
+       <crs:RedHue>0</crs:RedHue>
+       <crs:RedSaturation>0</crs:RedSaturation>
+       <crs:GreenHue>0</crs:GreenHue>
+       <crs:GreenSaturation>0</crs:GreenSaturation>
+       <crs:BlueHue>0</crs:BlueHue>
+       <crs:BlueSaturation>0</crs:BlueSaturation>
+       <crs:FillLight>0</crs:FillLight>
+       <crs:Vibrance>0</crs:Vibrance>
+       <crs:HighlightRecovery>0</crs:HighlightRecovery>
+       <crs:Clarity>0</crs:Clarity>
+       <crs:Defringe>0</crs:Defringe>
+       <crs:HueAdjustmentRed>0</crs:HueAdjustmentRed>
+       <crs:HueAdjustmentOrange>0</crs:HueAdjustmentOrange>
+       <crs:HueAdjustmentYellow>0</crs:HueAdjustmentYellow>
+       <crs:HueAdjustmentGreen>0</crs:HueAdjustmentGreen>
+       <crs:HueAdjustmentAqua>0</crs:HueAdjustmentAqua>
+       <crs:HueAdjustmentBlue>0</crs:HueAdjustmentBlue>
+       <crs:HueAdjustmentPurple>0</crs:HueAdjustmentPurple>
+       <crs:HueAdjustmentMagenta>0</crs:HueAdjustmentMagenta>
+       <crs:SaturationAdjustmentRed>0</crs:SaturationAdjustmentRed>
+       <crs:SaturationAdjustmentOrange>0</crs:SaturationAdjustmentOrange>
+       <crs:SaturationAdjustmentYellow>0</crs:SaturationAdjustmentYellow>
+       <crs:SaturationAdjustmentGreen>0</crs:SaturationAdjustmentGreen>
+       <crs:SaturationAdjustmentAqua>0</crs:SaturationAdjustmentAqua>
+       <crs:SaturationAdjustmentBlue>0</crs:SaturationAdjustmentBlue>
+       <crs:SaturationAdjustmentPurple>0</crs:SaturationAdjustmentPurple>
+       <crs:SaturationAdjustmentMagenta>0</crs:SaturationAdjustmentMagenta>
+       <crs:LuminanceAdjustmentRed>0</crs:LuminanceAdjustmentRed>
+       <crs:LuminanceAdjustmentOrange>0</crs:LuminanceAdjustmentOrange>
+       <crs:LuminanceAdjustmentYellow>0</crs:LuminanceAdjustmentYellow>
+       <crs:LuminanceAdjustmentGreen>0</crs:LuminanceAdjustmentGreen>
+       <crs:LuminanceAdjustmentAqua>0</crs:LuminanceAdjustmentAqua>
+       <crs:LuminanceAdjustmentBlue>0</crs:LuminanceAdjustmentBlue>
+       <crs:LuminanceAdjustmentPurple>0</crs:LuminanceAdjustmentPurple>
+       <crs:LuminanceAdjustmentMagenta>0</crs:LuminanceAdjustmentMagenta>
+       <crs:SplitToningShadowHue>0</crs:SplitToningShadowHue>
+       <crs:SplitToningShadowSaturation>0</crs:SplitToningShadowSaturation>
+       <crs:SplitToningHighlightHue>0</crs:SplitToningHighlightHue>
+       <crs:SplitToningHighlightSaturation>0</crs:SplitToningHighlightSaturation>
+       <crs:SplitToningBalance>0</crs:SplitToningBalance>
+       <crs:ParametricShadows>0</crs:ParametricShadows>
+       <crs:ParametricDarks>0</crs:ParametricDarks>
+       <crs:ParametricLights>0</crs:ParametricLights>
+       <crs:ParametricHighlights>0</crs:ParametricHighlights>
+       <crs:ParametricShadowSplit>25</crs:ParametricShadowSplit>
+       <crs:ParametricMidtoneSplit>50</crs:ParametricMidtoneSplit>
+       <crs:ParametricHighlightSplit>75</crs:ParametricHighlightSplit>
+       <crs:SharpenRadius>+1.0</crs:SharpenRadius>
+       <crs:SharpenDetail>25</crs:SharpenDetail>
+       <crs:SharpenEdgeMasking>0</crs:SharpenEdgeMasking>
+       <crs:ConvertToGrayscale>False</crs:ConvertToGrayscale>
+       <crs:ToneCurveName>Medium Contrast</crs:ToneCurveName>
+       <crs:ToneCurve>
+        <rdf:Seq>
+         <rdf:li>0, 0</rdf:li>
+         <rdf:li>32, 22</rdf:li>
+         <rdf:li>64, 56</rdf:li>
+         <rdf:li>128, 128</rdf:li>
+         <rdf:li>192, 196</rdf:li>
+         <rdf:li>255, 255</rdf:li>
+        </rdf:Seq>
+       </crs:ToneCurve>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:crx="http://ns.adobe.com/lightroom-settings-experimental/1.0/">
+   <crx:ConvertToGrayscale>false</crx:ConvertToGrayscale>
+   <crx:SplitToningHighlightHue>0</crx:SplitToningHighlightHue>
+   <crx:Sharpness>25</crx:Sharpness>
+   <crx:CropBottom>1</crx:CropBottom>
+   <crx:GreenSaturation>0</crx:GreenSaturation>
+   <crx:Exposure>0</crx:Exposure>
+   <crx:LuminanceAdjustmentGreens>0</crx:LuminanceAdjustmentGreens>
+   <crx:SplitToningShadowHue>0</crx:SplitToningShadowHue>
+   <crx:BlueHue>0</crx:BlueHue>
+   <crx:GreenHue>0</crx:GreenHue>
+   <crx:FillLight>0</crx:FillLight>
+   <crx:HueAdjustmentCyans>0</crx:HueAdjustmentCyans>
+   <crx:SaturationAdjustmentGreens>0</crx:SaturationAdjustmentGreens>
+   <crx:Saturation>0</crx:Saturation>
+   <crx:SaturationAdjustmentBlues>0</crx:SaturationAdjustmentBlues>
+   <crx:VignetteMidpoint>50</crx:VignetteMidpoint>
+   <crx:ToneHighlightSplit>75</crx:ToneHighlightSplit>
+   <crx:ToneShadowSplit>25</crx:ToneShadowSplit>
+   <crx:Contrast>25</crx:Contrast>
+   <crx:WhiteBalance>As Shot</crx:WhiteBalance>
+   <crx:HueAdjustmentMagentas>0</crx:HueAdjustmentMagentas>
+   <crx:HighlightRecovery>0</crx:HighlightRecovery>
+   <crx:SaturationAdjustmentCyans>0</crx:SaturationAdjustmentCyans>
+   <crx:GrayMixerYellows>100</crx:GrayMixerYellows>
+   <crx:HueAdjustmentGreens>0</crx:HueAdjustmentGreens>
+   <crx:ToneShadows>0</crx:ToneShadows>
+   <crx:GrayMixerGreens>71</crx:GrayMixerGreens>
+   <crx:GrayMixerBlues>0</crx:GrayMixerBlues>
+   <crx:ColorNoiseReduction>25</crx:ColorNoiseReduction>
+   <crx:ShadowTint>0</crx:ShadowTint>
+   <crx:Shadows>5</crx:Shadows>
+   <crx:RedHue>0</crx:RedHue>
+   <crx:Brightness>50</crx:Brightness>
+   <crx:BlueSaturation>0</crx:BlueSaturation>
+   <crx:CropTop>0</crx:CropTop>
+   <crx:SaturationAdjustmentMagentas>0</crx:SaturationAdjustmentMagentas>
+   <crx:GrayMixerReds>29</crx:GrayMixerReds>
+   <crx:AutoBrightness>false</crx:AutoBrightness>
+   <crx:AutoTonality>false</crx:AutoTonality>
+   <crx:AutoExposure>false</crx:AutoExposure>
+   <crx:RedSaturation>0</crx:RedSaturation>
+   <crx:LuminanceAdjustmentMagentas>0</crx:LuminanceAdjustmentMagentas>
+   <crx:LuminanceAdjustmentBlues>0</crx:LuminanceAdjustmentBlues>
+   <crx:HueAdjustmentBlues>0</crx:HueAdjustmentBlues>
+   <crx:SaturationAdjustmentReds>0</crx:SaturationAdjustmentReds>
+   <crx:LuminanceAdjustmentYellows>0</crx:LuminanceAdjustmentYellows>
+   <crx:SplitToningShadowSaturation>0</crx:SplitToningShadowSaturation>
+   <crx:ChromaticAberrationR>0</crx:ChromaticAberrationR>
+   <crx:LuminanceAdjustmentCyans>0</crx:LuminanceAdjustmentCyans>
+   <crx:CropAngle>0</crx:CropAngle>
+   <crx:ChromaticAberrationB>0</crx:ChromaticAberrationB>
+   <crx:AutoShadows>false</crx:AutoShadows>
+   <crx:CropRight>1</crx:CropRight>
+   <crx:ToneLights>0</crx:ToneLights>
+   <crx:HueAdjustmentReds>0</crx:HueAdjustmentReds>
+   <crx:Vibrance>0</crx:Vibrance>
+   <crx:ToneDarks>0</crx:ToneDarks>
+   <crx:GrayMixerMagentas>29</crx:GrayMixerMagentas>
+   <crx:LuminanceSmoothing>0</crx:LuminanceSmoothing>
+   <crx:SplitToningHighlightSaturation>0</crx:SplitToningHighlightSaturation>
+   <crx:HueAdjustmentYellows>0</crx:HueAdjustmentYellows>
+   <crx:GrayMixerCyans>71</crx:GrayMixerCyans>
+   <crx:ToneMidtoneSplit>50</crx:ToneMidtoneSplit>
+   <crx:VignetteAmount>0</crx:VignetteAmount>
+   <crx:AutoContrast>false</crx:AutoContrast>
+   <crx:CropLeft>0</crx:CropLeft>
+   <crx:ToneHighlights>0</crx:ToneHighlights>
+   <crx:AutoGrayscaleWeights>true</crx:AutoGrayscaleWeights>
+   <crx:SaturationAdjustmentYellows>0</crx:SaturationAdjustmentYellows>
+   <crx:LuminanceAdjustmentReds>0</crx:LuminanceAdjustmentReds>
+   <crx:Tint>1</crx:Tint>
+   <crx:Temperature>4350</crx:Temperature>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:lr="http://ns.adobe.com/lightroom/1.0/">
+   <lr:hierarchicalKeywords>aGllcmFyY2hpY2FsS2V5d29yZHMgPSB7Cgl7CgkJZmxhdCA9IHsKCQkJIm5pZ2h0IiwKCQl9LAoJCXBhdGggPSB7CgkJCSJuaWdodCIsCgkJfSwKCQlwcmltYXJ5ID0gIm5pZ2h0IiwKCQl1dWlkID0gIkU1RDEwQTFELTU3QUYtMTFEQi04RTMzLTAwMEQ5MzVDODY5QSIsCgl9LAoJewoJCWZsYXQgPSB7CgkJCSJvbnRhcmlvIiwKCQkJIm90dGF3YSIsCgkJfSwKCQlwYXRoID0gewoJCQkib250YXJpbyIsCgkJCSJvdHRhd2EiLAoJCX0sCgkJcHJpbWFyeSA9ICJvdHRhd2EiLAoJCXV1aWQgPSAiQjgzMTc4RkItNTdBRi0xMURCLThFMzMtMDAwRDkzNUM4NjlBIiwKCX0sCgl7CgkJZmxhdCA9IHsKCQkJInBhcmxpYW1lbnQgb2YgY2FuYWRhIiwKCQkJIm9udGFyaW8iLAoJCQkib3R0YXdhIiwKCQl9LAoJCXBhdGggPSB7CgkJCSJvbnRhcmlvIiwKCQkJIm90dGF3YSIsCgkJCSJwYXJsaWFtZW50IG9mIGNhbmFkYSIsCgkJfSwKCQlwcmltYXJ5ID0gInBhcmxpYW1lbnQgb2YgY2FuYWRhIiwKCQl1dWlkID0gIkU1RDMzMEZDLTU3QUYtMTFEQi04RTMzLTAwMEQ5MzVDODY5QSIsCgl9LAp9Cg==</lr:hierarchicalKeywords>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+        xmlns:xmpTPg="http://ns.adobe.com/xap/1.0/t/pg/">
+   <xmpTPg:MaxPageSize>
+    <rdf:Description
+            xmlns:stDim="http:ns.adobe.com/xap/1.0/sType/Dimensions#">
+     <stDim:w>4</stDim:w>
+     <stDim:h>3</stDim:h>
+     <stDim:unit>inches</stDim:unit>
+    </rdf:Description>
+   </xmpTPg:MaxPageSize>
+  </rdf:Description>
+  <rdf:Description rdf:about=""
+    xmlns:Iptc4xmpCore="http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/">
+   <Iptc4xmpCore:Location>Parliament Hill, Ottawa, Ontario, Canada</Iptc4xmpCore:Location>
+  </rdf:Description>
+ </rdf:RDF>
+</x:xmpmeta>
