@@ -1175,6 +1175,23 @@ def iterator_new(xmp, schema, propname, options):
     return iterator
 
 
+def iterator_skip(iterator, options):
+    """Wrapper for xmp_iterator_skip library routine.
+
+    Parameters
+    ----------
+    iterator : XmpIteratorPtr
+        iterator for use with iterator_next
+    options : int
+        TODO
+    """
+    EXEMPI.xmp_iterator_skip.argtypes = [ctypes.c_void_p,
+                                         ctypes.c_int32]
+    EXEMPI.xmp_iterator_skip.restype = ctypes.c_bool
+    success = EXEMPI.xmp_iterator_skip(iterator, options)
+    check_error(success)
+
+
 def namespace_prefix(namespace):
     """Returns a prefix associated with a namespace.
 

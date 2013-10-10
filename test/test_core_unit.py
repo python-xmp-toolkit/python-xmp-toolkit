@@ -54,6 +54,8 @@ from .common_fixtures import setup_sample_files
 from .samples import open_flags
 from . import xmpcoverage
 
+# TODO : iteration test with skip options
+
 class TestClass(object):
     def __unicode__(self):
         return xmpcoverage.RDFCoverage
@@ -261,6 +263,7 @@ class UtilsTestCase(unittest.TestCase):
 
     def test_object_to_dict_noxmp(self):
         self.assertEqual( object_to_dict( [] ), {} )
+
 
 
 class UnicodeTestCase(unittest.TestCase):

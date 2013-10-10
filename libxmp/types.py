@@ -86,10 +86,6 @@ _function_types = {
     'xmp_string_new' : { 'argstypes' : "", 'restype' : "XmpStringPtr" },
     'xmp_string_free' : { 'argstypes' : "XmpStringPtr s", 'restype' : "void" },
     'xmp_string_cstr' : { 'argstypes' : "XmpStringPtr s", 'restype' : "const char *" },
-    'xmp_iterator_new' : { 'argstypes' : "XmpPtr xmp, const char * schema,const char * propName, XmpIterOptions options", 'restype' : "XmpIteratorPtr" },
-    'xmp_iterator_free' : { 'argstypes' : "XmpIteratorPtr iter", 'restype' : "bool" },
-    'xmp_iterator_next' : { 'argstypes' : "XmpIteratorPtr iter, XmpStringPtr schema,XmpStringPtr propName, XmpStringPtr propValue,uint32_t *options", 'restype' : "bool" },
-    'xmp_iterator_skip' : { 'argstypes' : "XmpIteratorPtr iter, XmpIterSkipOptions options", 'restype' : "bool" },
 }
 
 # Definitions of how to convert the function types to ctypes
@@ -98,7 +94,6 @@ _typeconv = {
     'XmpPtr' : ctypes.c_void_p,
     'XmpStringPtr' : ctypes.c_void_p,
     'XmpFilePtr' : ctypes.c_void_p,
-    'XmpIteratorPtr' : ctypes.c_void_p,
     'const char *' : ctypes.c_char_p,
     'int' : ctypes.c_int,
     'void' : None,

@@ -738,25 +738,27 @@ class XMPMeta(object):
 
 
 class XMPIterator:
-    """
-    XMPIterator provides a uniform means to iterate over the schema and properties within an XMP object.
-    It's implemented according to Python's iterator protocol and it's the iterator for XMPMeta class.
-    :param  xmp_obj  : an XMPMeta instance
-    :param  schema_ns: Optional namespace URI to restrict the iteration.
-    :param  prop_name: Optional property name to restrict the iteration.
-    :param **kwargs : Optional keyword arguments from XMP_ITERATOR_OPTIONS
+    """Provides means to iterate over a schema and properties.
+
+    XMPIterator provides a uniform means to iterate over the schema and
+    properties within an XMP object.  It is implemented according to Python's
+    iterator protocol and it is the iterator for XMPMeta class.
+
+    :param xmp_obj:       an XMPMeta instance
+    :param str schema_ns: Optional namespace URI to restrict the iteration.
+    :param str prop_name: Optional property name to restrict the iteration.
+    :param **kwargs :     Optional keyword arguments from XMP_ITERATOR_OPTIONS
     :returns: an iterator for the given xmp_obj
     """
     def __init__( self, xmp_obj, schema_ns=None, prop_name=None, **kwargs ):
         self.options = options_mask(consts.XMP_ITERATOR_OPTIONS, **kwargs) if kwargs else 0
-        self.xmpiteratorptr = _exempi.xmp_iterator_new( xmp_obj.xmpptr, schema_ns, prop_name, self.options)
-        _check_for_error()
+        self.xmpiteratorptr = _cexempi.iterator_new(xmp_obj.xmpptr, schema_ns,
+                                                    prop_name, self.options)
         self.schema = schema_ns
         self.prop_name = prop_name
 
     def __del__(self):
-        _check_for_error()
-
+        _cexempi.iterator_free(self.xmpiteratorptr)
 
     def __iter__(self):
         return self
@@ -764,64 +766,52 @@ class XMPIterator:
     def __next__(self):
         """
         Implements iterator protocol for 3.X
+
+        :raises: StopIteration
         """
         return self._next_common()
 
     def next(self):
         """
         Implements iterator protocol for 2.X
+
+        .. todo:: Suppress this in sphinx docs
+
+        :raises: StopIteration
         """
         return self._next_common()
 
     def _next_common(self):
-        prop_value = _XMPString()
-        the_value = None
+        """
+        Internal function.
 
-        schema_ns = _XMPString()
-        prop_name = _XMPString()
+        :raises: StopIteration
+        """
+        schema, name, value, options = _cexempi.iterator_next(self.xmpiteratorptr)
 
-        options = c_int32(self.options)
+        #decode option bits into a human-readable format (that is, a dict)
+        opts = { 'VALUE_IS_URI'     : False,
+                 'IS_QUALIFIER'     : False,
+                 'HAS_QUALIFIERS'   : False,
+                 'HAS_LANG'         : False,
+                 'HAS_TYPE'         : False,
+                 'VALUE_IS_STRUCT'  : False,
+                 'VALUE_IS_ARRAY'   : False,
+                 'ARRAY_IS_ORDERED' : False,
+                 'ARRAY_IS_ALT'     : False,
+                 'ARRAY_IS_ALTTEXT' : False,
+                 'IS_ALIAS'         : False,
+                 'HAS_ALIASES'      : False,
+                 'IS_INTERNAL'      : False,
+                 'IS_STABLE'        : False,
+                 'IS_DERIVED'       : False,
+                 'IS_SCHEMA'        : False, }
 
-        if _exempi.xmp_iterator_next(self.xmpiteratorptr, schema_ns.get_ptr(), prop_name.get_ptr(), prop_value.get_ptr(),
-byref(options)):
-            #decode option bits into a human-readable format (that is, a dict)
-            opts = {
-                'VALUE_IS_URI' : False,
-                'IS_QUALIFIER' : False,
-                'HAS_QUALIFIERS' : False,
-                'HAS_LANG' : False,
-                'HAS_TYPE' : False,
-                'VALUE_IS_STRUCT' : False,
-                'VALUE_IS_ARRAY' : False,
-                'ARRAY_IS_ORDERED' : False,
-                'ARRAY_IS_ALT' : False,
-                'ARRAY_IS_ALTTEXT' : False,
-                'IS_ALIAS' : False,
-                'HAS_ALIASES' : False,
-                'IS_INTERNAL' : False,
-                'IS_STABLE' : False,
-                'IS_DERIVED' : False,
-                'IS_SCHEMA' : False,
-            }
+        for opt in opts:
+            if has_option(options.value, getattr(consts,'XMP_PROP_'+opt)):
+                opts[opt] = True
 
-            for opt in opts:
-                if has_option(options.value, getattr(consts,'XMP_PROP_'+opt)):
-                    opts[opt] = True
-
-            if sys.hexversion < 0x03000000:
-                return (unicode(schema_ns),
-                        unicode(prop_name),
-                        unicode(prop_value),
-                        opts)
-            else:
-                return (schema_ns.__unicode__(),
-                        prop_name.__unicode__(),
-                        prop_value.__unicode__(),
-                        opts)
-
-                
-        else:
-            raise StopIteration
+        return(schema, name, value, opts)
 
     def skip(**kwargs ):
         """
@@ -833,5 +823,3 @@ byref(options)):
         """
         options = options_mask(consts.XMP_SKIP_OPTIONS, **kwargs) if kwargs else 0
         _exempi.xmp_iterator_skip( self.xmpiteratorptr, options );
-        _check_for_error()
-        return None
