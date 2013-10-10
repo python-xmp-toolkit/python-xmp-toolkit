@@ -33,66 +33,50 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
 import os
-import os.path
+import pkg_resources
 import shutil
-import sys
-sys.path.append(os.path.pardir)
 
 import libxmp
 
-open_flags = [
-    'open_nooption',
-    'open_read',
-    'open_forupdate',
-    'open_onlyxmp',
-    'open_cachetnail',
-    'open_strictly',
-    'open_usesmarthandler',
-    'open_usepacketscanning',
-    'open_limitscanning',
-    'open_inbackground'
-]
-
-
-sampledir = '.tempsamples/'
-""" Name of temporary sample directory. """
-
-"""
-Definitions of test files
-"""
 samplefiles = {
-    'sig05-002a.tif' : libxmp.files.XMP_FT_TIFF,
-    'sig05-002a.xmp' : libxmp.files.XMP_FT_TEXT,
-    'BlueSquare.ai' : libxmp.files.XMP_FT_ILLUSTRATOR,
-    'BlueSquare.avi' : libxmp.files.XMP_FT_AVI,
-    'BlueSquare.eps' : libxmp.files.XMP_FT_EPS,
-    'BlueSquare.gif' : libxmp.files.XMP_FT_GIF,
+    'sig05-002a.tif'  : libxmp.files.XMP_FT_TIFF,
+    'sig05-002a.xmp'  : libxmp.files.XMP_FT_TEXT,
+    'BlueSquare.ai'   : libxmp.files.XMP_FT_ILLUSTRATOR,
+    'BlueSquare.avi'  : libxmp.files.XMP_FT_AVI,
+    'BlueSquare.eps'  : libxmp.files.XMP_FT_EPS,
+    'BlueSquare.gif'  : libxmp.files.XMP_FT_GIF,
     'BlueSquare.indd' : libxmp.files.XMP_FT_INDESIGN,
-    'BlueSquare.jpg' : libxmp.files.XMP_FT_JPEG,
-    'BlueSquare.mov' : libxmp.files.XMP_FT_MOV,
-    'BlueSquare.mp3' : libxmp.files.XMP_FT_MP3,
-    'BlueSquare.pdf' : libxmp.files.XMP_FT_PDF,
-    'BlueSquare.png' : libxmp.files.XMP_FT_PNG,
-    'BlueSquare.psd' : libxmp.files.XMP_FT_PHOTOSHOP,
-    'BlueSquare.tif' : libxmp.files.XMP_FT_TIFF,
-    'BlueSquare.wav' : libxmp.files.XMP_FT_WAV,
+    'BlueSquare.jpg'  : libxmp.files.XMP_FT_JPEG,
+    'BlueSquare.mov'  : libxmp.files.XMP_FT_MOV,
+    'BlueSquare.mp3'  : libxmp.files.XMP_FT_MP3,
+    'BlueSquare.pdf'  : libxmp.files.XMP_FT_PDF,
+    'BlueSquare.png'  : libxmp.files.XMP_FT_PNG,
+    'BlueSquare.psd'  : libxmp.files.XMP_FT_PHOTOSHOP,
+    'BlueSquare.tif'  : libxmp.files.XMP_FT_TIFF,
+    'BlueSquare.wav'  : libxmp.files.XMP_FT_WAV,
 }
 
-files = {}
-for k,v in samplefiles.items():
-    files[sampledir + k] = v
-samplefiles = files
+def setup_sample_files(dirname):
+    """
+    Copy test files so that we are free to write to them.
 
-def make_temp_samples():
-    global sampledir
-    if os.path.exists(sampledir):
-        remove_temp_samples()
+    Parameters
+    ----------
+    dirname : str
+        Destination directory, should be temporary.
 
-    shutil.copytree('samples', sampledir)
+    Returns
+    -------
+    Tuple of fully-qualified filenames and their formats.
+    """
+    copied_samplefiles = []
+    fmts = []
+    for samplefile, fmt in samplefiles.items():
+        relsrc = os.path.join('samples', samplefile)
+        full_source_file = pkg_resources.resource_filename(__name__, relsrc)
+        dest_file = os.path.join(dirname, samplefile)
+        shutil.copyfile(full_source_file, dest_file)
+        copied_samplefiles.append(dest_file)
+        fmts.append(fmt)
+    return copied_samplefiles, fmts
 
-def remove_temp_samples():
-    global sampledir
-    if os.path.exists( sampledir ):
-        if not os.path.isdir( sampledir):
-            raise StandardError('Cannot remove .tempsamples - it is not a directory. Please manually remove it.')
-        shutil.rmtree( sampledir )
