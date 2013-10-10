@@ -1235,8 +1235,11 @@ def parse(xmp, strbuffer):
     EXEMPI.xmp_parse.argtypes = [ctypes.c_void_p,
                                  ctypes.c_char_p,
                                  ctypes.c_size_t]
-    strbuffer_charray = strbuffer.encode()
-    EXEMPI.xmp_parse(xmp, strbuffer_charray, len(strbuffer_charray))
+    if isinstance(strbuffer, bytes):
+        pass
+    else:
+        strbuffer = strbuffer.encode()
+    EXEMPI.xmp_parse(xmp, strbuffer, len(strbuffer))
 
 
 def prefix_namespace_uri(prefix):
