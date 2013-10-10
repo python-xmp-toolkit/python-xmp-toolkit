@@ -430,6 +430,27 @@ def append_array_item(xmp, schema, name, array_options, value, option_bits):
                                  option_bits)
 
 
+def copy(xmp):
+    """Create a new XMP packet from an existing instance.
+
+    Wrapper for xmp_copy library routine.
+
+    Parameters
+    ----------
+    xmp : XmpPtr instance.
+        The XMP packet object.
+
+    Returns
+    -------
+    newxmp : XmpPtr instance.
+        A copy of the XMP packet object.
+    """
+    EXEMPI.xmp_copy.restype = ctypes.c_void_p
+    EXEMPI.xmp_copy.argtypes = [ctypes.c_void_p]
+    newxmp = EXEMPI.xmp_copy(xmp)
+    return newxmp
+
+
 def files_can_put_xmp(xfptr, xmp):
     """Wrapper for xmp_files_can_put_xmp library routine.
 

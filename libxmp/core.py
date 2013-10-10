@@ -41,10 +41,11 @@ from ctypes import *
 import datetime
 import sys
 
-from libxmp import XMPError
-from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
-from libxmp.consts import *
-from libxmp import consts
+from . import XMPError
+from . import _exempi, _XMP_ERROR_CODES, _check_for_error
+from .consts import *
+from . import consts
+from . import exempi as _cexempi
 
 __all__ = ['XMPMeta','XMPIterator']
 
@@ -191,20 +192,7 @@ class XMPMeta(object):
 
         .. todo:: Make get_property optionally return keywords describing property's options
         """
-        value = None
-        the_prop = _exempi.xmp_string_new()
-
-        if sys.hexversion >= 0x030000:
-            schema_ns = schema_ns.encode()
-            prop_name = prop_name.encode()
-
-        if _exempi.xmp_get_property( self.xmpptr, schema_ns, prop_name, the_prop, 0 ): #we're never returning options
-            value = _exempi.xmp_string_cstr(the_prop)
-
-        _exempi.xmp_string_free(the_prop)
-
-        if sys.hexversion >= 0x030000:
-            value = value.decode('utf-8')
+        value, _ = _cexempi.get_property(self.xmpptr, schema_ns, prop_name)
         return value
 
 
@@ -664,7 +652,7 @@ class XMPMeta(object):
         """
         Create a new XMP packet from this one.
         """
-        newptr = _exempi.xmp_copy( self.xmpptr )
+        newptr = _cexempi.copy( self.xmpptr )
 
         return (XMPMeta( _xmp_internal_ref = newptr ) if newptr else None)
 
