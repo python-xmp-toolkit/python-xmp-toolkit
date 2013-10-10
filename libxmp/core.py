@@ -133,8 +133,7 @@ class XMPMeta(object):
         if '_xmp_internal_ref' in kwargs:
             self.xmpptr = kwargs['_xmp_internal_ref']
         else:
-            self.xmpptr = _exempi.xmp_new_empty()
-            _check_for_error()
+            self.xmpptr = _cexempi.new_empty()
 
             if 'xmp_str' in kwargs:
                 self.parse_from_str( kwargs['xmp_str'] )
@@ -145,9 +144,8 @@ class XMPMeta(object):
         """
         Ensures memory is deallocated when destroying object.
         """
-        if self.xmpptr != None:
-            if not _exempi.xmp_free(self.xmpptr):
-                _check_for_error()
+        if self.xmpptr is not None:
+            _cexempi.free(self.xmpptr)
 
         if self.iterator is not None:
             del self.iterator
@@ -205,149 +203,199 @@ class XMPMeta(object):
         return value
 
 
-    def get_array_item( self, schema_ns, array_name, item_index ):
+    def get_array_item(self, schema_ns, array_prop_name, index):
+        """Get an item from an array property.
+
+        Items are accessed by an integer index
+
+        :param str schema_ns: The namespace URI for the property; can be null or
+            the empty string if the first component of the prop_name path
+            contains a namespace prefix.
+        :param str array_prop_name: The name of the array property. Can be a
+            general path expression, must not be null or the empty string. The
+            first component can be a namespace prefix; if present without a
+            schema_ns value, the prefix specifies the namespace.
+        :param int index:  The 1-based index of the item.
+
+        :raises: IOError if exempi library routine fails.
+
+        .. todo:: Make get_array_item optionally return keywords describing
+            array item's options
         """
-        get_array_item() provides access to items within an array.
-
-
-        Reports whether the item exists; if it does, and if it has a value, the function retrieves the value.; if it doesn't it raises Exception.
-        Items are accessed by an integer index, where the first item has index 1.
-
-        .. todo:: Make get_array_item optionally return keywords describing array item's options
-        """
-        the_prop = _exempi.xmp_string_new()
-        options = c_int32()
-
-        if _exempi.xmp_get_array_item( self.xmpptr, schema_ns, array_name, item_index, the_prop, byref(options)): #we're never returning options
-            return {_exempi.xmp_string_cstr(the_prop):options.value}
-        else:
-            raise Exception("Array's over")
+        prop, options = _cexempi.xmp_get_array_item(self.xmpptr, schema_ns,
+                                                    array_prop_name, index)
+        return prop
 
 
     # -------------------------------------
     # Functions for setting property values
     # -------------------------------------
     def set_property(self, schema_ns, prop_name, prop_value, **kwargs ):
-        """
-        set_property() creates or sets a property value.
+        """Creates or sets a property value.
 
         The method takes optional keyword aguments that describe the property.
-        You can use these functions to create empty arrays and structs by setting appropriate option flags.
-        When you assign a value, all levels of a struct that are implicit in the assignment are created if necessary; append_array_item() implicitly creates the named array if necessary.
+        You can use these functions to create empty arrays and structs by
+        setting appropriate option flags.  When you assign a value, all levels
+        of a struct that are implicit in the assignment are created if
+        necessary; append_array_item() implicitly creates the named array if
+        necessary.
 
-        :param schema_ns:    The namespace URI; see get_property().
-        :param prop_name:     The name of the property. Can be a general path expression, must not be null or the empty string; see get_property() for namespace prefix usage.
-        :param **kwargs:    Optional keyword arguments describing the options; must much an already existing option from consts.XMP_PROP_OPTIONS
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str prop_name: The name of the property. Can be a general path 
+            expression, must not be null or the empty string; see
+            get_property() for namespace prefix usage.
+        :param str prop_value: The new item value.
+        :param **kwargs: Optional keyword arguments describing the options;
+            must much an already existing option from consts.XMP_PROP_OPTIONS
 
-        :return True if the property was set correctly, False otherwise.
+        :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        if sys.hexversion >= 0x03000000:
-            schema_ns = schema_ns.encode()
-            prop_name = prop_name.encode()
-            prop_value = prop_value.encode()
-        return bool(_exempi.xmp_set_property(self.xmpptr, schema_ns, prop_name, prop_value, options))
+        _cexempi.set_property(self.xmpptr, schema_ns, prop_name, prop_value,
+                              options)
 
     def set_array_item( self, schema_ns, array_name, item_index, item_value, **kwargs ):
-        """
-        set_array_item() creates or sets the value of an item within an array.
+        """Creates or sets the value of an item within an array.
 
-        Items are accessed by an integer index, where the first item has index 1. T
-        This function creates the item if necessary, but the array itself must already exist: use append_array_item() to create arrays.
-        A new item is automatically appended if the index is the array size plus 1; to insert a new item before or after an existing item, use kwargs.
+        Items are accessed by an integer index, where the first item has index
+        1.  This function creates the item if necessary, but the array itself
+        must already exist: use append_array_item() to create arrays.  A new
+        item is automatically appended if the index is the array size plus 1;
+        to insert a new item before or after an existing item, use kwargs.
 
-        :param schema_ns:    The namespace URI; see get_property().
-        :param array_mame:     The name of the array. Can be a general path expression, must not be null or the empty string; see get_property() for namespace prefix usage.
-        :param item_index:     The 1-based index of the desired item.
-        :param item_value:     The new item value, a string, if the array item has a value.
-        :param **kwargs:     Optional keywork arguments describing the array type and insertion location for a new item
-                            The type, if specified, must match the existing array type, prop_array_is_ordered, prop_array_is_alternate, or prop_array_is_alt_text. Default (no keyword parameters) matches the existing array type.
-        :return True if the array item was set correctly, False otherwise.
-        :rtype bool
+        :param str schema_ns:  The namespace URI; see get_property().
+        :param str array_name: The name of the array property. Can be a
+            general path expression, must not be null or the empty string. The
+            first component can be a namespace prefix; if present without a
+            schema_ns value, the prefix specifies the namespace.
+        :param int item_index: The 1-based index of the desired item.
+        :param item_value:     The new item value.
+        :param **kwargs:       Optional keywork arguments describing the array
+            type and insertion location for a new item.  The type, if
+            specified, must match the existing array type,
+            prop_array_is_ordered, prop_array_is_alternate, or
+            prop_array_is_alt_text. Default (no keyword parameters) matches the
+            existing array type.
+
+        :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        return bool(_exempi.xmp_set_array_item(self.xmpptr, schema_ns, array_name, item_index, item_value, options))
+        _cexempi.set_array_item(self.xmpptr, schema_ns, array_name, item_index,
+                                item_value, options)
 
-    def append_array_item( self, schema_ns, array_name,  item_value, array_options={}, **kwargs ):
+
+    def append_array_item(self, schema_ns, array_name, item_value,
+                          array_options={}, **kwargs ):
+        """Adds an item to an array, creating the array if necessary.
+
+        This function simplifies construction of an array by not requiring that
+        you pre-create an empty array. The array that is assigned is created
+        automatically if it does not yet exist. If the array exists, it must
+        have the form specified by the options.  Each call appends a new item to
+        the array.
+
+        :param str schema_ns:   The namespace URI; see get_property().
+        :param str array_name:  The name of the array property. Can be a
+            general path expression, must not be null or the empty string. The
+            first component can be a namespace prefix; if present without a
+            schema_ns value, the prefix specifies the namespace.
+        :param str item_value:  The new item value.
+        :param dict array_options:  An optional dictionary of keywords from
+            XMP_PROP_OPTIONS describing the array type to create.
+        :param **kwargs:        Optional keyword arguments describing the item
+            type to create.
         """
-        append_array_item() adds an item to an array, creating the array if necessary.
-
-        This function simplifies construction of an array by not requiring that you pre-create an empty array. T
-        The array that is assigned is created automatically if it does not yet exist. If the array exists, it must have the form specified by the options.
-        Each call appends a new item to the array.
-
-        :param schema_ns       The namespace URI; see GetProperty().
-        :param array_name       The name of the array. Can be a general path expression, must not be null or the empty string; see GetProperty() for namespace prefix usage.
-        :param item_value       The new item value, a null-terminated UTF-8 string, if the array item has a value.
-        :param array_options An optional dictionary of keywords from XMP_PROP_OPTIONS describing the array type to create.
-        :param **kwargs      Optional keyword arguments describing the item type to create.
-        :return True if the array item was appended correctly, False otherwise.
-        :rtype bool
-        """
-        array_options = options_mask(XMP_PROP_OPTIONS, **array_options) if array_options else 0
+        if array_options:
+            array_options = options_mask(XMP_PROP_OPTIONS, **array_options)
+        else:
+            array_options = 0
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        return bool(_exempi.xmp_append_array_item(self.xmpptr, schema_ns, array_name, array_options, item_value, options))
+        _cexempi.append_array_item(self.xmpptr, schema_ns, array_name,
+                                   array_options, item_value, options)
 
 
     # -----------------------------------------------
     # Functions accessing properties as binary values
     # -----------------------------------------------
-    def get_property_bool(self, schema_ns, prop_name ):
+    def get_property_bool(self, schema, name):
+        """Retrieve a boolean property.
+
+        :param str schema_ns:   The namespace URI; see get_property().
+        :param str array_name:  The name of the array property. Can be a
+            general path expression, must not be null or the empty string. The
+            first component can be a namespace prefix; if present without a
+            schema_ns value, the prefix specifies the namespace.
+
+        :raises: IOError if operation fails.
+
+        :returns: The boolean property value.
+
+        .. todo:: Make get_property_bool optionally return keywords describing
+            property's options
         """
-        get_property_bool is just like get_property(), but it's only to be used to get boolean properties.
+        value, _ = _cexempi.get_property_bool(self.xmpptr, schema, name)
+        return value
 
-        :param schema_ns     The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
-        :param prop_name     The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace.
 
-        :return The property's value if the property exists, None otherwise.
+    def get_property_int(self, schema_ns, name):
+        """Retrieve an integer property.
 
-        .. todo:: Make get_property_bool optionally return keywords describing property's options
+        :param str schema_ns:   The namespace URI; see get_property().
+        :param str prop_name:  The name of the property. Can be a general path
+            expression, must not be null or the empty string. The
+            first component can be a namespace prefix; if present without a
+            schema_ns value, the prefix specifies the namespace.
+
+        :raises: IOError if operation fails.
+
+        :returns: The integer property value.
+
+        .. todo:: Make get_property_int optionally return keywords describing
+            property's options
         """
-        prop_value = c_int()
-        _exempi.xmp_get_property_bool(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 ) #we never return options
-        return bool(prop_value.value)
+        value, _ = _cexempi.get_property_int32(self.xmpptr, schema_ns, name)
+        return value
 
-    def get_property_int(self, schema_ns, prop_name ):
+    def get_property_long(self, schema_ns, prop_name):
+        """Retrieve a long (int64) property.
+
+        :param str schema_ns:   The namespace URI; see get_property().
+        :param str prop_name:  The name of the property. Can be a general path
+            expression, must not be null or the empty string. The
+            first component can be a namespace prefix; if present without a
+            schema_ns value, the prefix specifies the namespace.
+
+        :raises: IOError if operation fails.
+
+        :returns: The 64-bit integer property value.
+
+        .. todo:: Make get_property_int optionally return keywords describing
+            property's options
         """
-        get_property_int is just like get_property(), but it's only to be used to get integer properties.
+        value, _ = _cexempi.xmp_get_property_int64(self.xmpptr,
+                                                   schema_ns, prop_name)
+        return value
 
-        :param schema_ns     The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
-        :param prop_name     The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace.
-        :return The property's value if the property exists, None otherwise.
 
-        .. todo:: Make get_property_int optionally return keywords describing property's options
+    def get_property_float(self, schema_ns, prop_name):
+        """Return a property value as floating point.
+
+        :param str schema_ns:   The namespace URI; see get_property().
+        :param str prop_name:  The name of the property. Can be a general path
+            expression, must not be null or the empty string. The
+            first component can be a namespace prefix; if present without a
+            schema_ns value, the prefix specifies the namespace.
+
+        :raises: IOError if operation fails.
+
+        :returns: The floating point property value.
+
+        .. todo:: Make get_property_float optionally return keywords describing
+            property's options
         """
-        prop_value =  c_int32()
-        _exempi.xmp_get_property_int32(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
-        return prop_value.value
+        value = _exempi.get_property_float(self.xmpptr, schema_ns, prop_name)
+        return value
 
-    def get_property_long(self, schema_ns, prop_name ):
-        """
-        get_property_long is just like get_property(), but it's only to be used to get long nteger properties.
-
-        :param schema_ns     The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
-        :param prop_name     The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace.
-        :return The property's value if the property exists, None otherwise.
-
-        .. todo:: Make get_property_long optionally return keywords describing property's options
-        """
-        prop_value =  c_int64()
-        _exempi.xmp_get_property_int64(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
-        return prop_value.value
-
-    def get_property_float(self, schema_ns, prop_name ):
-        """
-        get_property_float is just like get_property(), but it's only to be used to get float properties.
-
-        :param schema_ns     The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
-        :param prop_name     The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace.
-        :return The property's value if the property exists, None otherwise.
-
-        .. todo:: Make get_property_float optionally return keywords describing property's options
-        """
-        prop_value =  c_float()
-        _exempi.xmp_get_property_float(self.xmpptr, schema_ns, prop_name, byref(prop_value), 0 )
-        return prop_value.value
 
     def get_property_datetime(self, schema_ns, prop_name ):
         """
@@ -365,39 +413,30 @@ class XMPMeta(object):
         _exempi.xmp_get_property_date(self.xmpptr, schema_ns, prop_name, byref(d), 0 )
         return datetime.datetime(d.year,d.month,d.day,d.hour,d.minute,d.second)
 
-    def get_localized_text(self, schema_ns, alt_text_name, generic_lang, specific_lang, **kwargs ):
+
+    def get_localized_text(self, schema_ns, alt_text_name, generic_lang,
+                           specific_lang, **kwargs):
+        """Returns information about a selected item in an alt-text array.
+
+        :param str schema_ns:   The namespace URI; see get_property().
+        :param str alt_text_name:  The name of the alt-text array. May be a
+            general path expression, must not be None or the empty string.  Has
+            the same namespace prefix usage as propName in GetProperty.
+        :param str generic_lang:  The name of the generic language as an RFC
+            3066 primary subtag. May be null or the empty string if no generic
+            language is wanted.
+        :param str specific_lang: The name of the specific language as an RFC
+            3066 tag. Must not be null or the empty string.
+
+        :raises: IOError if operation fails.
+
+        :return: The property's value.
         """
-        get_localized_text() returns information about a selected item in an alt-text array.
-
-        :param schema_ns    The namespace URI for the alt-text array. Has the same usage as in GetProperty.
-        :param alt_text_name    The name of the alt-text array. May be a general path expression, must not be null or the empty string. Has the same namespace prefix usage as propName in GetProperty.
-        :param generic_lang    The name of the generic language as an RFC 3066 primary subtag. May be null or the empty string if no generic language is wanted.
-        :param specific_lang    The name of the specific language as an RFC 3066 tag. Must not be null or the empty string.
-
-        :return: The property's value if the property exists, None otherwise.
-        """
-        value = None
-        value_lang = None
-        the_prop = _exempi.xmp_string_new()
-        actual_lang = _exempi.xmp_string_new()
-        options = c_int32()
-
-        if sys.hexversion >= 0x03000000:
-            schema_ns = schema_ns.encode()
-            alt_text_name = alt_text_name.encode()
-            generic_lang = generic_lang.encode()
-            specific_lang = specific_lang.encode()
-
-        if _exempi.xmp_get_localized_text( self.xmpptr, schema_ns, alt_text_name, generic_lang, specific_lang, actual_lang, the_prop, byref(options) ):
-            value = _exempi.xmp_string_cstr(the_prop)
-            value_lang = _exempi.xmp_string_cstr(actual_lang)
-
-        _exempi.xmp_string_free(the_prop)
-        _exempi.xmp_string_free(actual_lang)
-
-        if sys.hexversion >= 0x03000000:
-            value = value.decode('utf-8')
+        value, _, _ = _cexempi.get_localized_text(self.xmpptr, schema_ns,
+                                                  alt_text_name, generic_lang,
+                                                  specific_lang)
         return value
+
 
     def set_property_bool(self, schema_ns, prop_name, prop_value, **kwargs ):
         """
