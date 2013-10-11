@@ -844,7 +844,7 @@ def get_property(xmp, schema, name):
 
     value = string_cstr(_value)
     _string_free(_value)
-
+    
     return value, prop_bits.value
 
 
@@ -1647,16 +1647,13 @@ def string_cstr(xmpstr):
 
     Returns
     -------
-    pystr : str
+    pystr : UTF-8 str
         Python string
     """
     EXEMPI.xmp_string_cstr.restype = ctypes.c_char_p
     EXEMPI.xmp_string_cstr.argtypes = [ctypes.c_void_p]
     cstr = EXEMPI.xmp_string_cstr(xmpstr)
-    if sys.hexversion < 0x03000000:
-        return str(cstr)
-    else:
-        return cstr.decode('utf-8')
+    return cstr.decode('utf-8')
 
 
 def _string_free(xmp_string):
