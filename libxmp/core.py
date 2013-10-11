@@ -102,24 +102,6 @@ def _encode_as_utf8( obj, input_encoding=None ):
 
 
 
-class _XmpDateTime(Structure):
-    """
-    Helper class (not intended to be exposed) to manage datetimes in Exempi
-    """
-    _fields_ = [
-                    ('year', c_int32),
-                    ('month', c_int32),
-                    ('day', c_int32),
-                    ('hour', c_int32),
-                    ('minute', c_int32),
-                    ('second', c_int32),
-                    ('tzSign', c_int32),
-                    ('tzHour', c_int32),
-                    ('tzMinute', c_int32),
-                    ('nanoSecond', c_int32),
-                ]
-
-
 class XMPMeta(object):
     """
     XMPMeta is the class providing the core services of the library
@@ -398,20 +380,21 @@ class XMPMeta(object):
 
 
     def get_property_datetime(self, schema_ns, prop_name ):
-        """
-        get_property_date is just like get_property(), but it's only to be used to get datetime properties.
-        It returns a standart datetime.datetime instance.
+        """Retrieve a datetime property.
 
-        :param schema_ns     The namespace URI for the property; can be null or the empty string if the first component of the prop_name path contains a namespace prefix.
-        :param prop_name     The name of the property. Can be a general path expression, must not be null or the empty string. The first component can be a namespace prefix; if present without a schema_ns value, the prefix specifies the namespace.
-        :return The property's value if the property exists, None otherwise.
+        :param str schema_ns:   The namespace URI; see get_property().
+        :param str prop_name:  The name of the property. Can be a general path
+            expression, must not be null or the empty string. The
+            first component can be a namespace prefix; if present without a
+            schema_ns value, the prefix specifies the namespace.
 
-        .. todo:: Make get_property_int optionally return keywords describing property's options
-        .. todo:: Ad the tzInfo to the datetime.datetime object
+        :returns: datetime.datetime instance.
+
+        :raises: IOError if operation fails.
         """
-        d = _XmpDateTime()
-        _exempi.xmp_get_property_date(self.xmpptr, schema_ns, prop_name, byref(d), 0 )
-        return datetime.datetime(d.year,d.month,d.day,d.hour,d.minute,d.second)
+        prop, _ = _cexempi.xmp_get_property_date(self.xmpptr,
+                                                 schema_ns, prop_name)
+        return prop
 
 
     def get_localized_text(self, schema_ns, alt_text_name, generic_lang,
@@ -507,15 +490,21 @@ class XMPMeta(object):
                                         float(prop_value), options)
 
 
-    def set_property_datetime(self, schema_ns, prop_name, prop_value, **kwargs ):
-        """
-        set_property_datetime is just like set_property(), but it's only to be used to set datetime properties
+    def set_property_datetime(self, schema_ns, prop_name, prop_value, **kwargs):
+        """Set a datetime property.
 
-        .. todo:: Add tzInfo support
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str prop_name: The name of the property. Can be a general path 
+            expression, must not be null or the empty string; see
+            get_property() for namespace prefix usage.
+        :param datetime.datetime prop_value: The new datetime value.
+
+        :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        d = _XmpDateTime(prop_value.year, prop_value.month, prop_value.day, prop_value.hour, prop_value.minute, prop_value.second,0,0,0)
-        return bool(_exempi.xmp_set_property_date(self.xmpptr, schema_ns, prop_name, byref(d), options))
+        _cexempi.xmp_set_property_date(self.xmpptr, schema_ns, prop_name,
+                                       prop_value, options)
+
 
     def set_localized_text(self, schema_ns, alt_text_name, generic_lang,
                            specific_lang, prop_value, **kwargs):
@@ -789,12 +778,11 @@ class XMPMeta(object):
 
     @staticmethod
     def get_namespace_for_prefix(prefix):
-        """
-        Checks if a prefix is registered.
-        Parameters:
-        prefix: the prefix to check.
+        """Checks if a prefix is registered.
 
-         Returns the associated namespace if registered, None if the prefix is not registered
+        :param str prefix: The prefix to check.
+        :returns: The associated namespace if registered, None if the prefix is
+            not registered
         """
         associated_namespace = _exempi.xmp_string_new()
         if _exempi.xmp_prefix_namespace_uri(prefix, associated_namespace):
@@ -830,14 +818,18 @@ class XMPIterator:
     properties within an XMP object.  It is implemented according to Python's
     iterator protocol and it is the iterator for XMPMeta class.
 
-    :param xmp_obj:       an XMPMeta instance
+    :param obj xmp_obj:   an XMPMeta instance
     :param str schema_ns: Optional namespace URI to restrict the iteration.
     :param str prop_name: Optional property name to restrict the iteration.
-    :param **kwargs :     Optional keyword arguments from XMP_ITERATOR_OPTIONS
+    :param **kwargs:      Optional keyword arguments from XMP_ITERATOR_OPTIONS
     :returns: an iterator for the given xmp_obj
     """
     def __init__( self, xmp_obj, schema_ns=None, prop_name=None, **kwargs ):
-        self.options = options_mask(consts.XMP_ITERATOR_OPTIONS, **kwargs) if kwargs else 0
+        if kwargs:
+            self.options = options_mask(consts.XMP_ITERATOR_OPTIONS, **kwargs)
+        else:
+            self.options = 0
+
         self.xmpiteratorptr = _cexempi.iterator_new(xmp_obj.xmpptr, schema_ns,
                                                     prop_name, self.options)
         self.schema = schema_ns

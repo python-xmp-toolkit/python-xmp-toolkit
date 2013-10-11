@@ -2,11 +2,13 @@
 Wrapper functions for individual exempi library routines.
 """
 import ctypes
+import datetime
 from ctypes.util import find_library
 import os
 import sys
 
 from flufl.enum import IntEnum
+import pytz
 
 # Handle for the library.
 EXEMPI = ctypes.CDLL(find_library('exempi'))
@@ -921,7 +923,25 @@ def get_property_date(xmp, schema, name):
                                  name.encode(),
                                  ctypes.byref(xmp_date_time),
                                  ctypes.byref(prop_bits))
-    return xmp_date_time, prop_bits.value
+
+    date1 = datetime.datetime(xmp_date_time.year,
+                              xmp_date_time.month,
+                              xmp_date_time.day,
+                              xmp_date_time.hour,
+                              xmp_date_time.minute,
+                              xmp_date_time.second)
+    utc = pytz.timezone('utc')
+    utc_date = utc.localize(date1)
+    delta = datetime.timedelta(hours=xmp_date_time.tzHour,
+                               minutes=xmp_date_time.tzMinute,
+                               microseconds=xmp_date_time.nanoSecond * 1000)
+
+    if xmp_date_time.tzSign < 0:
+        the_date = utc_date - delta
+    else:
+        the_date = utc_date + delta
+
+    return the_date, prop_bits.value
 
 
 def get_property_int32(xmp, schema, name):
@@ -1502,7 +1522,7 @@ def set_property_bool(xmp, schema, name, value, option_bits=0):
                                  ctypes.c_uint32(option_bits))
 
 
-def set_property_date(xmp, schema, name, xmp_date, option_bits=0):
+def set_property_date(xmp, schema, name, the_date, option_bits=0):
     """Set a date XMP property in the XMP packet.
 
     Wrapper for xmp_set_property_date library routine.
@@ -1515,7 +1535,7 @@ def set_property_date(xmp, schema, name, xmp_date, option_bits=0):
         The schema of the property.
     name : str
         The name of the property.
-    xmp_date : XmpDateTime
+    the_date : datetime.datetime
         The date and time
     option_bits : unsigned int
         #TODO
@@ -1527,6 +1547,21 @@ def set_property_date(xmp, schema, name, xmp_date, option_bits=0):
                                               ctypes.c_char_p,
                                               ctypes.POINTER(XmpDateTime),
                                               ctypes.c_uint32]
+
+    if the_date.tzinfo is not None:
+        the_date = the_date.astimezone(pytz.utc)
+
+    xmp_date = XmpDateTime()
+    xmp_date.year = the_date.year
+    xmp_date.month = the_date.month
+    xmp_date.day = the_date.day
+    xmp_date.hour = the_date.hour
+    xmp_date.minute = the_date.minute
+    xmp_date.second = the_date.second
+    xmp_date.tzSign = 0
+    xmp_date.tzHour = 0
+    xmp_date.tzMinute = 0
+    xmp_date.nanoSecond = 0
 
     EXEMPI.xmp_set_property_date(xmp,
                                  ctypes.c_char_p(schema.encode()),

@@ -63,7 +63,7 @@ KWARGS = {
     'long_description': LONG_DESC,
     'download_url': DOWNLOAD_URL,
     'license': 'New BSD License',
-    'install_requires': ['flufl.enum>=4.0']
+    'install_requires': ['pytz', 'flufl.enum>=4.0']
     'packages': find_packages(exclude=["*test*"]),
     'version': VERSION
 }

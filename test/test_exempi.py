@@ -5,6 +5,7 @@ Test suites for exempi routine wrappers.
 # R0904:  Not too many methods in unittest.
 # pylint: disable=R0904
 
+import datetime
 import pkg_resources
 import shutil
 import sys
@@ -15,6 +16,7 @@ if sys.hexversion >= 0x02070000:
 else:
     import unittest2 as unittest
 
+import pytz
 
 import libxmp
 from libxmp import exempi
@@ -253,11 +255,12 @@ class TestExempi(unittest.TestCase):
                                           "DateTimeOriginal")
         self.assertEqual(the_prop, "2006-12-07T23:20:43-05:00")
 
+        # When the time information is read back, it is UTC.
         the_prop, _ = exempi.get_property_date(xmp, exempi.NS_EXIF,
                                                "DateTimeOriginal")
         self.assertEqual(the_prop.year, 2006)
         self.assertEqual(the_prop.minute, 20)
-        self.assertEqual(the_prop.tzSign, exempi.TimeSign.west)
+        self.assertEqual(the_prop.tzinfo, pytz.utc)
 
         the_prop, _ = exempi.get_property(xmp, exempi.NS_XAP, "Rating")
         self.assertEqual(the_prop, "3")
@@ -402,17 +405,7 @@ class TestExempi(unittest.TestCase):
         exempi.parse(xmp, strbuffer)
         self.assertFalse(exempi.get_error())
 
-        the_dt = exempi.XmpDateTime()
-        the_dt.year = 2005
-        the_dt.month = 12
-        the_dt.day = 25
-        the_dt.hour = 12
-        the_dt.minute = 42
-        the_dt.second = 42
-        the_dt.tzSign = exempi.TimeSign.utc
-        the_dt.tzHour = 0
-        the_dt.tzMinute = 0
-        the_dt.nanoSecond = 0
+        the_dt = datetime.datetime(2005, 12, 25, 12, 42, 42)
 
         exempi.set_property_date(xmp, exempi.NS_EXIF, "DateTimeOriginal",
                                  the_dt, 0)
@@ -424,7 +417,8 @@ class TestExempi(unittest.TestCase):
                                                "DateTimeOriginal")
         self.assertEqual(the_prop.year, 2005)
         self.assertEqual(the_prop.minute, 42)
-        self.assertEqual(the_prop.tzSign, exempi.TimeSign.utc)
+        self.assertEqual(the_prop, datetime.datetime(2005, 12, 25, 12, 42, 42,
+                                   tzinfo=pytz.utc))
 
         exempi.free(xmp)
 
