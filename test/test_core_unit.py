@@ -298,17 +298,43 @@ class UnicodeTestCase(unittest.TestCase):
         del xmp
 
 
-    def test_parse_from_str_latin1(self):
+    def test_parse_from_2_bytes_per_codepoint(self):
         """
-        Verify that latin-1 string literals are properly interpreted.
+        Verify that we can create and read back utf-8 where some characters
+        takes 2 bytes to encode.
         """
         xmp = XMPMeta()
         rdf = xmpcoverage.RDFCoverage
 
-        # Replace 'Simple2 value' with sturm (with an umlaut).
+        # Replace 'Simple2 value' with 'stürm'
+        # ü has code point 252, so takes 5+1=6 bytes to encode.
         expectedValue = u'stürm'
         if sys.hexversion < 0x03000000:
-            # This works because ü is code point 252, so it fits into latin-1?
+            rdf = unicode(rdf[0:272]) + expectedValue + unicode(rdf[285:])
+        else:
+            rdf = rdf[0:272] + expectedValue + rdf[285:]
+
+        xmp.parse_from_str(rdf, xmpmeta_wrap=True )
+
+        prop = xmp.get_property(xmpcoverage.NS1, "SimpleProp2" )
+        self.assertEqual(prop, expectedValue)
+
+        del xmp
+
+
+    def test_parse_from_str_3_bytes_per_codepoint(self):
+        """
+        Verify that we can create and read back utf-8 where each character
+        takes 3 bytes to encode.
+        """
+        xmp = XMPMeta()
+        rdf = xmpcoverage.RDFCoverage
+
+        # Replace 'Simple2 value' with 'शिव'
+        # This is 'Shiva' in Devanagari
+        # शिव has code points [2358, 2367, 2357]
+        expectedValue = u'शिव'
+        if sys.hexversion < 0x03000000:
             rdf = unicode(rdf[0:272]) + expectedValue + unicode(rdf[285:])
         else:
             rdf = rdf[0:272] + expectedValue + rdf[285:]
