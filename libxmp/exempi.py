@@ -1295,7 +1295,8 @@ def prefix_namespace_uri(prefix):
         The namespace associated if registered.
     """
     EXEMPI.xmp_prefix_namespace_uri.restype = check_error
-    EXEMPI.xmp_prefix_namespace_uri.argtypes = [ctypes.c_char_p]
+    EXEMPI.xmp_prefix_namespace_uri.argtypes = [ctypes.c_char_p,
+                                                ctypes.c_void_p]
 
     _namespace = _string_new()
     EXEMPI.xmp_prefix_namespace_uri(prefix.encode(), _namespace)
@@ -1338,6 +1339,39 @@ def register_namespace(namespace_uri, prefix):
     _string_free(_registered_prefix)
 
     return registered_prefix
+
+def serialize(xmp, options, padding):
+    """Serialize the XMP Packet.
+
+    Wrapper for xmp_serialize library routine.
+
+    Parameters
+    ----------
+    xmp : pointer
+        The XMP packet.
+    options : unsigned integer
+        Options on how to write the XMP.
+    padding : int
+        Number of bytes of padding, useful for modifying embedded XMP in place.
+
+    Returns
+    -------
+    item : str
+        The formatted XMP.
+    """
+    EXEMPI.xmp_serialize.restype = check_error
+    EXEMPI.xmp_serialize.argtypes = [ctypes.c_void_p,
+                                     ctypes.c_void_p,
+                                     ctypes.c_uint32,
+                                     ctypes.c_uint32]
+    _item = _string_new()
+    EXEMPI.xmp_serialize(xmp, _item, options, padding)
+
+    item = string_cstr(_item)
+    _string_free(_item)
+
+    return item
+
 
 def serialize_and_format(xmp, options, padding, newline, tab, indent):
     """Serialize the XMP Packet with formatting.

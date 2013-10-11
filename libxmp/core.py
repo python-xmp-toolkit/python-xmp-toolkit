@@ -691,19 +691,22 @@ class XMPMeta(object):
 
 
     def serialize_to_str( self, padding = 0, **kwargs ):
-        """
-        Serializes an XMPMeta object into a string (8-bit, UTF-8 encoded) as RDF and format.
+        """Serialize into a string (8-bit, UTF-8 encoded) as RDF and format.
 
-        :param padding: The number of bytes of padding, useful for modifying embedded XMP in place.
-        :param omit_packet_wrapper: Do not include an XML packet wrapper.
-        :param read_only_packet: Create a read-only XML packet wapper.
-        :param use_compact_format: Use a highly compact RDF syntax and layout.
-        :param include_thumbnail_pad: Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
-        :param exact_packet_length: The padding parameter provides the overall packet length.
-        :param write_alias_comments: Include XML comments for aliases.
-        :param omit_all_formatting: Omit all formatting whitespace.
-        :return: XMPMeta object serialized into a string as RDF.
-        :rtype: `str` 8-bit string in UTF-8 encoding (ready to e.g. be writtin to a file).
+        :param int padding: The number of bytes of padding, useful for
+            modifying embedded XMP in place.
+        :param bool omit_packet_wrapper: Do not include an XML packet wrapper.
+        :param bool read_only_packet: Create a read-only XML packet wapper.
+        :param bool use_compact_format: Use a highly compact RDF syntax and
+            layout.
+        :param bool include_thumbnail_pad: Include typical space for a JPEG
+            thumbnail in the padding if no xmp:Thumbnails property is present.
+        :param int exact_packet_length: The padding parameter provides the
+            overall packet length.
+        :param bool write_alias_comments: Include XML comments for aliases.
+        :param bool omit_all_formatting: Omit all formatting whitespace.
+        :returns: `str` 8-bit string in UTF-8 encoding (ready to be written to
+            a file).
         """
         res_str = None
 
@@ -727,6 +730,10 @@ class XMPMeta(object):
 
         del xmpstring
         return res_str
+
+
+        #res = _cexempi.serialize(self.xmpptr, options, padding)
+        #return res
 
 
     # -------------------------------------
