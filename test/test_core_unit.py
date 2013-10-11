@@ -298,6 +298,29 @@ class UnicodeTestCase(unittest.TestCase):
         del xmp
 
 
+    def test_parse_from_str_latin1(self):
+        """
+        Verify that latin-1 string literals are properly interpreted.
+        """
+        xmp = XMPMeta()
+        rdf = xmpcoverage.RDFCoverage
+
+        # Replace 'Simple2 value' with sturm (with an umlaut).
+        expectedValue = u'stürm'
+        if sys.hexversion < 0x03000000:
+            # This works because ü is code point 252, so it fits into latin-1?
+            rdf = unicode(rdf[0:272]) + expectedValue + unicode(rdf[285:])
+        else:
+            rdf = rdf[0:272] + expectedValue + rdf[285:]
+
+        xmp.parse_from_str(rdf, xmpmeta_wrap=True )
+
+        prop = xmp.get_property(xmpcoverage.NS1, "SimpleProp2" )
+        self.assertEqual(prop, expectedValue)
+
+        del xmp
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(XMPMetaTestCase))
