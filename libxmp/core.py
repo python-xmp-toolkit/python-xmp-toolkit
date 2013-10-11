@@ -900,12 +900,15 @@ class XMPIterator:
         return(schema, name, value, opts)
 
     def skip(**kwargs ):
-        """
-        skip() skips some portion of the remaining iterations.
+        """Skips some portion of the remaining iterations.
 
-        :param **kwargs: Optional keyword parameters from XMP_SKIP_OPTIONS to control the iteration
+        :param **kwargs: Optional keyword parameters from XMP_SKIP_OPTIONS to
+            control the iteration
         :returns: None
         :rtype: NoneType
         """
-        options = options_mask(consts.XMP_SKIP_OPTIONS, **kwargs) if kwargs else 0
-        _exempi.xmp_iterator_skip( self.xmpiteratorptr, options )
+        if kwargs:
+            options = options_mask(consts.XMP_SKIP_OPTIONS, **kwargs)
+        else:
+            options = 0
+        _cexempi.iterator_skip(self.xmpiteratorptr, options)
