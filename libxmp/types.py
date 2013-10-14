@@ -44,53 +44,18 @@ __all__ = ['define_function_types']
 # Edit the file until you have one funciton prototype per line
 # Search with pattern "([a-z \*]+) (xmp_[a-z0-9_]+)\((.*)\);" and replace with "    '\2' : { 'argstypes' : "\3", 'restype' : "\1" }"
 _function_types = {
-    'xmp_init' : { 'argstypes' : "", 'restype' : "bool" },
-    'xmp_terminate' : { 'argstypes' : "", 'restype' : "void" },
-    'xmp_get_error' : { 'argstypes' : "", 'restype' : "int" },
-    'xmp_files_new' : { 'argstypes' : "", 'restype' : "XmpFilePtr" },
-    'xmp_files_open_new' : { 'argstypes' : "const char *, XmpOpenFileOptions options", 'restype' : "XmpFilePtr" },
     'xmp_files_open' : { 'argstypes' : "XmpFilePtr xf, const char *, XmpOpenFileOptions options", 'restype' : "bool" },
     'xmp_files_close' : { 'argstypes' : "XmpFilePtr xf, XmpCloseFileOptions options", 'restype' : "bool" },
-    'xmp_files_get_new_xmp' : { 'argstypes' : "XmpFilePtr xf", 'restype' : "XmpPtr" },
-    'xmp_files_get_xmp' : { 'argstypes' : "XmpFilePtr xf, XmpPtr xmp", 'restype' : "bool" },
-    'xmp_files_can_put_xmp' : { 'argstypes' : "XmpFilePtr xf, XmpPtr xmp", 'restype' : "bool" },
-    'xmp_files_put_xmp' : { 'argstypes' : "XmpFilePtr xf, XmpPtr xmp", 'restype' : "bool" },
-    'xmp_files_free' : { 'argstypes' : "XmpFilePtr xf", 'restype' : "bool" },
-    'xmp_namespace_prefix' : { 'argstypes' : "const char *ns, XmpStringPtr prefix", 'restype' : "bool" },
-    'xmp_new' : { 'argstypes' : "const char *buffer, size_t len", 'restype' : "XmpPtr" },
-    'xmp_prefix_namespace_uri' : { 'argstypes' : "const char *prefix, XmpStringPtr ns", 'restype' : "bool" },
-    'xmp_serialize' : { 'argstypes' : "XmpPtr xmp, XmpStringPtr buffer, uint32_t options, uint32_t padding", 'restype' : "bool" },
-    'xmp_serialize_and_format' : { 'argstypes' : "XmpPtr xmp, XmpStringPtr buffer, uint32_t options, uint32_t padding, const char *newline, const char *tab, int32_t indent", 'restype' : "bool" },
-    'xmp_delete_localized_text' : { 'argstypes' : "XmpPtr xmp, const char *schema,const char *name, const char *genericLang,const char *specificLang", 'restype' : "bool" },
-    'xmp_string_new' : { 'argstypes' : "", 'restype' : "XmpStringPtr" },
-    'xmp_string_free' : { 'argstypes' : "XmpStringPtr s", 'restype' : "void" },
-    'xmp_string_cstr' : { 'argstypes' : "XmpStringPtr s", 'restype' : "const char *" },
 }
 
 # Definitions of how to convert the function types to ctypes
 
 _typeconv = {
-    'XmpPtr' : ctypes.c_void_p,
-    'XmpStringPtr' : ctypes.c_void_p,
     'XmpFilePtr' : ctypes.c_void_p,
     'const char *' : ctypes.c_char_p,
-    'int' : ctypes.c_int,
-    'void' : None,
-    'XmpIterSkipOptions' : ctypes.c_int,
     'XmpOpenFileOptions' : ctypes.c_int,
     'XmpCloseFileOptions' : ctypes.c_int,
-    'XmpIterOptions' : ctypes.c_int,
-    'size_t' : ctypes.c_ulonglong if is_64 else ctypes.c_uint,
-    'uint32_t' : ctypes.c_uint,
-    'uint32_t *' : ctypes.c_void_p,
-    'int32_t' : ctypes.c_int,
-    'int32_t *' : ctypes.c_void_p,
-    'int64_t' : ctypes.c_longlong,
-    'int64_t *' : ctypes.c_void_p,
-    'double' : ctypes.c_double,
-    'double *' : ctypes.c_void_p,
     'bool' : ctypes.c_int, # c_bool only defined in 2.6+
-    'bool *' : ctypes.c_void_p,
 }
 
 def _convert_type( t ):

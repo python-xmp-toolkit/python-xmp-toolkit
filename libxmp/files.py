@@ -47,6 +47,7 @@ import sys
 from libxmp import XMPError, XMPMeta
 from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
 from libxmp.consts import *
+from . import exempi as _cexempi
 
 __all__ = ['XMPFiles']
 
@@ -106,8 +107,7 @@ class XMPFiles(object):
         """
         Free up the memory associated with the XMP file instance.
         """
-        if not _exempi.xmp_files_free( self.xmpfileptr ):
-            raise XMPError( 'Could not free memory for XMPFiles.' )
+        _cexempi.files_free( self.xmpfileptr )
 
 
     def open_file(self, file_path, **kwargs ):
@@ -139,6 +139,7 @@ class XMPFiles(object):
             self._file_path = file_path
         else:
             _check_for_error()
+        #_cexempi.files_open( self.xmpfileptr, file_path, open_flags )
 
     def close_file( self, close_flags = XMP_CLOSE_NOOPTION ):
         """
@@ -155,6 +156,7 @@ class XMPFiles(object):
             _check_for_error()
         else:
             self._file_path = None
+        #_cexempi.xmp_files_close( self.xmpfileptr, close_flags )
 
     def get_xmp( self ):
         """
@@ -178,10 +180,7 @@ class XMPFiles(object):
         :param xmp_obj: An :class:`libxmp.core.XMPMeta` object
         """
         xmpptr = xmp_obj.xmpptr
-
-        if xmpptr != None:
-            if not _exempi.xmp_files_put_xmp( self.xmpfileptr, xmpptr ):
-                _check_for_error()
+        _cexempi.files_put_xmp( self.xmpfileptr, xmpptr )
 
     def can_put_xmp( self, xmp_obj ):
         """Determine if XMP can be written into the file.
@@ -199,6 +198,6 @@ class XMPFiles(object):
         xmpptr = xmp_obj.xmpptr
 
         if xmpptr != None:
-            return _exempi.xmp_files_can_put_xmp(self.xmpfileptr, xmpptr )
+            return _cexempi.files_can_put_xmp(self.xmpfileptr, xmpptr)
         else:
             return False
