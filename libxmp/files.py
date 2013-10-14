@@ -92,7 +92,7 @@ class XMPFiles(object):
         Open a given file and read XMP from file. File must be closed again with
         :func:`close_file`
 
-        :param file_path: Path to file to open.
+        :param str file_path: Path to file to open.
         :raises XMPError: in case of errors.
 
         .. todo::

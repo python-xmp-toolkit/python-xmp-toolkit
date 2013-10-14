@@ -40,6 +40,7 @@ has no knowledge of files. The core API is provided by the :class:`XMPMeta` and
 
 from ctypes import *
 import datetime
+import re
 import sys
 
 from . import XMPError
@@ -51,33 +52,6 @@ from . import exempi as _cexempi
 __all__ = ['XMPMeta','XMPIterator']
 
 
-
-class _XMPString(object):
-    """
-    Helper class (not intended to be exposed) to help managed strings in Exempi
-    """
-    def __init__(self):
-        self._ptr  = _exempi.xmp_string_new()
-
-    def __del__(self):
-        _exempi.xmp_string_free(self._ptr)
-
-    def get_ptr(self):
-        return self._ptr
-    ptr = property(get_ptr)
-
-    def __str__(self):
-        # Returns a UTF-8 encode 8-bit string. With a encoding specified so it cannot be
-        # decoded into a unicode string. This is needed when writing it to a file e.g.
-        return _exempi.xmp_string_cstr(self._ptr)
-
-    def __unicode__(self):
-        """
-        Note string cannot be used to be written to file, as it the special encoding character
-        is not included.
-        """
-        s = _exempi.xmp_string_cstr(self._ptr)
-        return s.decode('utf-8') #,errors='ignore')
 
 def _encode_as_utf8( obj, input_encoding=None ):
     """
@@ -101,6 +75,21 @@ def _encode_as_utf8( obj, input_encoding=None ):
         return unicode( obj ).encode('utf-8')
 
 
+
+def _force_to_unicode(str_obj):
+
+    # Python 2.7 cannot encode from ascii to utf-8 when an XMP string
+    # contains the XMP packet wrapper with the BOM in place.  Just get 
+    # rid of it if we find it.
+    regex = re.compile("\s*<\?xpacket\s*begin=\"(?P<bom>.*)\"\s*id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>", re.UNICODE)
+    m = regex.match(str_obj)
+    if m is not None:
+        # Ok we matched up to the BOM.  Get rid of it.
+        bom_start, bom_end = m.span('bom')
+        str_obj = str_obj[0:bom_start] + str_obj[bom_end:]
+
+    return str_obj.decode('utf-8')       
+    
 
 class XMPMeta(object):
     """
@@ -375,7 +364,7 @@ class XMPMeta(object):
         .. todo:: Make get_property_float optionally return keywords describing
             property's options
         """
-        value = _exempi.get_property_float(self.xmpptr, schema_ns, prop_name)
+        value, = _cexempi.get_property_float(self.xmpptr, schema_ns, prop_name)
         return value
 
 
@@ -545,7 +534,7 @@ class XMPMeta(object):
         :param str schema_ns: The namespace URI; see get_property().
         :param str prop_name: The name of the property; see get_property().
         """
-        _exempi.xmp_delete_property(self.xmpptr, schema_ns, prop_name);
+        _cexempi.delete_property(self.xmpptr, schema_ns, prop_name);
 
     def does_property_exist(self, schema_ns, prop_name ):
         """Queries for existence of a property.
@@ -559,8 +548,11 @@ class XMPMeta(object):
 
 
     def does_array_item_exist(self, schema_ns, array_name, item ):
-        """
-        does_array_item_exist() reports whether an array's item currently exists.
+        """Reports whether an item exists in an array.
+
+        :param str schema_ns: The namespace URI; see get_property().
+        :param str array_name: The name of the array; see get_property().
+        :param str item:  The name of the item.
 
         :return: True if item is in array, False otherwise
         :rtype: bool
@@ -598,99 +590,83 @@ class XMPMeta(object):
             string, it will by default be assumed to be UTF-8 encoded.
         :raises: IOError if operation fails.
         """
-
+        if sys.hexversion < 0x03000000 and isinstance(xmp_packet_str, str):
+            xmp_packet_str = _force_to_unicode(xmp_packet_str)
         if xmpmeta_wrap:
-            xmp_packet_str = "<x:xmpmeta xmlns:x='adobe:ns:meta/'>%s</x:xmpmeta>" % xmp_packet_str
+            fmt = u"<x:xmpmeta xmlns:x='adobe:ns:meta/'>{0}</x:xmpmeta>"
+            xmp_packet_str = fmt.format(xmp_packet_str)
 
-        xmp_packet_str = _encode_as_utf8( xmp_packet_str, input_encoding )
         res = _cexempi.parse(self.xmpptr, xmp_packet_str)
 
 
-    def serialize_and_format( self, padding=0, newlinechr='\n', tabchr = '\t', indent=0, **kwargs ):
-        """
-        Serializes an XMPMeta object into a string as RDF. Note, normally it is sufficient to use either
-        `serialize_to_str` or `serialize_to_unicode` unless you need high degree of control over the serialization.
+    def serialize_and_format(self, padding=0, newlinechr='\n', tabchr = '\t',
+                             indent=0, **kwargs ):
+        """Serializes an XMPMeta object into a string as RDF.
+        
+        Note, normally it is sufficient to use either `serialize_to_str` or
+        `serialize_to_unicode` unless you need high degree of control over the
+        serialization.
 
-        The specified parameters must be logically consistent, an exception is raised if not. You cannot specify
-        both `omit_packet_wrapper` along with `read_only_packet`, `include_thumbnail_pad`, or `exact_packet_length`.
+        The specified parameters must be logically consistent, an exception is
+        raised if not. You cannot specify both `omit_packet_wrapper` along with
+        `read_only_packet`, `include_thumbnail_pad`, or `exact_packet_length`.
 
-        :param padding: The number of bytes of padding, useful for modifying embedded XMP in place.
-        :param newlinechr: The new line character to use.
-        :param tabchr: The indentation character to use.
-        :param indent: The initial indentation level.
-        :param omit_packet_wrapper: Do not include an XML packet wrapper.
-        :param read_only_packet: Create a read-only XML packet wapper.
-        :param use_compact_format: Use a highly compact RDF syntax and layout.
-        :param include_thumbnail_pad: Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
-        :param exact_packet_length: The padding parameter provides the overall packet length.
-        :param write_alias_comments: Include XML comments for aliases.
-        :param omit_all_formatting: Omit all formatting whitespace.
+        :param int padding: The number of bytes of padding, useful for modifying
+            embedded XMP in place.
+        :param str newlinechr: The new line character to use.
+        :param str tabchr: The indentation character to use.
+        :param int indent: The initial indentation level.
+        :param bool omit_packet_wrapper: Do not include an XML packet wrapper.
+        :param bool read_only_packet: Create a read-only XML packet wapper.
+        :param bool use_compact_format: Use a highly compact RDF syntax and
+            layout.
+        :param bool include_thumbnail_pad: Include typical space for a JPEG
+            thumbnail in the padding if no xmp:Thumbnails property is present.
+        :param bool exact_packet_length: The padding parameter provides the
+            overall packet length.
+        :param bool write_alias_comments: Include XML comments for aliases.
+        :param bool omit_all_formatting: Omit all formatting whitespace.
         :return: XMPMeta object serialized into a string as RDF.
-        :rtype: `unicode` string.
+        :rtype: utf-8 string.
         """
-        res_str = None
-
-        # Ensure padding is an int.
-        padding = int(padding)
-        indent = int(indent)
-
-        if sys.hexversion <= 0x03000000:
-            tabchr = str(tabchr)
-            newlinechr = str(newlinechr)
-        else:
-            tabchr = tabchr.encode()
-            newlinechr = newlinechr.encode()
-
-        # Define options bitmask
         options = options_mask( XMP_SERIAL_OPTIONS, **kwargs )
+        return _cexempi.serialize_and_format(self.xmpptr, options, padding,
+                                             newlinechr, tabchr, indent)
 
-        # Serialize
-        xmpstring = _XMPString()
-        res = _exempi.xmp_serialize_and_format( self.xmpptr, xmpstring.ptr, options, padding, newlinechr, tabchr, indent )
-        _check_for_error()
-
-        # Get string
-        if res:
-            res_str = xmpstring.__str__()
-
-        if sys.hexversion >= 0x03000000:
-            res_str = res_str.decode('utf-8')
-        else:
-            res_str = _encode_as_utf8(res_str)
-
-        del xmpstring
-        return res_str
 
 
     def serialize_to_unicode( self, **kwargs ):
         """
-        Serializes an XMPMeta object into a Unicode string as RDF and format. Note, this is
-        wrapper around `serialize_to_str`.
+        Serializes an XMPMeta object into a Unicode string as RDF and format.
+        Note, this is wrapper around `serialize_to_str`.
 
-        The specified parameters must be logically consistent, an exception is raised if not. You cannot specify
-        both `omit_packet_wrapper` along with `read_only_packet`, `include_thumbnail_pad`, or `exact_packet_length`.
+        The specified parameters must be logically consistent, an exception
+        is raised if not. You cannot specify both `omit_packet_wrapper` along
+        with `read_only_packet`, `include_thumbnail_pad`, or
+        `exact_packet_length`.
 
-        :param padding: The number of bytes of padding, useful for modifying embedded XMP in place.
-        :param omit_packet_wrapper: Do not include an XML packet wrapper.
-        :param read_only_packet: Create a read-only XML packet wapper.
-        :param use_compact_format: Use a highly compact RDF syntax and layout.
-        :param include_thumbnail_pad: Include typical space for a JPEG thumbnail in the padding if no xmp:Thumbnails property is present.
-        :param exact_packet_length: The padding parameter provides the overall packet length.
-        :param write_alias_comments: Include XML comments for aliases.
-        :param omit_all_formatting: Omit all formatting whitespace.
+        :param int padding: The number of bytes of padding, useful for
+            modifying embedded XMP in place.
+        :param bool omit_packet_wrapper: Do not include an XML packet wrapper.
+        :param bool read_only_packet: Create a read-only XML packet wapper.
+        :param bool use_compact_format: Use a highly compact RDF syntax and
+            layout.
+        :param bool  include_thumbnail_pad: Include typical space for a JPEG
+            thumbnail in the padding if no xmp:Thumbnails property is present.
+        :param bool exact_packet_length: The padding parameter provides the
+            overall packet length.
+        :param bool write_alias_comments: Include XML comments for aliases.
+        :param bool omit_all_formatting: Omit all formatting whitespace.
         :return: XMPMeta object serialized into a string as RDF.
         :rtype: `unicode` string.
         """
-        tmp =  self.serialize_to_str( **kwargs )
-
-        if sys.hexversion >= 0x03000000:
-            # already there.
-            return tmp
-        else:
-            return (tmp.decode('utf-8') if tmp else None)
+        obj =  self.serialize_to_str( **kwargs )
+        #if sys.hexversion < 0x03000000:
+        #    obj = obj.decode('utf-8')
+        return obj
 
 
-    def serialize_to_str( self, padding = 0, **kwargs ):
+    def serialize_to_str(self, padding = 0, **kwargs):
         """Serialize into a string (8-bit, UTF-8 encoded) as RDF and format.
 
         :param int padding: The number of bytes of padding, useful for
@@ -708,32 +684,8 @@ class XMPMeta(object):
         :returns: `str` 8-bit string in UTF-8 encoding (ready to be written to
             a file).
         """
-        res_str = None
-
-        # Ensure padding is an int.
-        padding = int(padding)
-
-        # Define options bitmask
-        options = options_mask( XMP_SERIAL_OPTIONS, **kwargs )
-
-        # Serialize
-        xmpstring = _XMPString()
-        res = _exempi.xmp_serialize( self.xmpptr, xmpstring.ptr, options, padding )
-        _check_for_error()
-
-        # Get string
-        if res:
-            res_str = xmpstring.__str__()
-
-        if sys.hexversion >= 0x03000000:
-            res_str = res_str.decode('utf-8')
-
-        del xmpstring
-        return res_str
-
-
-        #res = _cexempi.serialize(self.xmpptr, options, padding)
-        #return res
+        options = options_mask(XMP_SERIAL_OPTIONS, **kwargs)                  
+        return _cexempi.serialize(self.xmpptr, options, padding)
 
 
     # -------------------------------------
@@ -742,6 +694,9 @@ class XMPMeta(object):
     def clone( self ):
         """
         Create a new XMP packet from this one.
+
+        :returns:  Copy of XMP packet.
+        :rtype: XMPMeta
         """
         newptr = _cexempi.copy( self.xmpptr )
 
@@ -752,6 +707,7 @@ class XMPMeta(object):
         """
         count_array_items returns the number of a given array's items
         """
+        import pdb; pdb.set_trace()
         index = 0
 
         the_prop = _exempi.xmp_string_new()
@@ -773,48 +729,31 @@ class XMPMeta(object):
         Check if a namespace is registered.
 
         Parameters:
-        namespace: the namespace to check.
-
-         Returns the associated prefix if registered, None if the namespace is not registered
+        :param str namespace: the namespace to check.
+        :returns: the associated prefix if registered
+        :raises: IOError if exempi library routine fails.
         """
-        associated_prefix = _exempi.xmp_string_new()
-        if _exempi.xmp_namespace_prefix(namespace, associated_prefix):
-            return _exempi.xmp_string_cstr(associated_prefix)
-        else:
-            return None
+        return _cexempi.namespace_prefix(namespace)
 
     @staticmethod
     def get_namespace_for_prefix(prefix):
         """Checks if a prefix is registered.
 
         :param str prefix: The prefix to check.
-        :returns: The associated namespace if registered, None if the prefix is
-            not registered
+        :returns: The associated namespace if registered.
+        :raises: IOError if exempi library routine fails.
         """
-        associated_namespace = _exempi.xmp_string_new()
-        if _exempi.xmp_prefix_namespace_uri(prefix, associated_namespace):
-            return _exempi.xmp_string_cstr(associated_namespace)
-        else:
-            return None
+        return _cexempi.prefix_namespace_uri(prefix)
 
     @staticmethod
     def register_namespace( namespace_uri, suggested_prefix ):
+        """ Register a new namespace.
+
+        :param str namespace_uri: the new namespace's URI
+        :param str suggested prefix: the suggested prefix: note that is NOT
+            guaranteed it'll be the actual namespace's prefix
+        :returns: the actual registered prefix for the namespace
         """
-        Register a new namespace to save properties to.
-
-        Parameters:
-        namespace_uri: the new namespace's URI
-        suggested prefix: the suggested prefix: note that is NOT guaranteed it'll be the actual namespace's prefix
-
-        Returns the actual registered prefix for the namespace of None if the namespace wasn't created.
-        """
-
-
-        registered_prefix = _exempi.xmp_string_new()
-        if _exempi.xmp_register_namespace(namespace_uri, suggested_prefix, registered_prefix):
-            return _exempi.xmp_string_cstr(registered_prefix)
-        else:
-            return None
 
 
 

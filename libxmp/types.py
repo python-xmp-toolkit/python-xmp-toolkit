@@ -56,7 +56,6 @@ _function_types = {
     'xmp_files_can_put_xmp' : { 'argstypes' : "XmpFilePtr xf, XmpPtr xmp", 'restype' : "bool" },
     'xmp_files_put_xmp' : { 'argstypes' : "XmpFilePtr xf, XmpPtr xmp", 'restype' : "bool" },
     'xmp_files_free' : { 'argstypes' : "XmpFilePtr xf", 'restype' : "bool" },
-    'xmp_register_namespace' : { 'argstypes' : "const char *namespaceURI, const char *suggestedPrefix, XmpStringPtr registeredPrefix", 'restype' : "bool" },
     'xmp_namespace_prefix' : { 'argstypes' : "const char *ns, XmpStringPtr prefix", 'restype' : "bool" },
     'xmp_new' : { 'argstypes' : "const char *buffer, size_t len", 'restype' : "XmpPtr" },
     'xmp_prefix_namespace_uri' : { 'argstypes' : "const char *prefix, XmpStringPtr ns", 'restype' : "bool" },

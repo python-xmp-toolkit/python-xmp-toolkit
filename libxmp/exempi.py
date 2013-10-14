@@ -10,6 +10,8 @@ import sys
 from flufl.enum import IntEnum
 import pytz
 
+from . import XMPError
+
 # Handle for the library.
 EXEMPI = ctypes.CDLL(find_library('exempi'))
 
@@ -1272,10 +1274,7 @@ def parse(xmp, strbuffer):
     EXEMPI.xmp_parse.argtypes = [ctypes.c_void_p,
                                  ctypes.c_char_p,
                                  ctypes.c_size_t]
-    if isinstance(strbuffer, bytes):
-        pass
-    else:
-        strbuffer = strbuffer.encode()
+    strbuffer = strbuffer.encode('utf-8')
     EXEMPI.xmp_parse(xmp, strbuffer, len(strbuffer))
 
 
@@ -1331,6 +1330,7 @@ def register_namespace(namespace_uri, prefix):
                                               ctypes.c_void_p]
 
     _registered_prefix = _string_new()
+
     EXEMPI.xmp_register_namespace(namespace_uri.encode(),
                                   prefix.encode(),
                                   _registered_prefix)
@@ -1760,16 +1760,16 @@ def terminate():
     EXEMPI.xmp_terminate()
 
 
-def check_error(status):
+def check_error(success):
     """Set a generic function as the restype attribute of all exempi
     functions that return a boolean value.  This way we do not have to check
     for error status in each wrapping function and an exception will always be
     appropriately raised.
     """
-    if status != 1:
+    if not success:
         error_msg = _error_message[EXEMPI.xmp_get_error()]
         msg = 'Exempi function failure ("{0}").'.format(error_msg)
-        raise IOError(msg)
+        raise XMPError(msg)
 
 
 # The following correspond to macros in xmp.h

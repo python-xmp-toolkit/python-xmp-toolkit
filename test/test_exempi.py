@@ -92,7 +92,6 @@ class TestExempi(unittest.TestCase):
         exempi.files_free(xfptr)
         self.assertTrue(True)
 
-    @unittest.skip("unresolved failure")
     def test_write_new_property(self):
         """Corresponds to test-write-new-property.cpp"""
 
@@ -121,18 +120,7 @@ class TestExempi(unittest.TestCase):
         the_prop, _ = exempi.get_property(xmp, exempi.NS_CC, "License")
         self.assertEqual(the_prop, "Foo")
 
-        the_dt = exempi.XmpDateTime()
-        the_dt.year = 2005
-        the_dt.month = 12
-        the_dt.day = 25
-        the_dt.hour = 12
-        the_dt.minute = 42
-        the_dt.second = 42
-        the_dt.tzSign = exempi.TimeSign.utc
-        the_dt.tzHour = 0
-        the_dt.tzMinute = 0
-        the_dt.nanoSecond = 0
-
+        the_dt = datetime.datetime(2005, 12, 25, 12, 42, 42, tzinfo=pytz.utc)
         exempi.set_property_date(xmp, exempi.NS_EXIF, "DateTimeOriginal",
                                  the_dt, 0)
         the_prop, _ = exempi.get_property(xmp, exempi.NS_EXIF,
@@ -143,7 +131,7 @@ class TestExempi(unittest.TestCase):
                                                "DateTimeOriginal")
         self.assertEqual(the_prop.year, 2005)
         self.assertEqual(the_prop.minute, 42)
-        self.assertEqual(the_prop.tzSign, exempi.TimeSign.utc)
+        self.assertEqual(the_prop.tzinfo, pytz.utc)
 
         exempi.free(xmp)
 

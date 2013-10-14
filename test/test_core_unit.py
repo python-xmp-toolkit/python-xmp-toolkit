@@ -45,14 +45,16 @@ import tempfile
 
 sys.path.append(os.path.pardir)
 
+import libxmp
 from libxmp import *
 from libxmp import XMPIterator
-from libxmp import _exempi
 from libxmp.utils import file_to_dict, object_to_dict
+from libxmp import exempi
 
 from .common_fixtures import setup_sample_files
 from .samples import open_flags
 from . import xmpcoverage
+from libxmp.exempi import NS_EXIF, NS_TIFF, NS_DC
 
 # TODO : iteration test with skip options
 
@@ -122,7 +124,12 @@ class XMPMetaTestCase(unittest.TestCase):
 
         obj = xmp.serialize_to_str(use_compact_format=True,
                                    omit_packet_wrapper=True)
-        self.assertTrue( isinstance(obj, str ), "Result is not a 8-bit string")
+
+        if sys.hexversion >= 0x03000000:
+            the_unicode_type = str
+        else:
+            the_unicode_type = unicode
+        self.assertTrue(isinstance(obj, the_unicode_type))
 
         with self.assertRaises(XMPError):
             xmp.serialize_to_str(read_only_packet=True,
@@ -138,6 +145,9 @@ class XMPMetaTestCase(unittest.TestCase):
         del xmp
 
     def test_serialize_unicode(self):
+        """
+        Return type is unicode in 2.7, but str in 3.x
+        """
         xmp = XMPMeta()
         xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True)
         if sys.hexversion >= 0x03000000:
@@ -148,7 +158,7 @@ class XMPMetaTestCase(unittest.TestCase):
         obj = xmp.serialize_to_unicode(use_compact_format=True,
                                        omit_packet_wrapper=False)
         self.assertTrue(isinstance(obj, the_unicode_type ),
-                        "Result is not a unicode string" )
+                        "Incorrect string result type." )
 
         with self.assertRaises(XMPError):
             xmp.serialize_to_unicode(read_only_packet=True,
@@ -172,8 +182,12 @@ class XMPMetaTestCase(unittest.TestCase):
                                        newlinechr='NEWLINE',
                                        tabchr = 'TAB',
                                        indent=6 )
-        self.assertTrue(isinstance(obj, str),
-                        "Result is not a 8-bit string" )
+        if sys.hexversion >= 0x03000000:
+            the_unicode_type = str
+        else:
+            the_unicode_type = unicode
+        self.assertTrue(isinstance(obj, the_unicode_type),
+                        "Result is not the correct string" )
 
         with self.assertRaises(XMPError):
             xmp.serialize_and_format(read_only_packet=True,
@@ -233,6 +247,63 @@ class XMPMetaTestCase(unittest.TestCase):
         xmp_data = xmp.get_xmp()
         self.assertTrue( xmp_data.does_property_exist( "http://ns.adobe.com/photoshop/1.0/", 'Headline' ) )
 
+
+    @unittest.skip("unresolved failure")
+    def test_write_new_property(self):
+        """Corresponds to test-write-new-property.cpp"""
+
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+
+        xmp = XMPMeta()
+        xmp.parse_from_str(strbuffer, xmpmeta_wrap=False)
+
+        #reg_prefix = exempi.register_namespace(exempi.NS_CC, "cc")
+        #self.assertEqual("cc:", reg_prefix)
+        XMPMeta.register_namespace(libxmp.consts.XMP_NS_CC, "cc")
+
+        #reg_prefix = exempi.prefix_namespace_uri("cc")
+        reg_prefix = XMPMeta.get_namespace_for_prefix("cc")
+        self.assertEqual(libxmp.consts.XMP_NS_CC, reg_prefix)
+
+        reg_prefix = XMPMeta.get_prefix_for_namespace(exempi.NS_CC)
+        self.assertEqual("cc:", reg_prefix)
+
+    def test_exempi_core(self):
+        """Corresponds to test_exempi.TestExempi.test_exempi_core"""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+
+        xmp = XMPMeta()
+        xmp.parse_from_str(strbuffer)
+
+        self.assertTrue(xmp.does_property_exist(NS_TIFF, 'Make'))
+        self.assertFalse(xmp.does_property_exist(NS_TIFF, 'Foo'))
+
+        prop = xmp.get_property(NS_TIFF, 'Make')
+        self.assertEqual(prop, 'Canon')
+
+        xmp.set_property(NS_TIFF, 'Make', 'Leica')
+        prop = xmp.get_property(NS_TIFF, 'Make')
+        self.assertEqual(prop, 'Leica')
+
+        # Some tests correspond to option masks not currently returned via
+        # this interface.
+        item = xmp.get_localized_text(NS_DC, 'rights', None, 'x-default')
+        self.assertEqual(item, "2006, Hubert Figuiere")
+
+        xmp.set_localized_text(NS_DC, 'rights', 'en', 'en-CA', 'Foo bar')
+        item = xmp.get_localized_text(NS_DC, 'rights', 'en', 'en-US')
+        # Can't look at the actual lang.
+        self.assertEqual(item, 'Foo bar')
+
+        xmp.delete_localized_text(NS_DC, 'rights', 'en', 'en-CA')
+    
 
 class UtilsTestCase(unittest.TestCase):
     def setUp(self):
@@ -345,6 +416,8 @@ class UnicodeTestCase(unittest.TestCase):
         expectedValue = u'शिव'
         if sys.hexversion < 0x03000000:
             rdf = unicode(rdf[0:272]) + expectedValue + unicode(rdf[285:])
+            #rdf = rdf[0:272] + expectedValue.encode('utf-8') + rdf[285:]
+            #rdf = unicode(rdf)
         else:
             rdf = rdf[0:272] + expectedValue + rdf[285:]
 
