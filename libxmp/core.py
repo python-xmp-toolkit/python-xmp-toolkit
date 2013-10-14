@@ -45,6 +45,7 @@ from . import XMPError
 from . import consts
 from .consts import options_mask, has_option
 from .consts import XMP_SERIAL_OPTIONS
+from .consts import XMP_PROP_OPTIONS
 
 from . import exempi as _cexempi
 
@@ -52,20 +53,23 @@ __all__ = ['XMPMeta','XMPIterator']
 
 
 
-def _force_to_unicode(str_obj):
+def _force_rdf_to_unicode(str_obj):
+    """Force RDF to unicode on 2.7, optionally removing BOM."""
 
     # Python 2.7 cannot encode from ascii to utf-8 when an XMP string
-    # contains the XMP packet wrapper with the BOM in place.  Just get 
+    # contains the XMP packet wrapper with the BOM in place.  Just get
     # rid of it if we find it.
-    regex = re.compile("\s*<\?xpacket\s*begin=\"(?P<bom>.*)\"\s*id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>", re.UNICODE)
-    m = regex.match(str_obj)
-    if m is not None:
+    regex = re.compile(r"""\s*<\?xpacket\s*
+                           begin=\"(?P<bom>.*)\"\s*
+                           id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>""", re.UNICODE)
+    match = regex.match(str_obj)
+    if match is not None:
         # Ok we matched up to the BOM.  Get rid of it.
-        bom_start, bom_end = m.span('bom')
+        bom_start, bom_end = match.span('bom')
         str_obj = str_obj[0:bom_start] + str_obj[bom_end:]
 
-    return str_obj.decode('utf-8')       
-    
+    return str_obj.decode('utf-8')
+
 
 class XMPMeta(object):
     """
@@ -169,8 +173,8 @@ class XMPMeta(object):
         .. todo:: Make get_array_item optionally return keywords describing
             array item's options
         """
-        prop, options = _cexempi.get_array_item(self.xmpptr, schema_ns,
-                                                array_prop_name, index)
+        prop, _ = _cexempi.get_array_item(self.xmpptr, schema_ns,
+                                          array_prop_name, index)
         return prop
 
 
@@ -188,7 +192,7 @@ class XMPMeta(object):
         necessary.
 
         :param str schema_ns: The namespace URI; see get_property().
-        :param str prop_name: The name of the property. Can be a general path 
+        :param str prop_name: The name of the property. Can be a general path
             expression, must not be null or the empty string; see
             get_property() for namespace prefix usage.
         :param str prop_value: The new item value.
@@ -201,7 +205,8 @@ class XMPMeta(object):
         _cexempi.set_property(self.xmpptr, schema_ns, prop_name, prop_value,
                               options)
 
-    def set_array_item( self, schema_ns, array_name, item_index, item_value, **kwargs ):
+    def set_array_item(self, schema_ns, array_name, item_index, item_value,
+                       **kwargs):
         """Creates or sets the value of an item within an array.
 
         Items are accessed by an integer index, where the first item has index
@@ -389,7 +394,7 @@ class XMPMeta(object):
         """Set a boolean property.
 
         :param str schema_ns: The namespace URI; see get_property().
-        :param str prop_name: The name of the property. Can be a general path 
+        :param str prop_name: The name of the property. Can be a general path
             expression, must not be null or the empty string; see
             get_property() for namespace prefix usage.
         :param bool prop_value: The new item value.
@@ -406,7 +411,7 @@ class XMPMeta(object):
         """Set an integer property.
 
         :param str schema_ns: The namespace URI; see get_property().
-        :param str prop_name: The name of the property. Can be a general path 
+        :param str prop_name: The name of the property. Can be a general path
             expression, must not be null or the empty string; see
             get_property() for namespace prefix usage.
         :param int prop_value: The new item value.
@@ -423,7 +428,7 @@ class XMPMeta(object):
         """Set a long integer (int64) property.
 
         :param str schema_ns: The namespace URI; see get_property().
-        :param str prop_name: The name of the property. Can be a general path 
+        :param str prop_name: The name of the property. Can be a general path
             expression, must not be null or the empty string; see
             get_property() for namespace prefix usage.
         :param long prop_value: The new item value.
@@ -440,7 +445,7 @@ class XMPMeta(object):
         """Set a floating point property.
 
         :param str schema_ns: The namespace URI; see get_property().
-        :param str prop_name: The name of the property. Can be a general path 
+        :param str prop_name: The name of the property. Can be a general path
             expression, must not be null or the empty string; see
             get_property() for namespace prefix usage.
         :param float prop_value: The new item value.
@@ -458,7 +463,7 @@ class XMPMeta(object):
         """Set a datetime property.
 
         :param str schema_ns: The namespace URI; see get_property().
-        :param str prop_name: The name of the property. Can be a general path 
+        :param str prop_name: The name of the property. Can be a general path
             expression, must not be null or the empty string; see
             get_property() for namespace prefix usage.
         :param datetime.datetime prop_value: The new datetime value.
@@ -529,7 +534,7 @@ class XMPMeta(object):
         :param str schema_ns: The namespace URI; see get_property().
         :param str prop_name: The name of the property; see get_property().
         """
-        _cexempi.delete_property(self.xmpptr, schema_ns, prop_name);
+        _cexempi.delete_property(self.xmpptr, schema_ns, prop_name)
 
     def does_property_exist(self, schema_ns, prop_name ):
         """Queries for existence of a property.
@@ -560,7 +565,7 @@ class XMPMeta(object):
                                                       array_name, index+1)
                 index += 1
             except XMPError:
-                # We've gone through the entire list. It does not exist. 
+                # We've gone through the entire list. It does not exist.
                 break
             if the_prop == item:
                 found = True
@@ -576,7 +581,7 @@ class XMPMeta(object):
     def parse_from_str(self, xmp_packet_str, xmpmeta_wrap=False,
                        input_encoding=None ):
         """Parses RDF from a string into a XMP object.
-        
+
         The input for parsing may be any valid Unicode encoding. ISO Latin-1 is
         also recognized, but its use is strongly discouraged.
 
@@ -590,7 +595,7 @@ class XMPMeta(object):
         :raises: IOError if operation fails.
         """
         if sys.hexversion < 0x03000000 and isinstance(xmp_packet_str, str):
-            xmp_packet_str = _force_to_unicode(xmp_packet_str)
+            xmp_packet_str = _force_rdf_to_unicode(xmp_packet_str)
         if xmpmeta_wrap:
             fmt = u"<x:xmpmeta xmlns:x='adobe:ns:meta/'>{0}</x:xmpmeta>"
             xmp_packet_str = fmt.format(xmp_packet_str)
@@ -601,7 +606,7 @@ class XMPMeta(object):
     def serialize_and_format(self, padding=0, newlinechr='\n', tabchr = '\t',
                              indent=0, **kwargs ):
         """Serializes an XMPMeta object into a string as RDF.
-        
+
         Note, normally it is sufficient to use either `serialize_to_str` or
         `serialize_to_unicode` unless you need high degree of control over the
         serialization.
@@ -683,7 +688,7 @@ class XMPMeta(object):
         :returns: `str` 8-bit string in UTF-8 encoding (ready to be written to
             a file).
         """
-        options = options_mask(XMP_SERIAL_OPTIONS, **kwargs)                  
+        options = options_mask(XMP_SERIAL_OPTIONS, **kwargs)
         return _cexempi.serialize(self.xmpptr, options, padding)
 
 
@@ -713,7 +718,7 @@ class XMPMeta(object):
                                                       array_name, count+1)
                 count += 1
             except XMPError:
-                # We've gone through the entire list. It does not exist. 
+                # We've gone through the entire list. It does not exist.
                 break
 
         return count
