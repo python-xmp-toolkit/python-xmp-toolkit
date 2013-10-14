@@ -43,10 +43,10 @@ import pkg_resources
 import shutil
 import tempfile
 
-sys.path.append(os.path.pardir)
+import pytz
 
 import libxmp
-from libxmp import *
+from libxmp import XMPFiles, XMPMeta, XMPError
 from libxmp import XMPIterator
 from libxmp.utils import file_to_dict, object_to_dict
 from libxmp import exempi
@@ -54,7 +54,8 @@ from libxmp import exempi
 from .common_fixtures import setup_sample_files
 from .samples import open_flags
 from . import xmpcoverage
-from libxmp.exempi import NS_EXIF, NS_TIFF, NS_DC
+from libxmp.exempi import NS_EXIF, NS_TIFF, NS_DC, NS_XAP
+from libxmp.exempi import NS_CAMERA_RAW_SETTINGS
 
 # TODO : iteration test with skip options
 
@@ -299,10 +300,73 @@ class XMPMetaTestCase(unittest.TestCase):
 
         xmp.set_localized_text(NS_DC, 'rights', 'en', 'en-CA', 'Foo bar')
         item = xmp.get_localized_text(NS_DC, 'rights', 'en', 'en-US')
-        # Can't look at the actual lang.
+
+        # Can't look at the actual lang, unlike the original test.
         self.assertEqual(item, 'Foo bar')
 
         xmp.delete_localized_text(NS_DC, 'rights', 'en', 'en-CA')
+        self.assertFalse(xmp.does_property_exist(NS_DC, "rights[1]"))
+
+        xmp.set_array_item(NS_DC, "creator", 2, "foo")
+        xmp.append_array_item(NS_DC, "creator", "bar")
+
+        prop = xmp.get_array_item(NS_DC, "creator", 3)
+        self.assertEqual(prop, "bar")
+
+        xmp.delete_property(NS_DC, "creator[3]")
+        self.assertFalse(xmp.does_property_exist(NS_DC, "creator[3]"))
+
+        prop = xmp.get_property(NS_EXIF, "DateTimeOriginal")
+        self.assertEqual(prop, "2006-12-07T23:20:43-05:00")
+
+        the_prop = xmp.get_property_datetime(NS_EXIF, "DateTimeOriginal")
+        self.assertEqual(the_prop.year, 2006) 
+        self.assertEqual(the_prop.minute, 20)
+        self.assertEqual(the_prop.tzinfo, pytz.utc)
+
+        prop = xmp.get_property(NS_XAP, "Rating")
+        self.assertEqual(prop, "3")
+
+        prop = xmp.get_property_float(NS_CAMERA_RAW_SETTINGS, "SharpenRadius")
+        self.assertEqual(prop, 1.0)
+
+        xmp.set_property_float(NS_CAMERA_RAW_SETTINGS, "SharpenRadius", 2.5)
+        prop = xmp.get_property_float(NS_CAMERA_RAW_SETTINGS, "SharpenRadius")
+        self.assertEqual(prop, 2.5)
+
+        prop = xmp.get_property_bool(NS_CAMERA_RAW_SETTINGS, "AlreadyApplied")
+        self.assertFalse(prop)
+        xmp.set_property_bool(NS_CAMERA_RAW_SETTINGS, "AlreadyApplied", True)
+        prop = xmp.get_property_bool(NS_CAMERA_RAW_SETTINGS, "AlreadyApplied")
+        self.assertTrue(prop)
+
+        prop = xmp.get_property_int(NS_EXIF, "MeteringMode")
+        self.assertEqual(prop, 5)
+        xmp.set_property_int(NS_EXIF, "MeteringMode", 10)
+        prop = xmp.get_property_long(NS_EXIF, "MeteringMode")
+        self.assertEqual(prop, 10)
+        xmp.set_property_long(NS_EXIF, "MeteringMode", 32)
+        prop = xmp.get_property_int(NS_EXIF, "MeteringMode")
+        self.assertEqual(prop, 32)
+
+
+
+    def test_does_array_item_exist(self):
+        """Tests XMPMeta method does_array_item_exist."""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+
+        xmp = XMPMeta()
+        xmp.parse_from_str(strbuffer)
+
+        xmp.set_array_item(NS_DC, "creator", 2, "foo")
+        xmp.append_array_item(NS_DC, "creator", "bar")
+
+        self.assertTrue(xmp.does_array_item_exist(NS_DC, "creator", "foo"))
+        self.assertFalse(xmp.does_array_item_exist(NS_DC, "creator", "blah"))
+
     
 
 class UtilsTestCase(unittest.TestCase):
