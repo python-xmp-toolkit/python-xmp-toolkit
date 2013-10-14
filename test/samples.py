@@ -35,12 +35,13 @@
 import os
 import os.path
 import shutil
+from sets import Set
 import sys
 sys.path.append(os.path.pardir)
 
 import libxmp
 
-open_flags = [
+open_flags = Set([
     'open_nooption',
     'open_read',
     'open_forupdate',
@@ -50,8 +51,7 @@ open_flags = [
     'open_usesmarthandler',
     'open_usepacketscanning',
     'open_limitscanning',
-    'open_inbackground'
-]
+    'open_inbackground'])
 
 
 sampledir = '.tempsamples/'

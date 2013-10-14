@@ -668,6 +668,27 @@ def files_get_xmp(xfptr):
     return xmp
 
 
+def files_open(xfptr, filename, options):
+    """Wrapper for xmp_files_open library routine.
+
+    Parameters
+    ----------
+    xfptr : object
+        XMP file object (with no associated file)
+    filename : str
+        File to be opened.
+    options : XmpFileOpenOptions
+        How the file is to be opened.
+    """
+    if not os.path.exists(filename) and options & OpenFileOptions.read:
+        raise IOError("{0} does not exist.".format(filename))
+    EXEMPI.xmp_files_open.restype = check_error
+    EXEMPI.xmp_files_open_new.argtypes = [ctypes.c_void_p,
+                                          ctypes.c_char_p,
+                                          ctypes.c_int32]
+    EXEMPI.xmp_files_open(xfptr, filename.encode('utf-8'), options)
+
+
 def files_open_new(filename, options):
     """Wrapper for xmp_files_open_new library routine.
 

@@ -129,17 +129,21 @@ class XMPFiles(object):
         if self._file_path != None:
             raise XMPError('A file is already open - close it first.')
 
-        # Ensure file path is UTF-8 encoded (expected by Exempi)
-        file_path = _encode_as_utf8(file_path)
-
         if not os.path.exists(file_path):
             raise XMPError('File does not exists.')
 
-        if _exempi.xmp_files_open( self.xmpfileptr, file_path, open_flags ):
-            self._file_path = file_path
+        if False:
+            # Ensure file path is UTF-8 encoded (expected by Exempi)
+            file_path = _encode_as_utf8(file_path)
+
+            if _exempi.xmp_files_open( self.xmpfileptr, file_path, open_flags ):
+                self._file_path = file_path
+            else:
+                _check_for_error()
+
         else:
-            _check_for_error()
-        #_cexempi.files_open( self.xmpfileptr, file_path, open_flags )
+            _cexempi.files_open( self.xmpfileptr, file_path, open_flags )
+            self._file_path = file_path
 
     def close_file( self, close_flags = XMP_CLOSE_NOOPTION ):
         """
@@ -152,11 +156,12 @@ class XMPFiles(object):
         .. todo::
             Change signature into using kwargs to set option flag
         """
-        if not _exempi.xmp_files_close( self.xmpfileptr, close_flags ):
-            _check_for_error()
-        else:
-            self._file_path = None
-        #_cexempi.xmp_files_close( self.xmpfileptr, close_flags )
+        #if not _exempi.xmp_files_close( self.xmpfileptr, close_flags ):
+        #    _check_for_error()
+        #else:
+        #    self._file_path = None
+        _cexempi.files_close( self.xmpfileptr, close_flags )
+        self._file_path = None
 
     def get_xmp( self ):
         """

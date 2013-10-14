@@ -36,6 +36,7 @@ import unittest
 import sys
 import os
 import os.path
+import pkg_resources
 import platform
 import shutil
 import tempfile
@@ -44,7 +45,7 @@ sys.path.append(os.path.pardir)
 
 from libxmp import *
 from libxmp.consts import *
-from libxmp import _exempi
+from libxmp import exempi
 from .common_fixtures import setup_sample_files
 from .samples import open_flags
 
@@ -87,13 +88,44 @@ class XMPFilesTestCase(unittest.TestCase):
         for f in self.samplefiles:
             xmpfile = XMPFiles( file_path=f )
 
-        # Try all open options
+    def test_open_file_with_options(self):
+        """Try all open options"""
+        print(open_flags)
         for flg in open_flags:
+            print(flg)
             kwargs = { flg: True }
 
             for f in self.samplefiles:
+                fmt = exempi.files_check_file_format(f)
+                print(f)
+                print(flg)
+                import pdb; pdb.set_trace()
+                if fmt == exempi.FileType.pdf and flg == 'open_usesmarthandler':
+                    continue
+                if fmt == exempi.FileType.pdf and flg == 'open_limitscanning':
+                    continue
                 xmpfile = XMPFiles()
                 xmpfile.open_file( f, **kwargs )
+
+    def test_open_pdf_use_smarthandler(self):
+        """Verify this library failure."""
+        # Issue 5
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.pdf")
+        xmpfile = XMPFiles()
+        with self.assertRaises(XMPError):
+            xmpfile.open_file(filename, open_usesmarthandler=True)
+
+
+    def test_open_pdf_open_limitscanning(self):
+        """Verify this library failure."""
+        # Issue 5
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.pdf")
+        xmpfile = XMPFiles()
+        with self.assertRaises(XMPError):
+            xmpfile.open_file(filename, open_limitscanning=True)
+
 
     def test_close_file(self):
         for f in self.samplefiles:
@@ -138,9 +170,15 @@ class XMPFilesTestCase(unittest.TestCase):
         is_snow_leopard = platform.system() =='Darwin' and int(platform.release().split(".")[0]) >= 10
         # Note, exempi for OS X 10.6 don't have smart handlers for MOV due to large changes in Quicktime from 10.5 to 10.6
 
-        return (((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or fmt == XMP_FT_ILLUSTRATOR or (fmt == XMP_FT_MOV and is_snow_leopard)) and flg == 'open_usesmarthandler' ) or
-                ((fmt == XMP_FT_TEXT or fmt == XMP_FT_PDF or (fmt == XMP_FT_MOV and is_snow_leopard)) and flg == 'open_limitscanning' )
-                )
+        return ((((fmt == XMP_FT_TEXT or 
+                   fmt == XMP_FT_PDF or 
+                   fmt == XMP_FT_ILLUSTRATOR) or 
+                  (fmt == XMP_FT_MOV and is_snow_leopard)) and
+                 (flg == 'open_usesmarthandler')) or
+                (((fmt == XMP_FT_TEXT) or
+                  (fmt == XMP_FT_PDF) or
+                  (fmt == XMP_FT_MOV and is_snow_leopard)) and
+                 (flg == 'open_limitscanning')))
 
     def test_exempi_bad_combinations(self):
         """
@@ -155,8 +193,10 @@ class XMPFilesTestCase(unittest.TestCase):
                     xmpfile.get_xmp()
                 else:
                     xmpfile = XMPFiles()
-                    xmpfile.open_file( f, **kwargs )
-                    self.assertRaises( XMPError, xmpfile.get_xmp )
+                    #xmpfile.open_file( f, **kwargs )
+                    with self.assertRaises(XMPError):
+                        xmpfile.open_file( f, **kwargs )
+                    #self.assertRaises( XMPError, xmpfile.get_xmp )
 
     def exempi_problem( self, flg, fmt ):
         """
