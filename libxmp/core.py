@@ -193,8 +193,8 @@ class XMPMeta(object):
         .. todo:: Make get_array_item optionally return keywords describing
             array item's options
         """
-        prop, options = _cexempi.xmp_get_array_item(self.xmpptr, schema_ns,
-                                                    array_prop_name, index)
+        prop, options = _cexempi.get_array_item(self.xmpptr, schema_ns,
+                                                array_prop_name, index)
         return prop
 
 
@@ -343,8 +343,8 @@ class XMPMeta(object):
         .. todo:: Make get_property_int optionally return keywords describing
             property's options
         """
-        value, _ = _cexempi.xmp_get_property_int64(self.xmpptr,
-                                                   schema_ns, prop_name)
+        value, _ = _cexempi.get_property_int64(self.xmpptr,
+                                               schema_ns, prop_name)
         return value
 
 
@@ -364,8 +364,8 @@ class XMPMeta(object):
         .. todo:: Make get_property_float optionally return keywords describing
             property's options
         """
-        value, = _cexempi.get_property_float(self.xmpptr, schema_ns, prop_name)
-        return value
+        val, _ = _cexempi.get_property_float(self.xmpptr, schema_ns, prop_name)
+        return val
 
 
     def get_property_datetime(self, schema_ns, prop_name ):
@@ -381,8 +381,7 @@ class XMPMeta(object):
 
         :raises: IOError if operation fails.
         """
-        prop, _ = _cexempi.xmp_get_property_date(self.xmpptr,
-                                                 schema_ns, prop_name)
+        prop, _ = _cexempi.get_property_date(self.xmpptr, schema_ns, prop_name)
         return prop
 
 
@@ -459,7 +458,7 @@ class XMPMeta(object):
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
         _cexempi.set_property_int64(self.xmpptr, schema_ns, prop_name,
-                                    long(prop_value), options)
+                                    prop_value, options)
 
     def set_property_float(self, schema_ns, prop_name, prop_value, **kwargs ):
         """Set a floating point property.
@@ -475,8 +474,8 @@ class XMPMeta(object):
         :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        _cexempi.xmp_set_property_float(self.xmpptr, schema_ns, prop_name,
-                                        float(prop_value), options)
+        _cexempi.set_property_float(self.xmpptr, schema_ns, prop_name,
+                                    float(prop_value), options)
 
 
     def set_property_datetime(self, schema_ns, prop_name, prop_value, **kwargs):
@@ -491,8 +490,8 @@ class XMPMeta(object):
         :raises: IOError if exempi library routine fails.
         """
         options = options_mask(XMP_PROP_OPTIONS, **kwargs) if kwargs else 0
-        _cexempi.xmp_set_property_date(self.xmpptr, schema_ns, prop_name,
-                                       prop_value, options)
+        _cexempi.set_property_date(self.xmpptr, schema_ns, prop_name,
+                                   prop_value, options)
 
 
     def set_localized_text(self, schema_ns, alt_text_name, generic_lang,
@@ -525,6 +524,26 @@ class XMPMeta(object):
     # ------------------------------------------------
     # Functions for deleting and detecting properties.
     # ------------------------------------------------
+    def delete_localized_text(self, schema_ns, alt_text_name, generic_lang,
+                              specific_lang):
+        """Remove a localized property.
+
+        :param str schema_ns:   The namespace URI; see get_property().
+        :param str alt_text_name:  The name of the alt-text array. May be a
+            general path expression, must not be None or the empty string.  Has
+            the same namespace prefix usage as propName in GetProperty.
+        :param str generic_lang:  The name of the generic language as an RFC
+            3066 primary subtag. May be null or the empty string if no generic
+            language is wanted.
+        :param str specific_lang: The name of the specific language as an RFC
+            3066 tag. Must not be null or the empty string.
+
+        :raises: XMPError if operation fails.
+        """
+        _cexempi.delete_localized_text(self.xmpptr, schema_ns, alt_text_name,
+                                       generic_lang, specific_lang)
+
+
     def delete_property(self, schema_ns, prop_name ):
         """Delete a property from XMP packet.
 
@@ -558,16 +577,20 @@ class XMPMeta(object):
         :rtype: bool
         """
         index = 0
-
-        the_prop = _exempi.xmp_string_new()
-
-        while( True ):
-            if _exempi.xmp_get_array_item( self.xmpptr, str(schema_ns), str(array_name), index+1, the_prop, None):
+        found = False
+        while True:
+            try:
+                the_prop, _ = _cexempi.get_array_item(self.xmpptr, schema_ns,
+                                                      array_name, index+1)
                 index += 1
-            else:
+            except XMPError as e:
+                # We've gone through the entire list. It does not exist. 
+                break
+            if the_prop == item:
+                found = True
                 break
 
-        return index
+        return found
 
     # -------------------------------------
     # Functions for parsing and serializing

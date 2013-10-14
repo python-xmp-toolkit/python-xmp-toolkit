@@ -511,6 +511,8 @@ def delete_localized_text(xmp, schema, name, generic_lang, specific_lang):
         The generic language you may want.  Can be None.
     specific_lang : str
         The specific language.
+
+    .. versionadded:: 2.0.0
     """
     EXEMPI.xmp_delete_localized_text.restype = check_error
     EXEMPI.xmp_delete_localized_text.argtypes = [ctypes.c_void_p,
