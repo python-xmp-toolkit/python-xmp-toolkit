@@ -38,41 +38,17 @@ has no knowledge of files. The core API is provided by the :class:`XMPMeta` and
 :class:`XMPIterator` classes.
 """
 
-from ctypes import *
-import datetime
 import re
 import sys
 
 from . import XMPError
-from . import _exempi, _XMP_ERROR_CODES, _check_for_error
-from .consts import *
 from . import consts
+from .consts import options_mask, has_option
+from .consts import XMP_SERIAL_OPTIONS
+
 from . import exempi as _cexempi
 
 __all__ = ['XMPMeta','XMPIterator']
-
-
-
-def _encode_as_utf8( obj, input_encoding=None ):
-    """
-    Helper function to ensure that a proper string object in UTF-8 encoding.
-
-    If obj is not a string, it will try to convert the object into a unicode
-    string and thereafter encode as UTF-8.
-    """
-    if sys.hexversion >= 0x03000000:
-        obj = obj.encode()
-        return obj
-
-    if isinstance( obj, unicode ):
-        return obj.encode('utf-8')
-    elif isinstance( obj, str ):
-        if not input_encoding or input_encoding == 'utf-8':
-            return obj
-        else:
-            return obj.decode(input_encoding).encode('utf-8')
-    else:
-        return unicode( obj ).encode('utf-8')
 
 
 
@@ -583,7 +559,7 @@ class XMPMeta(object):
                 the_prop, _ = _cexempi.get_array_item(self.xmpptr, schema_ns,
                                                       array_name, index+1)
                 index += 1
-            except XMPError as e:
+            except XMPError:
                 # We've gone through the entire list. It does not exist. 
                 break
             if the_prop == item:
@@ -619,7 +595,7 @@ class XMPMeta(object):
             fmt = u"<x:xmpmeta xmlns:x='adobe:ns:meta/'>{0}</x:xmpmeta>"
             xmp_packet_str = fmt.format(xmp_packet_str)
 
-        res = _cexempi.parse(self.xmpptr, xmp_packet_str)
+        _cexempi.parse(self.xmpptr, xmp_packet_str)
 
 
     def serialize_and_format(self, padding=0, newlinechr='\n', tabchr = '\t',
@@ -730,18 +706,17 @@ class XMPMeta(object):
         """
         count_array_items returns the number of a given array's items
         """
-        import pdb; pdb.set_trace()
-        index = 0
-
-        the_prop = _exempi.xmp_string_new()
-
-        while( True ):
-            if _exempi.xmp_get_array_item( self.xmpptr, str(schema_ns), str(array_name), index+1, the_prop, None):
-                index += 1
-            else:
+        count = 0
+        while True:
+            try:
+                _, _ = _cexempi.get_array_item(self.xmpptr, schema_ns,
+                                                      array_name, count+1)
+                count += 1
+            except XMPError:
+                # We've gone through the entire list. It does not exist. 
                 break
 
-        return index
+        return count
 
     # -------------------------------------
     # Namespace Functions
@@ -780,7 +755,7 @@ class XMPMeta(object):
 
 
 
-class XMPIterator:
+class XMPIterator(object):
     """Provides means to iterate over a schema and properties.
 
     XMPIterator provides a uniform means to iterate over the schema and
@@ -855,12 +830,12 @@ class XMPIterator:
                  'IS_SCHEMA'        : False, }
 
         for opt in opts:
-            if has_option(options.value, getattr(consts,'XMP_PROP_'+opt)):
+            if has_option(options.value, getattr(consts, 'XMP_PROP_' + opt)):
                 opts[opt] = True
 
         return(schema, name, value, opts)
 
-    def skip(**kwargs ):
+    def skip(self, **kwargs ):
         """Skips some portion of the remaining iterations.
 
         :param **kwargs: Optional keyword parameters from XMP_SKIP_OPTIONS to

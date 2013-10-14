@@ -350,9 +350,8 @@ class XMPMetaTestCase(unittest.TestCase):
         self.assertEqual(prop, 32)
 
 
-
     def test_does_array_item_exist(self):
-        """Tests XMPMeta method does_array_item_exist."""
+        """Tests XMPMeta method does_array_item_exist.  Issue #03"""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
         with open(filename, 'r') as fptr:
@@ -366,6 +365,22 @@ class XMPMetaTestCase(unittest.TestCase):
 
         self.assertTrue(xmp.does_array_item_exist(NS_DC, "creator", "foo"))
         self.assertFalse(xmp.does_array_item_exist(NS_DC, "creator", "blah"))
+
+    
+    def test_count_array_items(self):
+        """Tests XMPMeta method count_array_items."""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+
+        xmp = XMPMeta()
+        xmp.parse_from_str(strbuffer)
+
+        xmp.set_array_item(NS_DC, "creator", 2, "foo")
+        xmp.append_array_item(NS_DC, "creator", "bar")
+        xmp.append_array_item(NS_DC, "creator", "donuts")
+        self.assertEqual(xmp.count_array_items(NS_DC, "creator"), 4)
 
     
 
