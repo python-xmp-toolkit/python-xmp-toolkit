@@ -45,34 +45,15 @@ import os
 import sys
 
 from libxmp import XMPError, XMPMeta
-from libxmp import _exempi, _XMP_ERROR_CODES, _check_for_error
-from libxmp.consts import *
+from libxmp import _XMP_ERROR_CODES, _check_for_error
+#from libxmp.consts import *
+from libxmp.consts import options_mask
+from libxmp.consts import XMP_CLOSE_NOOPTION
+from libxmp.consts import XMP_OPEN_OPTIONS
+from libxmp.consts import XMP_OPEN_NOOPTION
 from . import exempi as _cexempi
 
 __all__ = ['XMPFiles']
-
-def _encode_as_utf8( obj, input_encoding=None ):
-    """
-    Helper function to ensure that a proper string object in UTF-8 encoding.
-
-    If obj is not a string, it will try to convert the object into a unicode
-    string and thereafter encode as UTF-8.
-    """
-    if sys.hexversion >= 0x03000000:
-        obj = obj.encode()
-        return obj
-
-    if isinstance( obj, unicode ):
-        return obj.encode('utf-8')
-    elif isinstance( obj, str ):
-        if not input_encoding or input_encoding == 'utf-8':
-            return obj
-        else:
-            return obj.decode(input_encoding).encode('utf-8')
-    else:
-        return unicode( obj ).encode('utf-8')
-
-
 
 class XMPFiles(object):
     """API for access to the "main" metadata in a file.
@@ -94,7 +75,7 @@ class XMPFiles(object):
     """
     def __init__(self, **kwargs ):
         self._file_path = None
-        self.xmpfileptr = _exempi.xmp_files_new()
+        self.xmpfileptr = _cexempi.files_new()
 
         if 'file_path' in kwargs:
             file_path = kwargs['file_path']
@@ -132,20 +113,10 @@ class XMPFiles(object):
         if not os.path.exists(file_path):
             raise XMPError('File does not exists.')
 
-        if False:
-            # Ensure file path is UTF-8 encoded (expected by Exempi)
-            file_path = _encode_as_utf8(file_path)
+        _cexempi.files_open( self.xmpfileptr, file_path, open_flags )
+        self._file_path = file_path
 
-            if _exempi.xmp_files_open( self.xmpfileptr, file_path, open_flags ):
-                self._file_path = file_path
-            else:
-                _check_for_error()
-
-        else:
-            _cexempi.files_open( self.xmpfileptr, file_path, open_flags )
-            self._file_path = file_path
-
-    def close_file( self, close_flags = XMP_CLOSE_NOOPTION ):
+    def close_file( self, close_flags=XMP_CLOSE_NOOPTION):
         """
         Close file after use. XMP will not be written to file until
         this method has been called.
@@ -156,10 +127,6 @@ class XMPFiles(object):
         .. todo::
             Change signature into using kwargs to set option flag
         """
-        #if not _exempi.xmp_files_close( self.xmpfileptr, close_flags ):
-        #    _check_for_error()
-        #else:
-        #    self._file_path = None
         _cexempi.files_close( self.xmpfileptr, close_flags )
         self._file_path = None
 
@@ -170,7 +137,7 @@ class XMPFiles(object):
         :return: A new :class:`libxmp.core.XMPMeta` instance.
         :raises XMPError: in case of errors.
         """
-        xmpptr = _exempi.xmp_files_get_new_xmp( self.xmpfileptr )
+        xmpptr = _cexempi.files_get_new_xmp(self.xmpfileptr)
         _check_for_error()
 
         if xmpptr:

@@ -122,12 +122,6 @@ try:
 except OSError:
     raise Exception('Could not load shared library exempi.')
 
-#
-# Define arg/return types for exempi functions.
-#
-from libxmp.types import define_function_types
-define_function_types( _exempi )
-
 # Import classes into global namespace
 from .core import *
 from .files import *

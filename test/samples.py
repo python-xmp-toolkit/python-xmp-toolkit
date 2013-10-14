@@ -35,13 +35,12 @@
 import os
 import os.path
 import shutil
-from sets import Set
 import sys
 sys.path.append(os.path.pardir)
 
 import libxmp
 
-open_flags = Set([
+open_flags = [
     'open_nooption',
     'open_read',
     'open_forupdate',
@@ -51,7 +50,7 @@ open_flags = Set([
     'open_usesmarthandler',
     'open_usepacketscanning',
     'open_limitscanning',
-    'open_inbackground'])
+    'open_inbackground']
 
 
 sampledir = '.tempsamples/'
@@ -61,21 +60,21 @@ sampledir = '.tempsamples/'
 Definitions of test files
 """
 samplefiles = {
-    'sig05-002a.tif' : libxmp.files.XMP_FT_TIFF,
-    'sig05-002a.xmp' : libxmp.files.XMP_FT_TEXT,
-    'BlueSquare.ai' : libxmp.files.XMP_FT_ILLUSTRATOR,
-    'BlueSquare.avi' : libxmp.files.XMP_FT_AVI,
-    'BlueSquare.eps' : libxmp.files.XMP_FT_EPS,
-    'BlueSquare.gif' : libxmp.files.XMP_FT_GIF,
-    'BlueSquare.indd' : libxmp.files.XMP_FT_INDESIGN,
-    'BlueSquare.jpg' : libxmp.files.XMP_FT_JPEG,
-    'BlueSquare.mov' : libxmp.files.XMP_FT_MOV,
-    'BlueSquare.mp3' : libxmp.files.XMP_FT_MP3,
-    'BlueSquare.pdf' : libxmp.files.XMP_FT_PDF,
-    'BlueSquare.png' : libxmp.files.XMP_FT_PNG,
-    'BlueSquare.psd' : libxmp.files.XMP_FT_PHOTOSHOP,
-    'BlueSquare.tif' : libxmp.files.XMP_FT_TIFF,
-    'BlueSquare.wav' : libxmp.files.XMP_FT_WAV,
+    'sig05-002a.tif'  : libxmp.consts.XMP_FT_TIFF,
+    'sig05-002a.xmp'  : libxmp.consts.XMP_FT_TEXT,
+    'BlueSquare.ai'   : libxmp.consts.XMP_FT_ILLUSTRATOR,
+    'BlueSquare.avi'  : libxmp.consts.XMP_FT_AVI,
+    'BlueSquare.eps'  : libxmp.consts.XMP_FT_EPS,
+    'BlueSquare.gif'  : libxmp.consts.XMP_FT_GIF,
+    'BlueSquare.indd' : libxmp.consts.XMP_FT_INDESIGN,
+    'BlueSquare.jpg'  : libxmp.consts.XMP_FT_JPEG,
+    'BlueSquare.mov'  : libxmp.consts.XMP_FT_MOV,
+    'BlueSquare.mp3'  : libxmp.consts.XMP_FT_MP3,
+    'BlueSquare.pdf'  : libxmp.consts.XMP_FT_PDF,
+    'BlueSquare.png'  : libxmp.consts.XMP_FT_PNG,
+    'BlueSquare.psd'  : libxmp.consts.XMP_FT_PHOTOSHOP,
+    'BlueSquare.tif'  : libxmp.consts.XMP_FT_TIFF,
+    'BlueSquare.wav'  : libxmp.consts.XMP_FT_WAV,
 }
 
 files = {}

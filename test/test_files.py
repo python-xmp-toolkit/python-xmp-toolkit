@@ -32,16 +32,17 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-import unittest
-import sys
 import os
 import os.path
 import pkg_resources
 import platform
 import shutil
+import sys
 import tempfile
-
-sys.path.append(os.path.pardir)
+if sys.hexversion < 0x02070000:
+    import unittest2 as unittest
+else:
+    import unittest
 
 from libxmp import *
 from libxmp.consts import *
@@ -90,41 +91,51 @@ class XMPFilesTestCase(unittest.TestCase):
 
     def test_open_file_with_options(self):
         """Try all open options"""
-        print(open_flags)
         for flg in open_flags:
-            print(flg)
             kwargs = { flg: True }
 
             for f in self.samplefiles:
+                # TODO:  files_check_file_format does not want to work?
                 fmt = exempi.files_check_file_format(f)
-                print(f)
-                print(flg)
-                import pdb; pdb.set_trace()
-                if fmt == exempi.FileType.pdf and flg == 'open_usesmarthandler':
+                if f.lower().endswith('.ai') and flg == 'open_usesmarthandler':
                     continue
-                if fmt == exempi.FileType.pdf and flg == 'open_limitscanning':
+                if f.lower().endswith('.pdf') and flg == 'open_usesmarthandler':
+                    continue
+                if f.lower().endswith('.xmp') and flg == 'open_usesmarthandler':
+                    continue
+                if f.lower().endswith('.pdf') and flg == 'open_limitscanning':
+                    continue
+                if f.lower().endswith('.xmp') and flg == 'open_limitscanning':
                     continue
                 xmpfile = XMPFiles()
                 xmpfile.open_file( f, **kwargs )
 
-    def test_open_pdf_use_smarthandler(self):
+    def test_open_use_smarthandler(self):
         """Verify this library failure."""
         # Issue 5
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.pdf")
+        filenames = [pkg_resources.resource_filename(__name__,
+                                                     "samples/BlueSquare.pdf"),
+                     pkg_resources.resource_filename(__name__,
+                                                     "samples/BlueSquare.ai"),
+                     pkg_resources.resource_filename(__name__,
+                                                     "samples/BlueSquare.xmp")]
         xmpfile = XMPFiles()
-        with self.assertRaises(XMPError):
-            xmpfile.open_file(filename, open_usesmarthandler=True)
+        for filename in filenames:
+            with self.assertRaises(XMPError):
+                xmpfile.open_file(filename, open_usesmarthandler=True)
 
 
-    def test_open_pdf_open_limitscanning(self):
+    def test_open_open_limitscanning(self):
         """Verify this library failure."""
         # Issue 5
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.pdf")
+        filenames = [pkg_resources.resource_filename(__name__,
+                                                     "samples/BlueSquare.pdf"),
+                     pkg_resources.resource_filename(__name__,
+                                                     "samples/BlueSquare.xmp")]
         xmpfile = XMPFiles()
-        with self.assertRaises(XMPError):
-            xmpfile.open_file(filename, open_limitscanning=True)
+        for filename in filenames:
+            with self.assertRaises(XMPError):
+                xmpfile.open_file(filename, open_limitscanning=True)
 
 
     def test_close_file(self):

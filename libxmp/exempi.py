@@ -683,10 +683,24 @@ def files_open(xfptr, filename, options):
     if not os.path.exists(filename) and options & OpenFileOptions.read:
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open.restype = check_error
-    EXEMPI.xmp_files_open_new.argtypes = [ctypes.c_void_p,
-                                          ctypes.c_char_p,
-                                          ctypes.c_int32]
+    EXEMPI.xmp_files_open.argtypes = [ctypes.c_void_p,
+                                      ctypes.c_char_p,
+                                      ctypes.c_int32]
     EXEMPI.xmp_files_open(xfptr, filename.encode('utf-8'), options)
+
+
+def files_new():
+    """Wrapper for xmp_files_new library routine.
+
+    Returns
+    -------
+    xfptr : ctypes pointer
+        File pointer.
+    """
+    EXEMPI.xmp_files_new.restype = ctypes.c_void_p
+    xfptr = EXEMPI.xmp_files_new()
+
+    return xfptr
 
 
 def files_open_new(filename, options):
