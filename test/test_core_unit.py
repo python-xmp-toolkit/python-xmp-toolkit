@@ -54,8 +54,12 @@ from libxmp import exempi
 from .common_fixtures import setup_sample_files
 from .samples import open_flags
 from . import xmpcoverage
-from libxmp.exempi import NS_EXIF, NS_TIFF, NS_DC, NS_XAP
-from libxmp.exempi import NS_CAMERA_RAW_SETTINGS
+
+from libxmp.consts import XMP_NS_XMP as NS_XAP
+from libxmp.consts import XMP_NS_DC as NS_DC
+from libxmp.consts import XMP_NS_EXIF as NS_EXIF
+from libxmp.consts import XMP_NS_TIFF as NS_TIFF
+from libxmp.consts import XMP_NS_CameraRaw as NS_CAMERA_RAW_SETTINGS
 
 # TODO : iteration test with skip options
 
