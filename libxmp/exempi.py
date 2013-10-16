@@ -5,7 +5,6 @@ import ctypes
 import datetime
 from ctypes.util import find_library
 import os
-import sys
 
 from flufl.enum import IntEnum
 import pytz
@@ -16,6 +15,9 @@ from . import XMPError
 EXEMPI = ctypes.CDLL(find_library('exempi'))
 
 class ErrorCodes(IntEnum):
+    """
+    Error codes defined by libexempi.  See "xmperrors.h"
+    """
     unknown            =    0
     tbd                =   -1
     unavailable        =   -2
@@ -54,43 +56,43 @@ class ErrorCodes(IntEnum):
     bad_iptc           = -210
     bad_mpeg           = -211
 
-_error_message = { int(ErrorCodes.unknown):            "unknown error",
-                   int(ErrorCodes.tbd):                "TBD",
-                   int(ErrorCodes.unavailable):        "unavailable",
-                   int(ErrorCodes.bad_object):         "bad object",
-                   int(ErrorCodes.bad_param):          "bad parameter",
-                   int(ErrorCodes.bad_value):          "bad value",
-                   int(ErrorCodes.assert_failure):     "assert failure",
-                   int(ErrorCodes.enforce_failure):    "enforce failure",
-                   int(ErrorCodes.unimplemented):      "unimplemented",
-                   int(ErrorCodes.internal_failure):   "internal failure",
-                   int(ErrorCodes.deprecated):         "deprecated",
-                   int(ErrorCodes.external_failure):   "external failure",
-                   int(ErrorCodes.user_abort):         "user abort",
-                   int(ErrorCodes.std_exception):      "std exception",
-                   int(ErrorCodes.unknown_exception):  "unknown exception",
-                   int(ErrorCodes.no_memory):          "no memory",
-                   int(ErrorCodes.bad_schema):         "bad schema",
-                   int(ErrorCodes.bad_xpath):          "bad XPath",
-                   int(ErrorCodes.bad_options):        "bad options",
-                   int(ErrorCodes.bad_index):          "bad index",
-                   int(ErrorCodes.bad_iter_position):  "bad iter position",
-                   int(ErrorCodes.bad_parse):          "bad parse",
-                   int(ErrorCodes.bad_serialize):      "bad serialize",
-                   int(ErrorCodes.bad_file_format):    "bad file format",
-                   int(ErrorCodes.no_file_handler):    "no file handler",
-                   int(ErrorCodes.too_large_for_jpeg): "too large for JPEG",
-                   int(ErrorCodes.bad_xml):            "bad XML",
-                   int(ErrorCodes.bad_rdf):            "bad RDF",
-                   int(ErrorCodes.bad_xmp):            "bad XMP",
-                   int(ErrorCodes.empty_iterator):     "empty iterator",
-                   int(ErrorCodes.bad_unicode):        "bad unicode",
-                   int(ErrorCodes.bad_tiff):           "bad TIFF",
-                   int(ErrorCodes.bad_jpeg):           "bad JPEG",
-                   int(ErrorCodes.bad_psd):            "bad PSD",
-                   int(ErrorCodes.bad_psir):           "bad PSIR",
-                   int(ErrorCodes.bad_iptc):           "bad IPTC",
-                   int(ErrorCodes.bad_mpeg):           "bad MPEG" }
+ERROR_MESSAGE = { int(ErrorCodes.unknown):            "unknown error",
+                  int(ErrorCodes.tbd):                "TBD",
+                  int(ErrorCodes.unavailable):        "unavailable",
+                  int(ErrorCodes.bad_object):         "bad object",
+                  int(ErrorCodes.bad_param):          "bad parameter",
+                  int(ErrorCodes.bad_value):          "bad value",
+                  int(ErrorCodes.assert_failure):     "assert failure",
+                  int(ErrorCodes.enforce_failure):    "enforce failure",
+                  int(ErrorCodes.unimplemented):      "unimplemented",
+                  int(ErrorCodes.internal_failure):   "internal failure",
+                  int(ErrorCodes.deprecated):         "deprecated",
+                  int(ErrorCodes.external_failure):   "external failure",
+                  int(ErrorCodes.user_abort):         "user abort",
+                  int(ErrorCodes.std_exception):      "std exception",
+                  int(ErrorCodes.unknown_exception):  "unknown exception",
+                  int(ErrorCodes.no_memory):          "no memory",
+                  int(ErrorCodes.bad_schema):         "bad schema",
+                  int(ErrorCodes.bad_xpath):          "bad XPath",
+                  int(ErrorCodes.bad_options):        "bad options",
+                  int(ErrorCodes.bad_index):          "bad index",
+                  int(ErrorCodes.bad_iter_position):  "bad iter position",
+                  int(ErrorCodes.bad_parse):          "bad parse",
+                  int(ErrorCodes.bad_serialize):      "bad serialize",
+                  int(ErrorCodes.bad_file_format):    "bad file format",
+                  int(ErrorCodes.no_file_handler):    "no file handler",
+                  int(ErrorCodes.too_large_for_jpeg): "too large for JPEG",
+                  int(ErrorCodes.bad_xml):            "bad XML",
+                  int(ErrorCodes.bad_rdf):            "bad RDF",
+                  int(ErrorCodes.bad_xmp):            "bad XMP",
+                  int(ErrorCodes.empty_iterator):     "empty iterator",
+                  int(ErrorCodes.bad_unicode):        "bad unicode",
+                  int(ErrorCodes.bad_tiff):           "bad TIFF",
+                  int(ErrorCodes.bad_jpeg):           "bad JPEG",
+                  int(ErrorCodes.bad_psd):            "bad PSD",
+                  int(ErrorCodes.bad_psir):           "bad PSIR",
+                  int(ErrorCodes.bad_iptc):           "bad IPTC",
+                  int(ErrorCodes.bad_mpeg):           "bad MPEG" }
 
 class OpenFileOptions(IntEnum):
     """Option bits for xmp_files_open."""
@@ -229,53 +231,6 @@ class IterOptions(IntEnum):
 
     # Omit all qualifiers.
     omit_qualifiers = 0x1000
-
-
-# Namespaces
-# TODO verify that these are right.
-#NS_CC = "http://creativecommons.org/ns#"
-#NS_XMP = "http://ns.adobe.com/xap/1.0/"
-#NS_XMP_META = "adobe:ns:meta/"
-#NS_XAP = NS_XMP
-#NS_XMP_Rights = "http://ns.adobe.com/xap/1.0/rights/"
-#NS_XMP_MM = "http://ns.adobe.com/xap/1.0/mm/"
-#NS_XMP_BJ = "http://ns.adobe.com/xap/1.0/bj/"
-#
-#NS_PDF = "http://ns.adobe.com/pdf/1.3/"
-#NS_PHOTOSHOP = "http://ns.adobe.com/photoshop/1.0/"
-#NS_PSAlbum = "http://ns.adobe.com/album/1.0/"
-#NS_EXIF = "http://ns.adobe.com/exif/1.0/"
-#NS_EXIF_Aux = "http://ns.adobe.com/exif/1.0/aux/"
-#NS_TIFF = "http://ns.adobe.com/tiff/1.0/"
-#NS_PNG = "http://ns.adobe.com/png/1.0/"
-#NS_SWF = "http://ns.adobe.com/swf/1.0/"
-#NS_JPEG = "http://ns.adobe.com/jpeg/1.0/"
-#NS_JP2K = "http://ns.adobe.com/jp2k/1.0/"
-#NS_CAMERA_RAW_SETTINGS = "http://ns.adobe.com/camera-raw-settings/1.0/"
-#NS_DM = "http://ns.adobe.com/xmp/1.0/DynamicMedia/"
-#NS_Script = "http://ns.adobe.com/xmp/1.0/Script/"
-#NS_ASF = "http://ns.adobe.com/asf/1.0/"
-#NS_WAV = "http://ns.adobe.com/xmp/wav/1.0/"
-#NS_BWF = "http://ns.adobe.com/bwf/bext/1.0/"
-#NS_XMP_Note = "http://ns.adobe.com/xmp/note/"
-#NS_AdobeStockPhoto = "http://ns.adobe.com/StockPhoto/1.0/"
-#NS_CreatorAtom = "http://ns.adobe.com/creatorAtom/1.0/"
-#NS_DC = "http://purl.org/dc/elements/1.1/"
-#NS_IPTCCore = "http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/"
-#NS_DICOM = "http://ns.adobe.com/DICOM/"
-#
-#NS_PDFA_Schema = "http://www.aiim.org/pdfa/ns/schema#"
-#NS_PDFA_Property = "http://www.aiim.org/pdfa/ns/property#"
-#NS_PDFA_Type = "http://www.aiim.org/pdfa/ns/type#"
-#NS_PDFA_Field = "http://www.aiim.org/pdfa/ns/field#"
-#NS_PDFA_ID = "http://www.aiim.org/pdfa/ns/id/"
-#NS_PDFA_Extension = "http://www.aiim.org/pdfa/ns/extension/"
-#
-#NS_PDFX = "http://ns.adobe.com/pdfx/1.3/"
-#NS_PDFX_ID = "http://www.npes.org/pdfx/ns/id/"
-#
-#NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-#NS_XML = "http://www.w3.org/XML/1998/namespace"
 
 
 class XmpPropsBits(object):
@@ -472,8 +427,8 @@ def files_can_put_xmp(xfptr, xmp):
     """
     EXEMPI.xmp_files_can_put_xmp.restype = ctypes.c_bool
     EXEMPI.xmp_files_can_put_xmp.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
-    tf = EXEMPI.xmp_files_can_put_xmp(xfptr, xmp)
-    return tf == 1
+    value = EXEMPI.xmp_files_can_put_xmp(xfptr, xmp)
+    return value == 1
 
 
 def files_check_file_format(filename):
@@ -1804,15 +1759,6 @@ def check_error(success):
     appropriately raised.
     """
     if not success:
-        error_msg = _error_message[EXEMPI.xmp_get_error()]
+        error_msg = ERROR_MESSAGE[EXEMPI.xmp_get_error()]
         msg = 'Exempi function failure ("{0}").'.format(error_msg)
         raise XMPError(msg)
-
-
-# The following correspond to macros in xmp.h
-def is_prop_simple(opt):
-    return ((opt & XmpPropsBits.composite_mask) == 0)
-
-
-def is_prop_struct(opt):
-    return ((opt & XmpPropsBits.value_is_struct) == 0)

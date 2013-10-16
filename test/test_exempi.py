@@ -226,11 +226,11 @@ class TestExempi(unittest.TestCase):
 
         exempi.set_array_item(xmp, NS_DC, "creator", 2, "foo", 0)
         the_prop, bits = exempi.get_array_item(xmp, NS_DC, "creator", 2)
-        self.assertTrue(exempi.is_prop_simple(bits))
+        self.assertTrue((bits & exempi.XmpPropsBits.composite_mask) == 0)
 
         exempi.append_array_item(xmp, NS_DC, "creator", 0, "bar", 0)
         the_prop, bits = exempi.get_array_item(xmp, NS_DC, "creator", 3)
-        self.assertTrue(exempi.is_prop_simple(bits))
+        self.assertTrue((bits & exempi.XmpPropsBits.composite_mask) == 0)
         self.assertEqual(the_prop, "bar")
 
         exempi.delete_property(xmp, NS_DC, "creator[3]")

@@ -32,32 +32,33 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
+"""
+Helper utilities.
+"""
+
 import libxmp
 import os
+from .exempi import EXEMPI as _cexempi
 
-"""
-The `utils` module includes
-"""
-
-__all__ = ['terminate','object_to_dict','file_to_dict']
+__all__ = ['terminate', 'object_to_dict', 'file_to_dict']
 
 def object_to_dict(xmp):
     """
     Extracts all XMP data from a given XMPMeta instance organizing it into a standard
     Python dictionary.
     """
-    d = dict()
+    dxmp = dict()
 
     if not xmp:
         return {}
 
     for x in xmp:
         if x[-1]['IS_SCHEMA']:
-            d[x[0]] = []
+            dxmp[x[0]] = []
         else:
-            d[x[0]].append(x[1:])
+            dxmp[x[0]].append(x[1:])
 
-    return d
+    return dxmp
 
 def file_to_dict(file_path):
     """
@@ -98,4 +99,4 @@ def terminate():
     Note, Exempi library is automatically initialized when loading libxmp and normally
     you will not need to call this method. However, there might be cases where
     """
-    _exempi.xmp_terminate()
+    _cexempi.xmp_terminate()
