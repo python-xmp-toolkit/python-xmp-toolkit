@@ -617,7 +617,8 @@ def files_open(xfptr, filename, options):
     ------
     XMPError : if the corresponding library routine fails
     """
-    if not os.path.exists(filename) and options & OpenFileOptions.read:
+    if (((not os.path.exists(filename)) and
+         ((options == OpenFileOptions.no_option) or (options & OpenFileOptions.read)))):
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open.restype = check_error
     EXEMPI.xmp_files_open.argtypes = [ctypes.c_void_p,
