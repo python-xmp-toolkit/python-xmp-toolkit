@@ -45,7 +45,7 @@ import os
 import sys
 
 from libxmp import XMPError, XMPMeta
-from libxmp import _XMP_ERROR_CODES, _check_for_error
+from libxmp import _XMP_ERROR_CODES
 #from libxmp.consts import *
 from libxmp.consts import options_mask
 from libxmp.consts import XMP_CLOSE_NOOPTION
@@ -138,7 +138,6 @@ class XMPFiles(object):
         :raises XMPError: in case of errors.
         """
         xmpptr = _cexempi.files_get_new_xmp(self.xmpfileptr)
-        _check_for_error()
 
         if xmpptr:
             return XMPMeta( _xmp_internal_ref = xmpptr )

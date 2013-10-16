@@ -32,6 +32,7 @@
 
 import ctypes
 import ctypes.util
+from ctypes.util import find_library
 import os
 
 __all__ = ['XMPMeta','XMPFiles','XMPError','ExempiLoadError','files','core']
@@ -92,37 +93,10 @@ class XMPError(Exception):
     """ General XMP Error. """
     pass
 
-#
-# General private utility functions
-#
-def _check_for_error():
-    """
-    Check if an error occured when executing last operation. Raise an
-    exception in case of an error.
-    """
-    err = _exempi.xmp_get_error()
-    if err != 0:
-        raise XMPError( _XMP_ERROR_CODES[err] )
-
-#
-#  Load C library - Exempi must be installed on the system
-#
-try:
-    lib = ctypes.util.find_library('exempi')
-    if lib:
-        if os.name != 'nt':
-            _exempi = ctypes.CDLL( lib )
-        else:
-            _exempi = ctypes.WinDLL( lib )
-    else:
-        raise Exception('Could not load shared library exempi.')
-
-    if not _exempi.xmp_init():
-        _check_for_error()
-except OSError:
-    raise Exception('Could not load shared library exempi.')
-
 # Import classes into global namespace
 from .core import *
 from .files import *
 from .utils import *
+
+from . import exempi
+exempi.init()

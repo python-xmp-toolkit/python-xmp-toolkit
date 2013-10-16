@@ -11,7 +11,6 @@ import pytz
 
 from . import XMPError
 
-# Handle for the library.
 EXEMPI = ctypes.CDLL(find_library('exempi'))
 
 class ErrorCodes(IntEnum):
