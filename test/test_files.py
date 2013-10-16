@@ -70,7 +70,8 @@ class XMPFilesTestCase(unittest.TestCase):
     def test_open_file(self):
         # Non-existing file.
         xmpfile = XMPFiles()
-        self.assertRaises( XMPError, xmpfile.open_file, '' )
+        with self.assertRaises(IOError):
+            xmpfile.open_file('')
 
         xmpfile = XMPFiles()
         xmpfile.open_file( self.samplefiles[0] )

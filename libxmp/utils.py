@@ -69,8 +69,8 @@ def file_to_dict(file_path):
     :return: An empty dictionary if there's no valid XMP in the file passed as
         an argument.
     """
-    if not os.path.isfile( os.path.abspath( file_path ) ):
-        raise IOError("No such file or directory: '%s'" % file_path)
+    if not os.path.exists(file_path):
+        raise IOError("No such file or directory:  '{0}'".format(file_path))
 
     xmpfile = libxmp.files.XMPFiles()
 

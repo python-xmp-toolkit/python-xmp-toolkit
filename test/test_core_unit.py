@@ -231,7 +231,7 @@ class XMPMetaTestCase(unittest.TestCase):
 
                     self.assertEqual( headline[-5:], "=END="  )
                     self.assertTrue( len(headline) > 450, "Not all text was extracted from headline property."  )
-                except XMPError as e:
+                except ((IOError, XMPError)):
                     pass
 
 
