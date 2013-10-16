@@ -6,6 +6,7 @@ Test suites for exempi routine wrappers.
 # pylint: disable=R0904
 
 import datetime
+import os
 import pkg_resources
 import shutil
 import sys
@@ -19,6 +20,7 @@ else:
 import pytz
 
 import libxmp
+from libxmp import consts
 from libxmp import exempi
 from libxmp.consts import XMP_NS_CC as NS_CC
 from libxmp.consts import XMP_NS_DC as NS_DC
@@ -291,7 +293,7 @@ class TestExempi(unittest.TestCase):
                                                    "samples/BlueSquare.jpg")
 
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, exempi.FileType.jpeg)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
         xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
         xmp = exempi.files_get_new_xmp(xfptr)
@@ -403,13 +405,12 @@ class TestExempi(unittest.TestCase):
                                                    "samples/BlueSquare.jpg")
 
         xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
-
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, exempi.FileType.jpeg)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
         file_path, options, file_format, flags = exempi.files_get_file_info(xfptr)
         self.assertEqual(options, exempi.OpenFileOptions.read)
-        self.assertEqual(file_format, exempi.FileType.jpeg)
+        self.assertEqual(file_format, libxmp.consts.XMP_FT_JPEG)
         self.assertEqual(flags, 0x27f)  # 0x27f?
         self.assertEqual(filename, file_path)
 
@@ -417,4 +418,59 @@ class TestExempi(unittest.TestCase):
         the_prop, _ = exempi.get_property(xmp, NS_PHOTOSHOP, "ICCProfile")
         self.assertEqual(the_prop, "sRGB IEC61966-2.1")
         exempi.files_free(xfptr)
+
+    def test_formats(self):
+        """Verify that check_file_format function works as expected."""
+        pairs = { 'avi':  libxmp.consts.XMP_FT_AVI,
+                  'eps':  libxmp.consts.XMP_FT_EPS,
+                  'gif':  libxmp.consts.XMP_FT_GIF,
+                  'indd': libxmp.consts.XMP_FT_INDESIGN,
+                  'jpg':  libxmp.consts.XMP_FT_JPEG,
+                  'mov':  libxmp.consts.XMP_FT_MOV,
+                  'mp3':  libxmp.consts.XMP_FT_MP3,
+                  'png':  libxmp.consts.XMP_FT_PNG,
+                  'psd':  libxmp.consts.XMP_FT_PHOTOSHOP,
+                  'tif':  libxmp.consts.XMP_FT_TIFF,
+                  'wav':  libxmp.consts.XMP_FT_WAV,
+                  }
+        for suffix, expected_format in pairs.items():
+            relpath = os.path.join('samples', 'BlueSquare' + '.' + suffix)
+            filename = pkg_resources.resource_filename(__name__, relpath)
+            xfptr = exempi.files_open_new(filename,
+                                          exempi.OpenFileOptions.read)
+            actual_format = exempi.files_check_file_format(filename)
+            self.assertEqual(actual_format, expected_format)
+            exempi.files_free(xfptr)
+
+
+    @unittest.skip("Unresolved failure")
+    def test_format_pdf(self):
+        """Verify that check_file_format function works on PDF."""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.pdf")
+        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        fmt = exempi.files_check_file_format(filename)
+        self.assertEqual(fmt, exempi.FileType.pdf)
+        exempi.files_free(xfptr)
+
+    @unittest.skip("Unresolved failure")
+    def test_format_illustrator(self):
+        """Verify that check_file_format function works on Adobe Illustrator."""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.ai")
+        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        fmt = exempi.files_check_file_format(filename)
+        self.assertEqual(fmt, exempi.FileType.illustrator)
+        exempi.files_free(xfptr)
+
+    @unittest.skip("Unresolved failure")
+    def test_format_xmp(self):
+        """Verify that check_file_format function works on XMP."""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.xmp")
+        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        fmt = exempi.files_check_file_format(filename)
+        self.assertEqual(fmt, exempi.FileType.xml)
+        exempi.files_free(xfptr)
+
 

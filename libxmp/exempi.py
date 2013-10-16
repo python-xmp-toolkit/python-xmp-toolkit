@@ -141,53 +141,6 @@ class CloseFileOptions(IntEnum):
     safe_update = 0x0001
 
 
-class FileType(IntEnum):
-    """Public file formats."""
-    pdf             = 0x50444620
-    ps              = 0x50532020
-    eps             = 0x45505320
-
-    jpeg            = 0x4A504547
-    jpeg2k          = 0x4A505820
-    tiff            = 0x54494646
-    gif             = 0x47494620
-    png             = 0x504E4720
-
-    swf             = 0x53574620
-    fla             = 0x464C4120
-    flv             = 0x464C5620
-
-    mov             = 0x4D4F5620  # Quicktime
-    avi             = 0x41564920
-    cin             = 0x43494E20  # Cineon
-    wav             = 0x57415620
-    mp3             = 0x4D503320
-    ses             = 0x53455320  # Audition session
-    cel             = 0x43454C20  # Audition loop
-    mpeg            = 0x4D504547
-    mpeg2           = 0x4D503220
-    mpeg4           = 0x4D503420  # ISO 14494-12 and -14
-    wmav            = 0x574D4156  # Windows Media Audio and Video
-    aiff            = 0x41494646
-
-    html            = 0x48544D4C
-    xml             = 0x584D4C20
-    text            = 0x74657874
-
-    # Adobe application file formats.
-    photoshop       = 0x50534420  # PSD
-    illustrator     = 0x41492020  # AI
-    indesign        = 0x494E4444  # INDD
-    aeproject       = 0x41455020  # AEP
-    aeprojtemplate  = 0x41455420  # AET, After Effects Project Template
-    aefilterpreset  = 0x46465820  # FFX
-    encoreproject   = 0x4E434F52  # NCOR
-    premierproject  = 0x5052504A  # PRPJ
-    premiertitle    = 0x5052544C  # PRTL
-
-    unknown         = 0x20202020
-
-
 class FileFormatOptions(IntEnum):
     """TODO"""
     can_inject_xmp        = 0x00000001
@@ -371,7 +324,11 @@ def append_array_item(xmp, schema, name, array_options, value, option_bits):
     value : str
         The value of the item to be appended.
     option_bits : unsigned int
-        Option bits of the value itself.
+        Mask of options.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_append_array_item.restype = check_error
     EXEMPI.xmp_append_array_item.argtypes = [ctypes.c_void_p,
@@ -445,8 +402,7 @@ def files_check_file_format(filename):
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_check_file_format.restype = ctypes.c_int32
     EXEMPI.xmp_files_check_file_format.argtypes = [ctypes.c_char_p]
-    fmt = EXEMPI.xmp_files_check_file_format(filename.encode())
-    return FileType[fmt]
+    return EXEMPI.xmp_files_check_file_format(filename.encode())
 
 
 def delete_localized_text(xmp, schema, name, generic_lang, specific_lang):
@@ -466,6 +422,10 @@ def delete_localized_text(xmp, schema, name, generic_lang, specific_lang):
         The generic language you may want.  Can be None.
     specific_lang : str
         The specific language.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
 
     .. versionadded:: 2.0.0
     """
@@ -496,6 +456,10 @@ def delete_property(xmp, schema, name):
         The schema of the property.
     name : str
         The name of the property.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_delete_property.restype = check_error
     EXEMPI.xmp_delete_property.argtypes = [ctypes.c_void_p,
@@ -515,6 +479,10 @@ def files_close(xfptr, options):
         File pointer
     options : CloseFileOptions
         the options for closing
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_files_close.restype = check_error
     EXEMPI.xmp_files_close.argtypes = [ctypes.c_void_p, ctypes.c_int32]
@@ -530,6 +498,10 @@ def files_free(xfptr):
     ----------
     xfptr : file pointer
         File pointer
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
 
     """
     EXEMPI.xmp_files_free.restype = check_error
@@ -557,6 +529,10 @@ def files_get_file_info(xfptr):
         the detected file format.
     handler_flags : XmpFileFormatOptions
         the format options like from files_get_format_info.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_files_get_file_info.restype = check_error
     EXEMPI.xmp_files_get_file_info.argtypes = [ctypes.c_void_p,
@@ -579,8 +555,7 @@ def files_get_file_info(xfptr):
     _string_free(_file_path)
 
     options = OpenFileOptions[options.value]
-    file_format = FileType[file_format.value]
-    return file_path, options, file_format, handler_flags.value
+    return file_path, options, file_format.value, handler_flags.value
 
 
 def files_get_new_xmp(xfptr):
@@ -614,6 +589,10 @@ def files_get_xmp(xfptr):
     -------
     xmp_ptr : ctypes pointer
         XMP pointer
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_files_get_xmp.restype = check_error
     EXEMPI.xmp_files_get_xmp.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
@@ -634,6 +613,10 @@ def files_open(xfptr, filename, options):
         File to be opened.
     options : XmpFileOpenOptions
         How the file is to be opened.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     if not os.path.exists(filename) and options & OpenFileOptions.read:
         raise IOError("{0} does not exist.".format(filename))
@@ -691,6 +674,10 @@ def files_put_xmp(xfptr, xmp):
         File pointer.
     xmp : pointer
         The XMP packet.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_files_put_xmp.restype = check_error
     EXEMPI.xmp_files_put_xmp.argtypes = [ctypes.c_void_p, ctypes.c_int32]
@@ -719,6 +706,10 @@ def get_array_item(xmp, schema, name, index):
         The value of the property.
     property_bits : unsigned int
         The property bits
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_get_array_item.restype = check_error
     EXEMPI.xmp_get_array_item.argtypes = [ctypes.c_void_p,
@@ -768,6 +759,10 @@ def get_localized_text(xmp, schema, name, generic_lang, specific_lang):
         option bit mask
     actual_lang : str
         The actual language of the item.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_get_localized_text.restype = check_error
     EXEMPI.xmp_get_localized_text.argtypes = [ctypes.c_void_p,
@@ -821,6 +816,10 @@ def get_property(xmp, schema, name):
         Property value as a string.
     prop_bits : unsigned int
         option bit mask
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_get_property.restype = check_error
@@ -862,6 +861,10 @@ def get_property_bool(xmp, schema, name):
         The value requested.
     prop_bits : unsigned int
         option bit mask
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_get_property_bool.restype = check_error
@@ -900,6 +903,10 @@ def get_property_date(xmp, schema, name):
         Date structure.
     prop_bits : unsigned int
         option bit mask
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_get_property_date.restype = check_error
@@ -956,6 +963,10 @@ def get_property_int32(xmp, schema, name):
         The int32 value requested.
     prop_bits : unsigned int
         option bit mask
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_get_property_int32.restype = check_error
@@ -994,6 +1005,10 @@ def get_property_int64(xmp, schema, name):
         The int64 value requested.
     prop_bits : unsigned int
         option bit mask
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_get_property_int64.restype = check_error
@@ -1080,10 +1095,14 @@ def has_property(xmp, schema, name):
 
 
 def init():
-    """Wrapper for xmp_init library routine."""
+    """Wrapper for xmp_init library routine.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
+    """
     EXEMPI.xmp_init.restype = check_error
-    ret = EXEMPI.xmp_init()
-    return ret
+    EXEMPI.xmp_init()
 
 
 def iterator_free(iterator):
@@ -1093,6 +1112,10 @@ def iterator_free(iterator):
     ----------
     iterator : XmpIteratorPtr
         iterator for use with iterator_next
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
 
     EXEMPI.xmp_iterator_free.argtypes = [ctypes.c_void_p]
@@ -1197,7 +1220,11 @@ def iterator_skip(iterator, options):
     iterator : XmpIteratorPtr
         iterator for use with iterator_next
     options : int
-        TODO
+        Mask of options.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_iterator_skip.argtypes = [ctypes.c_void_p,
                                          ctypes.c_int32]
@@ -1221,6 +1248,10 @@ def namespace_prefix(namespace):
     -------
     prefix : str
         The prefix associated with the namespace.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_namespace_prefix.restype = check_error
     EXEMPI.xmp_namespace_prefix.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
@@ -1260,6 +1291,10 @@ def parse(xmp, strbuffer):
         The XMP packet.
     strbuffer : str
         A string of XML to parse.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_parse.restype = check_error
@@ -1284,6 +1319,10 @@ def prefix_namespace_uri(prefix):
     -------
     namespace : str
         The namespace associated if registered.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_prefix_namespace_uri.restype = check_error
     EXEMPI.xmp_prefix_namespace_uri.argtypes = [ctypes.c_char_p,
@@ -1314,8 +1353,11 @@ def register_namespace(namespace_uri, prefix):
     -------
     registered_prefix : str
         The really registered prefix.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
-    # TODO Needs a raises part.
     EXEMPI.xmp_register_namespace.restype = check_error
     EXEMPI.xmp_register_namespace.argtypes = [ctypes.c_char_p,
                                               ctypes.c_char_p,
@@ -1350,6 +1392,10 @@ def serialize(xmp, options, padding):
     -------
     item : str
         The formatted XMP.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_serialize.restype = check_error
     EXEMPI.xmp_serialize.argtypes = [ctypes.c_void_p,
@@ -1387,6 +1433,10 @@ def serialize_and_format(xmp, options, padding, newline, tab, indent):
     -------
     item : str
         The formatted XMP.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_serialize_and_format.restype = check_error
     EXEMPI.xmp_serialize_and_format.argtypes = [ctypes.c_void_p,
@@ -1421,6 +1471,10 @@ def set_array_item(xmp, schema, name, index, value, option_bits):
         1-based index of the property.
     value : str
         The value of the property.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_set_array_item.restype = check_error
     EXEMPI.xmp_set_array_item.argtypes = [ctypes.c_void_p,
@@ -1459,6 +1513,10 @@ def set_localized_text(xmp, schema, name, generic_lang, specific_lang, value,
         Opaque pointer to an XMP string.
     mask : unsigned int
         option bit mask
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_set_localized_text.restype = check_error
     EXEMPI.xmp_set_localized_text.argtypes = [ctypes.c_void_p,
@@ -1497,7 +1555,11 @@ def set_property(xmp, schema, name, value, option_bits=0):
     value : str
         The name of the property.
     option_bits : unsigned int
-        #TODO
+        Mask of options.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_set_property.restype = check_error
@@ -1530,7 +1592,11 @@ def set_property_bool(xmp, schema, name, value, option_bits=0):
     value : bool
         The boolean value
     option_bits : unsigned int
-        #TODO
+        Mask of options.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_set_property_bool.restype = check_error
@@ -1564,7 +1630,11 @@ def set_property_date(xmp, schema, name, the_date, option_bits=0):
     the_date : datetime.datetime
         The date and time
     option_bits : unsigned int
-        #TODO
+        Mask of options.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_set_property_date.restype = check_error
@@ -1612,7 +1682,11 @@ def set_property_int32(xmp, schema, name, value, option_bits=0):
     value : int64
         The int32 value
     option_bits : unsigned int
-        #TODO
+        Mask of options.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_set_property_int32.restype = check_error
@@ -1646,7 +1720,11 @@ def set_property_int64(xmp, schema, name, value, option_bits=0):
     value : int
         The int64 value
     option_bits : unsigned int
-        #TODO
+        Mask of options.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_set_property_int64.restype = check_error
@@ -1680,7 +1758,11 @@ def set_property_float(xmp, schema, name, value, option_bits=0):
     value : float
         The float value
     option_bits : unsigned int
-        #TODO
+        Mask of options.
+
+    Raises
+    ------
+    XMPError : if the corresponding library routine fails
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_set_property_float.restype = check_error
