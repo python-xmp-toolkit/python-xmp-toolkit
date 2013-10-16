@@ -110,9 +110,6 @@ class XMPFiles(object):
         if self._file_path != None:
             raise XMPError('A file is already open - close it first.')
 
-        if not os.path.exists(file_path):
-            raise XMPError('File does not exists.')
-
         _cexempi.files_open( self.xmpfileptr, file_path, open_flags )
         self._file_path = file_path
 
