@@ -474,3 +474,139 @@ class TestExempi(unittest.TestCase):
         exempi.files_free(xfptr)
 
 
+class TestIteration(unittest.TestCase):
+    """
+    Test suite for iteration configurations.
+    """
+    def setUp(self):
+        exempi.init()
+
+    @unittest.skip("Unresolved error.")
+    def test_namespaces(self):
+        """Iterate through the namespaces."""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+        xmp = exempi.new_empty()
+        exempi.parse(xmp, strbuffer)
+
+        options = exempi.IterOptions.namespaces
+        iterator = exempi.iterator_new(xmp, None, None, options)
+
+        schemas = []
+        paths = []
+        props = []
+
+        while True:
+            try:
+                schema, path, prop, _ = exempi.iterator_next(iterator)
+
+                schemas.append(schema)
+                paths.append(path)
+                props.append(prop)
+
+            except StopIteration:
+                break
+
+        #for j in range(len(props)):
+        #    print('"{0}":  "{1}"  "{2}"'.format(schemas[j],
+        #                                        paths[j],
+        #                                        props[j]))
+        exempi.iterator_free(iterator)
+        exempi.free(xmp)
+
+
+    def test_single_namespace_single_path_leaf_nodes(self):
+        """Get all the leaf nodes from a single path, single namespace."""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+        xmp = exempi.new_empty()
+        exempi.parse(xmp, strbuffer)
+
+        options = exempi.IterOptions.just_leaf_nodes
+        iterator = exempi.iterator_new(xmp, NS_DC, "rights", options)
+
+        schemas = []
+        paths = []
+        props = []
+
+        while True:
+            try:
+                schema, path, prop, _ = exempi.iterator_next(iterator)
+
+                schemas.append(schema)
+                paths.append(path)
+                props.append(prop)
+
+            except StopIteration:
+                break
+
+        for j in range(len(props)):
+            self.assertEqual(schemas[j], NS_DC)
+
+        self.assertEqual(paths[0], "dc:rights[1]")
+        self.assertEqual(paths[1], "dc:rights[1]/?xml:lang")
+
+        self.assertEqual(props[0], "2006, Hubert Figuiere")
+        self.assertEqual(props[1], "x-default")
+
+        exempi.iterator_free(iterator)
+        exempi.free(xmp)
+
+
+    def test_single_namespace_leaf_nodes(self):
+        """Get all the leaf nodes from a single namespace."""
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+        xmp = exempi.new_empty()
+        exempi.parse(xmp, strbuffer)
+
+        options = exempi.IterOptions.just_leaf_nodes
+        iterator = exempi.iterator_new(xmp, NS_DC, None, options)
+
+        schemas = []
+        paths = []
+        props = []
+
+        while True:
+            try:
+                schema, path, prop, _ = exempi.iterator_next(iterator)
+
+                schemas.append(schema)
+                paths.append(path)
+                props.append(prop)
+
+            except StopIteration:
+                break
+
+        for j in range(len(props)):
+            self.assertEqual(schemas[j], NS_DC)
+
+        self.assertEqual(paths[0], "dc:creator[1]")
+        self.assertEqual(paths[1], "dc:rights[1]")
+
+        # TODO:  why is this one here?
+        self.assertEqual(paths[2], "dc:rights[1]/?xml:lang")
+
+        self.assertEqual(paths[3], "dc:subject[1]")
+        self.assertEqual(paths[4], "dc:subject[2]")
+        self.assertEqual(paths[5], "dc:subject[3]")
+        self.assertEqual(paths[6], "dc:subject[4]")
+
+        self.assertEqual(props[0], "unknown")
+        self.assertEqual(props[1], "2006, Hubert Figuiere")
+        self.assertEqual(props[2], "x-default")
+        self.assertEqual(props[3], "night")
+        self.assertEqual(props[4], "ontario")
+        self.assertEqual(props[5], "ottawa")
+        self.assertEqual(props[6], "parliament of canada")
+
+        exempi.iterator_free(iterator)
+        exempi.free(xmp)
+
+
