@@ -41,8 +41,8 @@ probably need to run configure with one of the following options.::
   ./configure --with-fink 
 
 .. warning::
-	Note, only Exempi 2.1.1 compiles on OS X and Exempi 2.1.1 also fixes an issue over 2.1
-	that could lead to complete crash of the Python interpreter.
+	Note, only Exempi 2.1.1 compiles on OS X and Exempi 2.1.1 also fixes an
+    issue over 2.1 that could lead to complete crash of the Python interpreter.
 
 Windows 
 -------
