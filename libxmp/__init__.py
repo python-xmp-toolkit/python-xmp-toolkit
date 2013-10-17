@@ -82,9 +82,6 @@ _XMP_ERROR_CODES = {
     -211 : 'XMPErr_BadMPEG'
 }
 
-#
-# Exceptions
-#
 class ExempiLoadError(Exception):
     """ Error signaling that the Exempi library cannot be loaded. """
     pass

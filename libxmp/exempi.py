@@ -9,9 +9,11 @@ import os
 from flufl.enum import IntEnum
 import pytz
 
-from . import XMPError
+from . import XMPError, ExempiLoadError
 
-EXEMPI = ctypes.CDLL(find_library('exempi'))
+EXEMPI = ctypes.CDLL(find_library('exempi45'))
+if not hasattr(EXEMPI, 'xmp_init'):
+    raise ExempiLoadError('Exempi library not found.')
 
 class ErrorCodes(IntEnum):
     """
