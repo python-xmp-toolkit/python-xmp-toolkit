@@ -41,11 +41,11 @@ efficiently access the XMP in specific file formats. It also includes a
 fallback packet scanner that can be used for unknown file formats.
 """
 
-from libxmp import XMPError, XMPMeta
-from libxmp.consts import options_mask
-from libxmp.consts import XMP_CLOSE_NOOPTION
-from libxmp.consts import XMP_OPEN_OPTIONS
-from libxmp.consts import XMP_OPEN_NOOPTION
+from . import XMPError, XMPMeta
+from .consts import options_mask
+from .consts import XMP_CLOSE_NOOPTION
+from .consts import XMP_OPEN_OPTIONS
+from .consts import XMP_OPEN_NOOPTION
 from . import exempi as _cexempi
 
 __all__ = ['XMPFiles']

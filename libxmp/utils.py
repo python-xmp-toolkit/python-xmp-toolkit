@@ -36,7 +36,8 @@
 Helper utilities.
 """
 
-import libxmp
+from . import XMPError
+from .files import XMPFiles
 import os
 from .exempi import EXEMPI as _cexempi
 
@@ -72,12 +73,12 @@ def file_to_dict(file_path):
     if not os.path.exists(file_path):
         raise IOError("No such file or directory:  '{0}'".format(file_path))
 
-    xmpfile = libxmp.files.XMPFiles()
+    xmpfile = XMPFiles()
 
     try:
         xmpfile.open_file( file_path, open_read=True )
         xmp = xmpfile.get_xmp()
-    except libxmp.XMPError:
+    except XMPError:
         return {}
 
     return object_to_dict(xmp)
