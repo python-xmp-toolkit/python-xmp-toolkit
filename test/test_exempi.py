@@ -66,7 +66,7 @@ class TestPythonXmpToolkit(unittest.TestCase):
     """
     def test_file_not_there_open_new(self):
         """
-        The library does not catch comfortably, so we have to.
+        The library does not catch comfortably, so we perform our own check.
         """
         with self.assertRaises(IOError):
             xfptr = exempi.files_open_new('notthere.xmp',
@@ -74,7 +74,7 @@ class TestPythonXmpToolkit(unittest.TestCase):
 
     def test_file_not_there_check_file_format(self):
         """
-        The library does not catch comfortably, so we have to.
+        The library does not catch comfortably, so we perform our own check.
         """
         with self.assertRaises(IOError):
             exempi.files_check_file_format('notthere.xmp')
@@ -481,9 +481,8 @@ class TestIteration(unittest.TestCase):
     def setUp(self):
         exempi.init()
 
-    @unittest.skip("Unresolved error.")
-    def test_namespaces(self):
-        """Iterate through the namespaces."""
+    def collect_iteration(self, schema, prop, options):
+        """Run thru an iteration for a given configuration."""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
         with open(filename, 'r') as fptr:
@@ -491,8 +490,7 @@ class TestIteration(unittest.TestCase):
         xmp = exempi.new_empty()
         exempi.parse(xmp, strbuffer)
 
-        options = exempi.IterOptions.namespaces
-        iterator = exempi.iterator_new(xmp, None, None, options)
+        iterator = exempi.iterator_new(xmp, schema, prop, options)
 
         schemas = []
         paths = []
@@ -509,40 +507,22 @@ class TestIteration(unittest.TestCase):
             except StopIteration:
                 break
 
-        #for j in range(len(props)):
-        #    print('"{0}":  "{1}"  "{2}"'.format(schemas[j],
-        #                                        paths[j],
-        #                                        props[j]))
         exempi.iterator_free(iterator)
         exempi.free(xmp)
 
 
+        return schemas, paths, props
+
+    @unittest.skip("Segfaults.")
+    def test_namespaces(self):
+        """Iterate through the namespaces."""
+        options = exempi.IterOptions.namespaces
+        schemas, paths, props = self.collect_iteration(None, None, options)
+
     def test_single_namespace_single_path_leaf_nodes(self):
         """Get all the leaf nodes from a single path, single namespace."""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
-        xmp = exempi.new_empty()
-        exempi.parse(xmp, strbuffer)
-
         options = exempi.IterOptions.just_leaf_nodes
-        iterator = exempi.iterator_new(xmp, NS_DC, "rights", options)
-
-        schemas = []
-        paths = []
-        props = []
-
-        while True:
-            try:
-                schema, path, prop, _ = exempi.iterator_next(iterator)
-
-                schemas.append(schema)
-                paths.append(path)
-                props.append(prop)
-
-            except StopIteration:
-                break
+        schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
 
         for j in range(len(props)):
             self.assertEqual(schemas[j], NS_DC)
@@ -553,36 +533,39 @@ class TestIteration(unittest.TestCase):
         self.assertEqual(props[0], "2006, Hubert Figuiere")
         self.assertEqual(props[1], "x-default")
 
-        exempi.iterator_free(iterator)
-        exempi.free(xmp)
+
+    def test_single_namespace_single_path_children(self):
+        """Get just child nodes from a single path, single namespace."""
+        # This does not result in retrieving dc:rights[1]/?xml:lang
+        options = exempi.IterOptions.just_children
+        schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
+
+        self.assertEqual(schemas, [NS_DC])
+        self.assertEqual(paths, ["dc:rights[1]"])
+        self.assertEqual(props, ["2006, Hubert Figuiere"])
+
+
+    def test_single_namespace_single_path_leaf_names(self):
+        """Get just leaf names from a single path, single namespace."""
+        # TODO:  why?
+        options = exempi.IterOptions.just_leaf_names
+        schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
+
+        self.assertEqual(schemas, [NS_DC, NS_DC, NS_DC])
+        self.assertEqual(paths,
+                         ['dc:rights',
+                          '[1]',
+                          'xml:lang'])
+        self.assertEqual(props,
+                         ['',
+                          '2006, Hubert Figuiere',
+                          'x-default'])
 
 
     def test_single_namespace_leaf_nodes(self):
         """Get all the leaf nodes from a single namespace."""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
-        xmp = exempi.new_empty()
-        exempi.parse(xmp, strbuffer)
-
         options = exempi.IterOptions.just_leaf_nodes
-        iterator = exempi.iterator_new(xmp, NS_DC, None, options)
-
-        schemas = []
-        paths = []
-        props = []
-
-        while True:
-            try:
-                schema, path, prop, _ = exempi.iterator_next(iterator)
-
-                schemas.append(schema)
-                paths.append(path)
-                props.append(prop)
-
-            except StopIteration:
-                break
+        schemas, paths, props = self.collect_iteration(NS_DC, None, options)
 
         for j in range(len(props)):
             self.assertEqual(schemas[j], NS_DC)
@@ -606,7 +589,74 @@ class TestIteration(unittest.TestCase):
         self.assertEqual(props[5], "ottawa")
         self.assertEqual(props[6], "parliament of canada")
 
-        exempi.iterator_free(iterator)
-        exempi.free(xmp)
+    @unittest.skip("Segfaults.")
+    def test_no_namespace_single_prop_leaf_nodes(self):
+        """Get all the leaf nodes from a single property."""
+        options = exempi.IterOptions.just_leaf_nodes
+        schemas, paths, props = self.collect_iteration(None, "rights", options)
 
+        print(schemas)
+        print(paths)
+        print(props)
+
+    def test_single_namespace_leaf_nodes_omit_qualifiers(self):
+        """Get all the leaf nodes (no qualifiers) from a single namespace."""
+        # TODO:  explain
+        options = exempi.IterOptions.just_leaf_nodes
+        options &= exempi.IterOptions.omit_qualifiers
+        schemas, paths, props = self.collect_iteration(NS_DC, None, options)
+
+        self.assertEqual(schemas, [NS_DC] * 11)
+        self.assertEqual(paths, ['',
+                                 'dc:creator',
+                                 'dc:creator[1]',
+                                 'dc:rights',
+                                 'dc:rights[1]',
+                                 'dc:rights[1]/?xml:lang',
+                                 'dc:subject',
+                                 'dc:subject[1]',
+                                 'dc:subject[2]',
+                                 'dc:subject[3]',
+                                 'dc:subject[4]'])
+        self.assertEqual(props, ['',
+                                 '',
+                                 'unknown',
+                                 '',
+                                 '2006, Hubert Figuiere',
+                                 'x-default',
+                                 '',
+                                 'night',
+                                 'ontario',
+                                 'ottawa',
+                                 'parliament of canada'])
+
+    def test_single_namespace_properties(self):
+        """Get all the properties from a single namespace."""
+        # TODO:  same as above, must explain
+        options = exempi.IterOptions.properties
+        schemas, paths, props = self.collect_iteration(NS_DC, None, options)
+
+        self.assertEqual(schemas, [NS_DC] * 11)
+        self.assertEqual(paths, ['',
+                                 'dc:creator',
+                                 'dc:creator[1]',
+                                 'dc:rights',
+                                 'dc:rights[1]',
+                                 'dc:rights[1]/?xml:lang',
+                                 'dc:subject',
+                                 'dc:subject[1]',
+                                 'dc:subject[2]',
+                                 'dc:subject[3]',
+                                 'dc:subject[4]'])
+        self.assertEqual(props, ['',
+                                 '',
+                                 'unknown',
+                                 '',
+                                 '2006, Hubert Figuiere',
+                                 'x-default',
+                                 '',
+                                 'night',
+                                 'ontario',
+                                 'ottawa',
+                                 'parliament of canada'])
 

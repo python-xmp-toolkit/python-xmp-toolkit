@@ -12,8 +12,3 @@ Python XMP Toolkit has been developed by:
 
 Additional documentation is included in the docs/ directory in both HTML and
 PDF versions.
-
-Incompatible changes:
-    XMPMeta.serialize_to_str is deprecated.  Use serialize instead.
-    XMPMeta.serialize_to_unicode is deprecated.  Errors out in 3.x  Use 
-        serialize instead.

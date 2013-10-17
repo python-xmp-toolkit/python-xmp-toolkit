@@ -169,6 +169,7 @@ class IterOptions(IntEnum):
 
     # Iterate the global namespace table.
     namespaces      = 0x0002
+
     # Just do the immediate children * of the root, default is subtree.
     just_children   = 0x0100
 
@@ -1188,7 +1189,7 @@ def iterator_new(xmp, schema, propname, options):
     schema, propname : str
         The schema and name of the property.
     options : unsigned integer
-        The options for the property.
+        Option bit mask for controlling iteration.
 
     Returns
     -------
