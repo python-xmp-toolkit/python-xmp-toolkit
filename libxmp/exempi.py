@@ -11,7 +11,7 @@ import pytz
 
 from . import XMPError, ExempiLoadError
 
-EXEMPI = ctypes.CDLL(find_library('exempi45'))
+EXEMPI = ctypes.CDLL(find_library('exempi'))
 if not hasattr(EXEMPI, 'xmp_init'):
     raise ExempiLoadError('Exempi library not found.')
 
