@@ -45,8 +45,6 @@ import os
 import sys
 
 from libxmp import XMPError, XMPMeta
-from libxmp import _XMP_ERROR_CODES
-#from libxmp.consts import *
 from libxmp.consts import options_mask
 from libxmp.consts import XMP_CLOSE_NOOPTION
 from libxmp.consts import XMP_OPEN_OPTIONS

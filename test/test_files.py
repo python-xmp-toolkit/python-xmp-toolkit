@@ -44,8 +44,13 @@ if sys.hexversion < 0x02070000:
 else:
     import unittest
 
-from libxmp import *
-from libxmp.consts import *
+from libxmp import XMPFiles, XMPMeta, XMPError
+from libxmp.consts import XMP_NS_Photoshop as NS_PHOTOSHOP
+from libxmp.consts import XMP_FT_TEXT
+from libxmp.consts import XMP_FT_PDF
+from libxmp.consts import XMP_FT_ILLUSTRATOR
+from libxmp.consts import XMP_FT_MOV
+from libxmp.consts import XMP_FT_XML
 from libxmp import exempi
 from .common_fixtures import setup_sample_files
 from .samples import open_flags
@@ -153,7 +158,8 @@ class XMPFilesTestCase(unittest.TestCase):
                     xmpfile = XMPFiles( file_path=f, **kwargs )
                     try:
                         xmp = xmpfile.get_xmp()
-                        self.assertTrue( isinstance(xmp, XMPMeta), "Not an XMPMeta object" )
+                        self.assertTrue(isinstance(xmp, XMPMeta),
+                                        "Not an XMPMeta object" )
                     except XMPError as e:
                         print(f)
                         print(flg)
@@ -179,8 +185,10 @@ class XMPFilesTestCase(unittest.TestCase):
 
     def flg_fmt_combi( self, flg, fmt ):
         """ See test_exempi_bad_combinations """
-        is_snow_leopard = platform.system() =='Darwin' and int(platform.release().split(".")[0]) >= 10
-        # Note, exempi for OS X 10.6 don't have smart handlers for MOV due to large changes in Quicktime from 10.5 to 10.6
+        # Note, exempi for OS X 10.6 don't have smart handlers for MOV due to
+        # large changes in Quicktime from 10.5 to 10.6
+        is_snow_leopard = ((platform.system() == 'Darwin') and
+                           (int(platform.release().split(".")[0]) >= 10))
 
         return ((((fmt == XMP_FT_TEXT or 
                    fmt == XMP_FT_PDF or 
@@ -194,8 +202,10 @@ class XMPFilesTestCase(unittest.TestCase):
 
     def test_exempi_bad_combinations(self):
         """
-        Certain combinations of formats and open flags will raise an XMPError when you try to open the XMP
+        Verify bad combinations of formats and open flags.
         """
+        # Certain combinations of formats and open flags will raise an XMPError
+        # when you try to open the XMP
         for flg in open_flags:
             kwargs = { flg: True }
             for f, fmt in zip(self.samplefiles, self.formats):
@@ -205,10 +215,8 @@ class XMPFilesTestCase(unittest.TestCase):
                     xmpfile.get_xmp()
                 else:
                     xmpfile = XMPFiles()
-                    #xmpfile.open_file( f, **kwargs )
                     with self.assertRaises(XMPError):
                         xmpfile.open_file( f, **kwargs )
-                    #self.assertRaises( XMPError, xmpfile.get_xmp )
 
     def exempi_problem( self, flg, fmt ):
         """
@@ -216,7 +224,8 @@ class XMPFilesTestCase(unittest.TestCase):
 
         See exempi_error for a test case where this fails.
         """
-        return ((fmt == XMP_FT_TEXT or fmt == XMP_FT_XML) and flg == 'open_forupdate' )
+        return ((fmt == XMP_FT_TEXT or fmt == XMP_FT_XML) and
+                (flg == 'open_forupdate'))
 
     def exempi_error(self):
         """
@@ -224,11 +233,13 @@ class XMPFilesTestCase(unittest.TestCase):
 
         Seems like xmp_files_can_put_xmp in exempi is missing a try/catch block.
 
-        So loading a sidecar file and call can_put_xmp will kill python interpreter since
-        a C++ exception is thrown.
+        So loading a sidecar file and call can_put_xmp will kill python
+        interpreter since a C++ exception is thrown.
         """
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/sig05-002a.xmp")
         xmpfile = XMPFiles()
-        xmpfile.open_file( '.tempsamples/sig05-002a.xmp', open_forupdate = True )
+        xmpfile.open_file(filename, open_forupdate = True )
         xmp = xmpfile.get_xmp()
         xmpfile.can_put_xmp( xmp )
 
@@ -239,10 +250,9 @@ class XMPFilesTestCase(unittest.TestCase):
         filename = os.path.join(self.tempdir, 'sig05-002a.tif')
         xmpfile.open_file(filename)
         xmp_data = xmpfile.get_xmp()
-        xmp_data.set_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline', "Some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times." )
+        xmp_data.set_property( NS_PHOTOSHOP, 'Headline', "Some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times." )
         self.assertRaises( XMPError, xmpfile.put_xmp, xmp_data )
         self.assertEqual( xmpfile.can_put_xmp( xmp_data ), False )
-        #xmp = XMPFiles( file_path="/home/clr/ruby/rails/spitzer.caltech.edu/spec/fixtures/test.tif" )
 
 
 
@@ -258,5 +268,4 @@ def test( verbose=2 ):
     return result, runner
 
 if __name__ == "__main__":
-    #test()
     unittest.main()

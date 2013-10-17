@@ -511,6 +511,10 @@ class UnicodeTestCase(unittest.TestCase):
 
         del xmp
 
+    def test_libxmp_version(self):
+        """Verify that the version attribute is accessible."""
+        self.assertTrue(hasattr(libxmp, '__version__'))
+
 
 def suite():
     suite = unittest.TestSuite()
