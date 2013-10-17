@@ -66,7 +66,7 @@ KWARGS = {
 version_file = os.path.join('libxmp', 'version.py')
 with open(version_file, 'rt') as fptr:
     contents = fptr.read()
-    match = re.search('version\s*=\s*"(?P<version>\d*.\d*.\d*.*)"\n', contents)
+    match = re.search('VERSION\s*=\s*"(?P<version>\d*.\d*.\d*.*)"\n', contents)
     KWARGS['version'] = match.group('version')
 
 setup(**KWARGS)

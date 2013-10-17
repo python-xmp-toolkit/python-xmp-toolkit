@@ -44,19 +44,19 @@ __all__ = ['terminate', 'object_to_dict', 'file_to_dict']
 
 def object_to_dict(xmp):
     """
-    Extracts all XMP data from a given XMPMeta instance organizing it into a standard
-    Python dictionary.
+    Extracts all XMP data from a given XMPMeta instance organizing it into a
+    standard Python dictionary.
     """
     dxmp = dict()
 
     if not xmp:
         return {}
 
-    for x in xmp:
-        if x[-1]['IS_SCHEMA']:
-            dxmp[x[0]] = []
+    for item in xmp:
+        if item[-1]['IS_SCHEMA']:
+            dxmp[item[0]] = []
         else:
-            dxmp[x[0]].append(x[1:])
+            dxmp[item[0]].append(item[1:])
 
     return dxmp
 
@@ -94,9 +94,5 @@ def terminate():
     .. warning::
         After this function have been called, any call to methods in
         libxmp will result in a crash of Python.
-
-
-    Note, Exempi library is automatically initialized when loading libxmp and normally
-    you will not need to call this method. However, there might be cases where
     """
     _cexempi.xmp_terminate()

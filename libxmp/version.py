@@ -32,11 +32,13 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-import sys
+"""
+Version information for libxmp.
+"""
+
 from distutils.version import LooseVersion
 
 # Do not change the format of this next line!  Doing so risks breaking
 # setup.py
-version = "1.9.0"
-_sv = LooseVersion(version)
-version_tuple = _sv.version
+VERSION = "1.9.0"
+VERSION_TUPLE = LooseVersion(VERSION).version

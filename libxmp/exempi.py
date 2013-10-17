@@ -294,10 +294,10 @@ class XmpDateTime(ctypes.Structure):
         ("hour",        ctypes.c_int32),
         ("minute",      ctypes.c_int32),
         ("second",      ctypes.c_int32),
-        ("tzSign",      ctypes.c_int32),
-        ("tzHour",      ctypes.c_int32),
-        ("tzMinute",    ctypes.c_int32),
-        ("nanoSecond",  ctypes.c_int32)]
+        ("tzsign",      ctypes.c_int32),
+        ("tzhour",      ctypes.c_int32),
+        ("tzminute",    ctypes.c_int32),
+        ("nanosecond",  ctypes.c_int32)]
 
 
 class TimeSign(IntEnum):
@@ -655,7 +655,8 @@ def files_open(xfptr, filename, options):
     XMPError : if the corresponding library routine fails
     """
     if (((not os.path.exists(filename)) and
-         ((options == OpenFileOptions.no_option) or (options & OpenFileOptions.read)))):
+         ((options == OpenFileOptions.no_option) or
+          (options & OpenFileOptions.read)))):
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open.restype = check_error
     EXEMPI.xmp_files_open.argtypes = [ctypes.c_void_p,
@@ -876,7 +877,7 @@ def get_property(xmp, schema, name):
 
     value = string_cstr(_value)
     _string_free(_value)
-    
+
     return value, prop_bits.value
 
 
@@ -970,11 +971,11 @@ def get_property_date(xmp, schema, name):
                               xmp_date_time.second)
     utc = pytz.timezone('utc')
     utc_date = utc.localize(date1)
-    delta = datetime.timedelta(hours=xmp_date_time.tzHour,
-                               minutes=xmp_date_time.tzMinute,
-                               microseconds=xmp_date_time.nanoSecond * 1000)
+    delta = datetime.timedelta(hours=xmp_date_time.tzhour,
+                               minutes=xmp_date_time.tzminute,
+                               microseconds=xmp_date_time.nanosecond * 1000)
 
-    if xmp_date_time.tzSign < 0:
+    if xmp_date_time.tzsign < 0:
         the_date = utc_date - delta
     else:
         the_date = utc_date + delta
@@ -1691,10 +1692,10 @@ def set_property_date(xmp, schema, name, the_date, option_bits=0):
     xmp_date.hour = the_date.hour
     xmp_date.minute = the_date.minute
     xmp_date.second = the_date.second
-    xmp_date.tzSign = 0
-    xmp_date.tzHour = 0
-    xmp_date.tzMinute = 0
-    xmp_date.nanoSecond = 0
+    xmp_date.tzsign = 0
+    xmp_date.tzhour = 0
+    xmp_date.tzminute = 0
+    xmp_date.nanosecond = 0
 
     EXEMPI.xmp_set_property_date(xmp,
                                  ctypes.c_char_p(schema.encode()),

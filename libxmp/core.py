@@ -237,7 +237,7 @@ class XMPMeta(object):
 
 
     def append_array_item(self, schema_ns, array_name, item_value,
-                          array_options={}, **kwargs ):
+                          array_options=None, **kwargs ):
         """Adds an item to an array, creating the array if necessary.
 
         This function simplifies construction of an array by not requiring that
@@ -257,7 +257,7 @@ class XMPMeta(object):
         :param **kwargs:        Optional keyword arguments describing the item
             type to create.
         """
-        if array_options:
+        if array_options is not None:
             array_options = options_mask(XMP_PROP_OPTIONS, **array_options)
         else:
             array_options = 0
@@ -367,7 +367,7 @@ class XMPMeta(object):
 
 
     def get_localized_text(self, schema_ns, alt_text_name, generic_lang,
-                           specific_lang, **kwargs):
+                           specific_lang):
         """Returns information about a selected item in an alt-text array.
 
         :param str schema_ns:   The namespace URI; see get_property().

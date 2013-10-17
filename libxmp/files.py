@@ -41,9 +41,6 @@ efficiently access the XMP in specific file formats. It also includes a
 fallback packet scanner that can be used for unknown file formats.
 """
 
-import os
-import sys
-
 from libxmp import XMPError, XMPMeta
 from libxmp.consts import options_mask
 from libxmp.consts import XMP_CLOSE_NOOPTION
