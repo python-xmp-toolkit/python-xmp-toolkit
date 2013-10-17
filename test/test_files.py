@@ -69,8 +69,9 @@ class XMPFilesTestCase(unittest.TestCase):
         del xmpfile
 
     def test_test_files(self):
-        for f in self.samplefiles:
-            self.assertTrue( os.path.exists(f), "Test file does not exists." )
+        for filename in self.samplefiles:
+            self.assertTrue(os.path.exists(filename),
+                            "Test file does not exists." )
 
     def test_open_file(self):
         # Non-existing file.
@@ -87,34 +88,32 @@ class XMPFilesTestCase(unittest.TestCase):
         self.assertRaises( XMPError, xmpfile.open_file, self.samplefiles[0] )
 
         # Open all sample files.
-        for f in self.samplefiles:
+        for filename in self.samplefiles:
             xmpfile = XMPFiles()
-            xmpfile.open_file( f )
+            xmpfile.open_file(filename)
 
         # Try using init
-        for f in self.samplefiles:
-            xmpfile = XMPFiles( file_path=f )
+        for filename in self.samplefiles:
+            xmpfile = XMPFiles(file_path=filename)
 
     def test_open_file_with_options(self):
         """Try all open options"""
         for flg in open_flags:
             kwargs = { flg: True }
 
-            for f in self.samplefiles:
-                # TODO:  files_check_file_format does not want to work?
-                fmt = exempi.files_check_file_format(f)
-                if f.lower().endswith('.ai') and flg == 'open_usesmarthandler':
-                    continue
-                if f.lower().endswith('.pdf') and flg == 'open_usesmarthandler':
-                    continue
-                if f.lower().endswith('.xmp') and flg == 'open_usesmarthandler':
-                    continue
-                if f.lower().endswith('.pdf') and flg == 'open_limitscanning':
-                    continue
-                if f.lower().endswith('.xmp') and flg == 'open_limitscanning':
-                    continue
+            for filename in self.samplefiles:
+                if flg == 'open_usesmarthandler':
+                    # We know these are problematic.
+                    suffices = ('.ai', '.pdf', '.xmp')
+                    if filename.lower().endswith(suffices):
+                        continue
+                if flg == 'open_limitscanning':
+                    # We know these are problematic.
+                    suffices = ('.pdf', '.xmp')
+                    if filename.lower().endswith(suffices):
+                        continue
                 xmpfile = XMPFiles()
-                xmpfile.open_file( f, **kwargs )
+                xmpfile.open_file(filename, **kwargs)
 
     def test_open_use_smarthandler(self):
         """Verify this library failure."""
@@ -145,23 +144,23 @@ class XMPFilesTestCase(unittest.TestCase):
 
 
     def test_close_file(self):
-        for f in self.samplefiles:
-            xmpfile = XMPFiles( file_path=f )
+        for filename in self.samplefiles:
+            xmpfile = XMPFiles( file_path=filename )
             xmpfile.close_file()
 
     def test_get_xmp(self):
         for flg in open_flags:
             kwargs = { flg: True }
-            for f, fmt in zip(self.samplefiles, self.formats):
+            for filename, fmt in zip(self.samplefiles, self.formats):
                 # See test_exempi_error()
-                if not self.flg_fmt_combi(flg,fmt):
-                    xmpfile = XMPFiles( file_path=f, **kwargs )
+                if not self.flg_fmt_combi(flg, fmt):
+                    xmpfile = XMPFiles( file_path=filename, **kwargs )
                     try:
                         xmp = xmpfile.get_xmp()
                         self.assertTrue(isinstance(xmp, XMPMeta),
                                         "Not an XMPMeta object" )
-                    except XMPError as e:
-                        print(f)
+                    except XMPError:
+                        print(filename)
                         print(flg)
                         print(fmt)
                     xmpfile.close_file()
@@ -169,11 +168,12 @@ class XMPFilesTestCase(unittest.TestCase):
     def test_can_put_xmp(self):
         for flg in open_flags:
             kwargs = { flg: True }
-            for f, fmt in zip(self.samplefiles, self.formats):
+            for filename, fmt in zip(self.samplefiles, self.formats):
                 # See test_exempi_error()
-                if not self.flg_fmt_combi(flg,fmt) and not self.exempi_problem(flg, fmt):
+                if (((not self.flg_fmt_combi(flg, fmt)) and
+                     (not self.exempi_problem(flg, fmt)))):
                     xmpfile = XMPFiles()
-                    xmpfile.open_file( f, **kwargs )
+                    xmpfile.open_file( filename, **kwargs )
                     xmp = xmpfile.get_xmp()
                     if flg == 'open_forupdate':
                         self.assertTrue( xmpfile.can_put_xmp( xmp ) )
@@ -190,9 +190,9 @@ class XMPFilesTestCase(unittest.TestCase):
         is_snow_leopard = ((platform.system() == 'Darwin') and
                            (int(platform.release().split(".")[0]) >= 10))
 
-        return ((((fmt == XMP_FT_TEXT or 
-                   fmt == XMP_FT_PDF or 
-                   fmt == XMP_FT_ILLUSTRATOR) or 
+        return ((((fmt == XMP_FT_TEXT or
+                   fmt == XMP_FT_PDF or
+                   fmt == XMP_FT_ILLUSTRATOR) or
                   (fmt == XMP_FT_MOV and is_snow_leopard)) and
                  (flg == 'open_usesmarthandler')) or
                 (((fmt == XMP_FT_TEXT) or
@@ -208,15 +208,15 @@ class XMPFilesTestCase(unittest.TestCase):
         # when you try to open the XMP
         for flg in open_flags:
             kwargs = { flg: True }
-            for f, fmt in zip(self.samplefiles, self.formats):
-                if not self.flg_fmt_combi(flg,fmt):
+            for filename, fmt in zip(self.samplefiles, self.formats):
+                if not self.flg_fmt_combi(flg, fmt):
                     xmpfile = XMPFiles()
-                    xmpfile.open_file( f, **kwargs )
+                    xmpfile.open_file( filename, **kwargs )
                     xmpfile.get_xmp()
                 else:
                     xmpfile = XMPFiles()
                     with self.assertRaises(XMPError):
-                        xmpfile.open_file( f, **kwargs )
+                        xmpfile.open_file( filename, **kwargs )
 
     def exempi_problem( self, flg, fmt ):
         """
@@ -244,6 +244,7 @@ class XMPFilesTestCase(unittest.TestCase):
         xmpfile.can_put_xmp( xmp )
 
     def test_write_in_readonly(self):
+        """If not "open_forupdate = True", should raise exception"""
         # Note, the file should have been opened with "open_forupdate = True"
         # so let's check if XMPMeta is raising an Exception.
         xmpfile = XMPFiles()
@@ -257,9 +258,9 @@ class XMPFilesTestCase(unittest.TestCase):
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(XMPFilesTestCase))
-    return suite
+    the_suite = unittest.TestSuite()
+    the_suite.addTest(unittest.makeSuite(XMPFilesTestCase))
+    return the_suite
 
 def test( verbose=2 ):
     all_tests = suite()
