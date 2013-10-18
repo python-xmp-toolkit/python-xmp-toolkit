@@ -44,6 +44,16 @@ if sys.hexversion < 0x02070000:
 else:
     import unittest
 
+if sys.hexversion <= 0x03030000:
+    from mock import patch
+else:
+    from unittest.mock import patch
+
+if sys.hexversion < 0x03000000:
+    from StringIO import StringIO
+else:
+    from io import StringIO
+
 from libxmp import XMPFiles, XMPMeta, XMPError
 from libxmp.consts import XMP_NS_Photoshop as NS_PHOTOSHOP
 from libxmp.consts import XMP_FT_TEXT
@@ -62,6 +72,22 @@ class XMPFilesTestCase(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tempdir)
+
+    def test_print_bom(self):
+        """Should be able to print XMP packets despite BOM."""
+
+        # The BOM cannot be decoded from utf-8 into ascii, so a 2.7 XMPMeta
+        # object's __repr__ function would error out on it.
+
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.jpg")
+        xmpf = XMPFiles()
+        xmpf.open_file(file_path=filename)
+        xmp = xmpf.get_xmp()
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            print(xmp)
+        self.assertTrue(True)
+
 
     def test_init_del(self):
         xmpfile = XMPFiles()

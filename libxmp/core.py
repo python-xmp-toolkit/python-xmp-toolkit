@@ -58,7 +58,7 @@ def _remove_bom(xstr):
     # XMP packet contains the XMP packet wrapper with the BOM in place.  Just
     # get rid of it if we find it.
     regex = re.compile(r"""\s*<\?xpacket\s*
-                           begin=\"(?P<bom>\xef\xbb\xbf)\"\s*
+                           begin=\"(?P<bom>.*)\"\s*
                            id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>""",
                            re.UNICODE | re.VERBOSE)
     match = regex.match(xstr)

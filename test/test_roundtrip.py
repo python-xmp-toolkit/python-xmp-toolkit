@@ -57,3 +57,18 @@ class TestRoundTrip(unittest.TestCase):
             self.assertEqual(prop2, "no one in particular")
 
 
+    def test_jpeg(self):
+        """Create XMP from scratch to store in a jpeg."""
+
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.jpg")
+        with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
+            shutil.copyfile(filename, tfile.name)
+
+            # Do some surgery on the file, remove existing xmp.
+
+            xmpf = XMPFiles()
+            xmpf.open_file(file_path=tfile.name, open_forupdate=True)
+            xmp = xmpf.get_xmp()
+
+

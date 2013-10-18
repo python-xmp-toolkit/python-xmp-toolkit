@@ -49,6 +49,13 @@ LONG_DESC += "different file formats."
 
 DOWNLOAD_URL = 'http://code.google.com/p/python-xmp-toolkit/downloads/list'
 
+# Install requirements.
+install_requires = ['flufl.enum>4.0', 'pytz']
+if sys.hexversion < 0x03030000:
+    install_requires.append('mock>=1.0.1')
+if sys.hexversion < 0x02070000:
+    install_requires.append('unittest2>=0.5.1')
+
 KWARGS = {
     'name': 'python-xmp-toolkit',
     'description': 'Python XMP Toolkit for working with metadata.',
@@ -58,7 +65,7 @@ KWARGS = {
     'long_description': LONG_DESC,
     'download_url': DOWNLOAD_URL,
     'license': 'New BSD License',
-    'install_requires': ['pytz', 'flufl.enum>=4.0'],
+    'install_requires': install_requires,
     'packages': find_packages(exclude=["*test*"]),
 }
 
