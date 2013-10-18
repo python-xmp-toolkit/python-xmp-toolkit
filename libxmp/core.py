@@ -54,13 +54,13 @@ __all__ = ['XMPMeta','XMPIterator']
 
 def _remove_bom(xstr):
     """Remove BOM (byte order marker) from a string."""
-    # Python 2.7 cannot encode from ascii to utf-8 when an XMP string
-    # contains the XMP packet wrapper with the BOM in place.  Just get
-    # rid of it if we find it.
-    regex = re.compile(ur"""\s*<\?xpacket\s*
-                            begin=\"(?P<bom>.*)\"\s*
-                            id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>""",
-                            re.UNICODE | re.VERBOSE)
+    # Python 2.7 cannot encode from ascii to utf-8 (or utf-8 to ascii) when an
+    # XMP packet contains the XMP packet wrapper with the BOM in place.  Just
+    # get rid of it if we find it.
+    regex = re.compile(r"""\s*<\?xpacket\s*
+                           begin=\"(?P<bom>\xef\xbb\xbf)\"\s*
+                           id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>""",
+                           re.UNICODE | re.VERBOSE)
     match = regex.match(xstr)
     if match is not None:
         # Ok we matched up to the BOM.  Get rid of it.
@@ -70,7 +70,7 @@ def _remove_bom(xstr):
     return xstr
 
 def _force_rdf_to_unicode(xstr):
-    """Force RDF to unicode on 2.7, optionally removing BOM."""
+    """Force RDF to unicode on 2.7, removing BOM in the process."""
 
     xstr = _remove_bom(xstr)
     return xstr.decode('utf-8')
