@@ -1610,7 +1610,7 @@ def set_property(xmp, schema, name, value, option_bits=0):
     EXEMPI.xmp_set_property(xmp,
                             schema.encode(),
                             name.encode(),
-                            value.encode(),
+                            value.encode('utf-8'),
                             ctypes.c_uint32(option_bits))
 
 

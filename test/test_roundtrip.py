@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Test suite for round trip workflows.
 """
@@ -9,17 +10,15 @@ import shutil
 import sys
 import tempfile
 
+import numpy as np
+
 if sys.hexversion >= 0x02070000:
     import unittest
 else:
     import unittest2 as unittest
 
-try:
-    import skimage
-    relpath = os.path.join('data', 'multipage.tif')
-    skimage_tiff = pkg_resources.resource_filename(skimage.__name__, relpath)
-except ImportError:
-    skimage_tiff = None
+import skimage
+import skimage.io
 
 import pytz
 
@@ -33,12 +32,11 @@ from libxmp.consts import XMP_NS_XMP as NS_XAP
 
 class TestRoundTrip(unittest.TestCase):
 
-    @unittest.skipIf(skimage_tiff is None, "scikits-image tiff not available")
     def test_tiff(self):
         """Create a tiff from scratch with the intent of writing the XMP tag."""
-
+        data = np.zeros((32,32,3),dtype=np.uint8)
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
-            shutil.copyfile(skimage_tiff, tfile.name)
+            skimage.io.imsave(tfile.name, data)
 
             xmpf = XMPFiles()
             xmpf.open_file(file_path=tfile.name, open_forupdate=True)
@@ -55,6 +53,30 @@ class TestRoundTrip(unittest.TestCase):
             prop = xmp.get_property(NS_DC, "rights")
             prop2 = xmp.get_localized_text(NS_DC, "rights", None, "x-default")
             self.assertEqual(prop2, "no one in particular")
+
+
+    def test_sturm_und_drang(self):
+        """Should be able to write a property which includes umlauts."""
+        data = np.zeros((32,32,3),dtype=np.uint8)
+        with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
+            skimage.io.imsave(tfile.name, data)
+ 
+            expected_value = u'Stürm und Drang'
+
+            xmpf = XMPFiles()
+            xmpf.open_file(file_path=tfile.name, open_forupdate=True)
+            xmp = xmpf.get_xmp()
+            xmp.set_property(NS_DC, "Title", expected_value)
+            xmpf.put_xmp(xmp)
+            xmpf.close_file()
+
+            xmpf = XMPFiles()
+            xmpf.open_file(file_path=tfile.name)
+            xmp = xmpf.get_xmp()
+            actual_value = xmp.get_property(NS_DC, "Title")
+            xmpf.close_file()
+            
+            self.assertEqual(actual_value, expected_value)
 
 
     def test_jpeg(self):
