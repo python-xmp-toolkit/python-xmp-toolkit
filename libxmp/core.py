@@ -52,23 +52,28 @@ from . import exempi as _cexempi
 __all__ = ['XMPMeta','XMPIterator']
 
 
-
-def _force_rdf_to_unicode(str_obj):
-    """Force RDF to unicode on 2.7, optionally removing BOM."""
-
+def _remove_bom(xstr):
+    """Remove BOM (byte order marker) from a string."""
     # Python 2.7 cannot encode from ascii to utf-8 when an XMP string
     # contains the XMP packet wrapper with the BOM in place.  Just get
     # rid of it if we find it.
-    regex = re.compile(r"""\s*<\?xpacket\s*
-                           begin=\"(?P<bom>.*)\"\s*
-                           id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>""", re.UNICODE)
-    match = regex.match(str_obj)
+    regex = re.compile(ur"""\s*<\?xpacket\s*
+                            begin=\"(?P<bom>.*)\"\s*
+                            id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>""",
+                            re.UNICODE | re.VERBOSE)
+    match = regex.match(xstr)
     if match is not None:
         # Ok we matched up to the BOM.  Get rid of it.
         bom_start, bom_end = match.span('bom')
-        str_obj = str_obj[0:bom_start] + str_obj[bom_end:]
+        xstr = xstr[0:bom_start] + xstr[bom_end:]
 
-    return str_obj.decode('utf-8')
+    return xstr
+
+def _force_rdf_to_unicode(xstr):
+    """Force RDF to unicode on 2.7, optionally removing BOM."""
+
+    xstr = _remove_bom(xstr)
+    return xstr.decode('utf-8')
 
 
 class XMPMeta(object):
@@ -113,13 +118,17 @@ class XMPMeta(object):
         return self.iterator
 
     def __repr__(self):
+        """ Prints the serialization of the XMPMeta object.
+
+        On Python 2.7, the byte order marker (BOM) is removed.
         """
-        Prints the serialization of the XMPMeta object.
-        """
-        return self.serialize_to_str()
+        xstr = self.serialize_to_str()
+        if sys.hexversion < 0x03000000:
+            xstr = _remove_bom(xstr)
+        return xstr
 
     def __eq__(self, other):
-        """ Checks if two XMPMeta object are equal. """
+        """ Checks if two XMPMeta objects are equal."""
         return self.xmpptr == other.xmpptr
 
     def __ne__(self, other):
@@ -689,7 +698,8 @@ class XMPMeta(object):
             a file).
         """
         options = options_mask(XMP_SERIAL_OPTIONS, **kwargs)
-        return _cexempi.serialize(self.xmpptr, options, padding)
+        xstr = _cexempi.serialize(self.xmpptr, options, padding)
+        return xstr
 
 
     # -------------------------------------

@@ -169,10 +169,6 @@ class TestExempi(unittest.TestCase):
             except StopIteration:
                 break
 
-        #for j in range(len(props)):
-        #    print('"{0}":  "{1}"  "{2}"'.format(schemas[j],
-        #                                        paths[j],
-        #                                        props[j]))
         exempi.iterator_free(iterator)
         exempi.free(xmp)
 

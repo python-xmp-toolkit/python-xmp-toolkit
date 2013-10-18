@@ -1834,7 +1834,8 @@ def string_cstr(xmpstr):
     EXEMPI.xmp_string_cstr.restype = ctypes.c_char_p
     EXEMPI.xmp_string_cstr.argtypes = [ctypes.c_void_p]
     cstr = EXEMPI.xmp_string_cstr(xmpstr)
-    return cstr.decode('utf-8')
+    cstr = cstr.decode('utf-8')
+    return cstr
 
 
 def _string_free(xmp_string):
