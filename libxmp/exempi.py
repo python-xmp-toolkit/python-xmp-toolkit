@@ -180,10 +180,10 @@ def append_array_item(xmp, schema, name, array_options, value, option_bits):
                                              ctypes.c_uint32]
 
     EXEMPI.xmp_append_array_item(xmp,
-                                 schema.encode(),
-                                 name.encode(),
+                                 schema.encode('utf-8'),
+                                 name.encode('utf-8'),
                                  array_options,
-                                 value.encode(),
+                                 value.encode('utf-8'),
                                  option_bits)
 
 
@@ -243,7 +243,7 @@ def files_check_file_format(filename):
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_check_file_format.restype = ctypes.c_int32
     EXEMPI.xmp_files_check_file_format.argtypes = [ctypes.c_char_p]
-    return EXEMPI.xmp_files_check_file_format(filename.encode())
+    return EXEMPI.xmp_files_check_file_format(filename.encode('utf-8'))
 
 
 def delete_localized_text(xmp, schema, name, generic_lang, specific_lang):
@@ -278,10 +278,10 @@ def delete_localized_text(xmp, schema, name, generic_lang, specific_lang):
                                                  ctypes.c_char_p]
 
     EXEMPI.xmp_delete_localized_text(xmp,
-                                     schema.encode(),
-                                     name.encode(),
-                                     generic_lang.encode(),
-                                     specific_lang.encode())
+                                     schema.encode('utf-8'),
+                                     name.encode('utf-8'),
+                                     generic_lang.encode('utf-8'),
+                                     specific_lang.encode('utf-8'))
 
 
 def delete_property(xmp, schema, name):
@@ -306,7 +306,7 @@ def delete_property(xmp, schema, name):
     EXEMPI.xmp_delete_property.argtypes = [ctypes.c_void_p,
                                            ctypes.c_char_p,
                                            ctypes.c_char_p]
-    EXEMPI.xmp_delete_property(xmp, schema.encode(), name.encode())
+    EXEMPI.xmp_delete_property(xmp, schema.encode('utf-8'), name.encode('utf-8'))
 
 
 def files_close(xfptr, options):
@@ -501,7 +501,7 @@ def files_open_new(filename, options):
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open_new.restype = ctypes.c_void_p
     EXEMPI.xmp_files_open_new.argtypes = [ctypes.c_void_p, ctypes.c_int32]
-    xfptr = EXEMPI.xmp_files_open_new(filename.encode(), options)
+    xfptr = EXEMPI.xmp_files_open_new(filename.encode('utf-8'), options)
 
     return xfptr
 
@@ -563,8 +563,8 @@ def get_array_item(xmp, schema, name, index):
     property_bits = ctypes.c_uint32(0)
 
     EXEMPI.xmp_get_array_item(xmp,
-                              schema.encode(),
-                              name.encode(),
+                              schema.encode('utf-8'),
+                              name.encode('utf-8'),
                               ctypes.c_int32(index),
                               _item,
                               ctypes.byref(property_bits))
@@ -616,17 +616,17 @@ def get_localized_text(xmp, schema, name, generic_lang, specific_lang):
                                               ctypes.POINTER(ctypes.c_uint32)]
 
     if generic_lang is not None:
-        generic_lang = generic_lang.encode()
+        generic_lang = generic_lang.encode('utf-8')
 
     _item = _string_new()
     prop_bits = ctypes.c_uint32(0)
     _actual_lang = _string_new()
 
     EXEMPI.xmp_get_localized_text(xmp,
-                                  schema.encode(),
-                                  name.encode(),
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
                                   generic_lang,
-                                  specific_lang.encode(),
+                                  specific_lang.encode('utf-8'),
                                   _actual_lang, _item,
                                   ctypes.byref(prop_bits))
 
@@ -674,8 +674,8 @@ def get_property(xmp, schema, name):
     prop_bits = ctypes.c_uint32(0)
 
     EXEMPI.xmp_get_property(xmp,
-                            ctypes.c_char_p(schema.encode()),
-                            ctypes.c_char_p(name.encode()),
+                            ctypes.c_char_p(schema.encode('utf-8')),
+                            ctypes.c_char_p(name.encode('utf-8')),
                             _value, ctypes.byref(prop_bits))
 
     value = string_cstr(_value)
@@ -719,8 +719,8 @@ def get_property_bool(xmp, schema, name):
     prop_bits = ctypes.c_uint32(0)
 
     EXEMPI.xmp_get_property_bool(xmp,
-                                 schema.encode(),
-                                 name.encode(),
+                                 schema.encode('utf-8'),
+                                 name.encode('utf-8'),
                                  ctypes.byref(bool_value),
                                  ctypes.byref(prop_bits))
     return bool_value.value, prop_bits.value
@@ -761,8 +761,8 @@ def get_property_date(xmp, schema, name):
     prop_bits = ctypes.c_uint32(0)
 
     EXEMPI.xmp_get_property_date(xmp,
-                                 schema.encode(),
-                                 name.encode(),
+                                 schema.encode('utf-8'),
+                                 name.encode('utf-8'),
                                  ctypes.byref(xmp_date_time),
                                  ctypes.byref(prop_bits))
 
@@ -821,8 +821,8 @@ def get_property_int32(xmp, schema, name):
     prop_bits = ctypes.c_uint32(0)
 
     EXEMPI.xmp_get_property_int32(xmp,
-                                  schema.encode(),
-                                  name.encode(),
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
                                   ctypes.byref(ivalue),
                                   ctypes.byref(prop_bits))
     return ivalue.value, prop_bits.value
@@ -863,8 +863,8 @@ def get_property_int64(xmp, schema, name):
     prop_bits = ctypes.c_uint32(0)
 
     EXEMPI.xmp_get_property_int64(xmp,
-                                  schema.encode(),
-                                  name.encode(),
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
                                   ctypes.byref(ivalue),
                                   ctypes.byref(prop_bits))
     return ivalue.value, prop_bits.value
@@ -927,8 +927,8 @@ def has_property(xmp, schema, name):
                                         ctypes.c_char_p,
                                         ctypes.c_char_p]
     ret = EXEMPI.xmp_has_property(xmp,
-                                  schema.encode(),
-                                  name.encode())
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'))
     if ret == 1:
         return True
     else:
@@ -1044,10 +1044,10 @@ def iterator_new(xmp, schema, propname, options):
     EXEMPI.xmp_iterator_new.restype = ctypes.c_void_p
 
     if schema is not None:
-        schema = schema.encode()
+        schema = schema.encode('utf-8')
 
     if propname is not None:
-        propname = propname.encode()
+        propname = propname.encode('utf-8')
 
     iterator = EXEMPI.xmp_iterator_new(xmp, schema, propname, options)
     return iterator
@@ -1097,7 +1097,7 @@ def namespace_prefix(namespace):
     EXEMPI.xmp_namespace_prefix.restype = check_error
     EXEMPI.xmp_namespace_prefix.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
     _prefix = _string_new()
-    EXEMPI.xmp_namespace_prefix(namespace.encode(), _prefix)
+    EXEMPI.xmp_namespace_prefix(namespace.encode('utf-8'), _prefix)
 
     prefix = string_cstr(_prefix)
     _string_free(_prefix)
@@ -1170,7 +1170,7 @@ def prefix_namespace_uri(prefix):
                                                 ctypes.c_void_p]
 
     _namespace = _string_new()
-    EXEMPI.xmp_prefix_namespace_uri(prefix.encode(), _namespace)
+    EXEMPI.xmp_prefix_namespace_uri(prefix.encode('utf-8'), _namespace)
 
     namespace = string_cstr(_namespace)
     _string_free(_namespace)
@@ -1206,8 +1206,8 @@ def register_namespace(namespace_uri, prefix):
 
     _registered_prefix = _string_new()
 
-    EXEMPI.xmp_register_namespace(namespace_uri.encode(),
-                                  prefix.encode(),
+    EXEMPI.xmp_register_namespace(namespace_uri.encode('utf-8'),
+                                  prefix.encode('utf-8'),
                                   _registered_prefix)
 
     registered_prefix = string_cstr(_registered_prefix)
@@ -1289,7 +1289,7 @@ def serialize_and_format(xmp, options, padding, newline, tab, indent):
                                                 ctypes.c_int32]
     _item = _string_new()
     EXEMPI.xmp_serialize_and_format(xmp, _item, options, padding,
-                                    newline.encode(), tab.encode(), indent)
+                                    newline.encode('utf-8'), tab.encode('utf-8'), indent)
 
     item = string_cstr(_item)
     _string_free(_item)
@@ -1325,10 +1325,10 @@ def set_array_item(xmp, schema, name, index, value, option_bits):
                                           ctypes.c_char_p,
                                           ctypes.c_uint32]
     EXEMPI.xmp_set_array_item(xmp,
-                              schema.encode(),
-                              name.encode(),
+                              schema.encode('utf-8'),
+                              name.encode('utf-8'),
                               ctypes.c_int32(index),
-                              value.encode(),
+                              value.encode('utf-8'),
                               option_bits)
 
 
@@ -1369,15 +1369,15 @@ def set_localized_text(xmp, schema, name, generic_lang, specific_lang, value,
                                               ctypes.c_uint32]
 
     if generic_lang is not None:
-        generic_lang = generic_lang.encode()
+        generic_lang = generic_lang.encode('utf-8')
 
     mask = ctypes.c_uint32(mask)
     EXEMPI.xmp_set_localized_text(xmp,
-                                  schema.encode(),
-                                  name.encode(),
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
                                   generic_lang,
-                                  specific_lang.encode(),
-                                  value.encode(),
+                                  specific_lang.encode('utf-8'),
+                                  value.encode('utf-8'),
                                   mask)
 
 def set_property(xmp, schema, name, value, option_bits=0):
@@ -1411,8 +1411,8 @@ def set_property(xmp, schema, name, value, option_bits=0):
                                         ctypes.c_uint32]
 
     EXEMPI.xmp_set_property(xmp,
-                            schema.encode(),
-                            name.encode(),
+                            schema.encode('utf-8'),
+                            name.encode('utf-8'),
                             value.encode('utf-8'),
                             ctypes.c_uint32(option_bits))
 
@@ -1449,8 +1449,8 @@ def set_property_bool(xmp, schema, name, value, option_bits=0):
 
     bvalue = ctypes.c_bool(value)
     EXEMPI.xmp_set_property_bool(xmp,
-                                 schema.encode(),
-                                 name.encode(),
+                                 schema.encode('utf-8'),
+                                 name.encode('utf-8'),
                                  bvalue,
                                  ctypes.c_uint32(option_bits))
 
@@ -1501,8 +1501,8 @@ def set_property_date(xmp, schema, name, the_date, option_bits=0):
     xmp_date.nanosecond = 0
 
     EXEMPI.xmp_set_property_date(xmp,
-                                 ctypes.c_char_p(schema.encode()),
-                                 ctypes.c_char_p(name.encode()),
+                                 ctypes.c_char_p(schema.encode('utf-8')),
+                                 ctypes.c_char_p(name.encode('utf-8')),
                                  ctypes.byref(xmp_date),
                                  ctypes.c_uint32(option_bits))
 
@@ -1539,8 +1539,8 @@ def set_property_int32(xmp, schema, name, value, option_bits=0):
 
     ivalue = ctypes.c_int32(value)
     EXEMPI.xmp_set_property_int32(xmp,
-                                  schema.encode(),
-                                  name.encode(),
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
                                   ivalue,
                                   ctypes.c_uint32(option_bits))
 
@@ -1577,8 +1577,8 @@ def set_property_int64(xmp, schema, name, value, option_bits=0):
 
     ivalue = ctypes.c_int64(value)
     EXEMPI.xmp_set_property_int64(xmp,
-                                  schema.encode(),
-                                  name.encode(),
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
                                   ivalue,
                                   ctypes.c_uint32(option_bits))
 
@@ -1615,8 +1615,8 @@ def set_property_float(xmp, schema, name, value, option_bits=0):
 
     dvalue = ctypes.c_double(value)
     EXEMPI.xmp_set_property_float(xmp,
-                                  schema.encode(),
-                                  name.encode(),
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
                                   dvalue,
                                   ctypes.c_uint32(option_bits))
 
