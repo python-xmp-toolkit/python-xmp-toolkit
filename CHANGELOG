@@ -1,5 +1,6 @@
 Release 2.0.0 ( TBD )
   * Added support for Python 3.3, dropped support for 2.5.
+  * All string outputs in 2.6 and 2.7 are unicode objects with UTF-8 encoding.
   * Added exempi module, a low-level ctypes interface to exempi library.
   * Most XMPMeta methods that formerly returned bool now raise exceptions in
     case of failure, except for "does_property_exist", "does_array_item_exist".
