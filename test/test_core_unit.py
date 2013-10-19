@@ -48,12 +48,9 @@ import pytz
 
 import libxmp
 from libxmp import XMPFiles, XMPMeta, XMPError
-from libxmp import XMPIterator
 from libxmp.utils import file_to_dict, object_to_dict
-from libxmp import exempi
 
 from .common_fixtures import setup_sample_files
-from .samples import open_flags
 from . import xmpcoverage
 
 from libxmp.consts import XMP_NS_XMP as NS_XAP
@@ -62,8 +59,7 @@ from libxmp.consts import XMP_NS_DC as NS_DC
 from libxmp.consts import XMP_NS_EXIF as NS_EXIF
 from libxmp.consts import XMP_NS_TIFF as NS_TIFF
 from libxmp.consts import XMP_NS_CameraRaw as NS_CAMERA_RAW_SETTINGS
-
-# TODO : iteration test with skip options
+from libxmp.consts import XMP_NS_Photoshop as NS_PHOTOSHOP
 
 class TestClass(object):
     def __unicode__(self):
@@ -183,7 +179,7 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_serialize_and_format(self):
         xmp = XMPMeta()
-        xmp.parse_from_str(xmpcoverage.RDFCoverage,xmpmeta_wrap=True)
+        xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True)
 
         obj = xmp.serialize_and_format(padding=0,
                                        newlinechr='NEWLINE',
@@ -222,17 +218,23 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_text_property_450_file(self):
         # Currently fails on OS X 10.6 with Exempi installed from MacPorts
-        files = ["fixtures/BlueSquare450.xmp","fixtures/BlueSquare450.tif"]
-        options = ['open_nooption','open_read','open_forupdate','open_onlyxmp','open_cachetnail','open_strictly','open_usesmarthandler','open_usepacketscanning','open_limitscanning',]
+        files = ["fixtures/BlueSquare450.xmp",
+                 "fixtures/BlueSquare450.tif"]
+        options = ['open_nooption',        'open_read',
+                   'open_forupdate',       'open_onlyxmp',
+                   'open_cachetnail',      'open_strictly',
+                   'open_usesmarthandler', 'open_usepacketscanning',
+                   'open_limitscanning',]
         for f in files:
             for o in options:
                 try:
                     xmpfile = XMPFiles( file_path=f, ** { o : True } )
                     xmp_data = xmpfile.get_xmp()
-                    headline = xmp_data.get_property( "http://ns.adobe.com/photoshop/1.0/", 'Headline' )
+                    headline = xmp_data.get_property(NS_PHOTOSHOP, 'Headline')
 
-                    self.assertEqual( headline[-5:], "=END="  )
-                    self.assertTrue( len(headline) > 450, "Not all text was extracted from headline property."  )
+                    self.assertEqual(headline[-5:], "=END=")
+                    self.assertTrue(len(headline) > 450,
+                                    "Not all text was extracted."  )
                 except ((IOError, XMPError)):
                     pass
 
@@ -408,15 +410,15 @@ class UtilsTestCase(unittest.TestCase):
         shutil.rmtree(self.tempdir)
 
     def test_object_to_dict(self):
-        for f in self.samplefiles:
-            xmpfile = XMPFiles( file_path=f )
+        for filename in self.samplefiles:
+            xmpfile = XMPFiles( file_path=filename )
             xmp = xmpfile.get_xmp()
             self.assertTrue( object_to_dict( xmp ), "Not an XMPMeta object" )
             xmpfile.close_file()
 
     def test_file_to_dict(self):
-        for f in self.samplefiles:
-            self.assertTrue( file_to_dict( f ), "Expected dictionary" )
+        for filename in self.samplefiles:
+            self.assertTrue( file_to_dict(filename), "Expected dictionary" )
 
     def test_file_to_dict_nofile(self):
         self.assertRaises( IOError, file_to_dict, "nonexistingfile.ext" )
@@ -472,7 +474,7 @@ class UnicodeTestCase(unittest.TestCase):
         del xmp
 
 
-    def test_parse_from_2_bytes_per_codepoint(self):
+    def test_2bytes_codepoint(self):
         """
         Verify that we can create and read back utf-8 where some characters
         takes 2 bytes to encode.
