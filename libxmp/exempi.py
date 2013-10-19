@@ -44,6 +44,7 @@ from flufl.enum import IntEnum
 import pytz
 
 from . import XMPError, ExempiLoadError
+from .consts import XMP_OPEN_READ, XMP_OPEN_NOOPTION
 
 EXEMPI = ctypes.CDLL(find_library('exempi'))
 if not hasattr(EXEMPI, 'xmp_init'):
@@ -129,160 +130,6 @@ ERROR_MESSAGE = { int(ErrorCodes.unknown):            "unknown error",
                   int(ErrorCodes.bad_iptc):           "bad IPTC",
                   int(ErrorCodes.bad_mpeg):           "bad MPEG" }
 
-class OpenFileOptions(IntEnum):
-    """Option bits for xmp_files_open."""
-    # No open option.
-    no_option           = 0x00000000
-
-    # Open for read-only access
-    read                = 0x00000001
-
-    # open for reading and writing
-    for_update          = 0x00000002
-
-    # only the XMP is wanted, allows space/time optimizations
-    only_xmp            = 0x00000004
-
-    # Cache thumbnail if possible, GetThumbnail will be called.
-    cache_tnail         = 0x00000008
-
-    # Be strict about locating XMP and reconciling with other forms.
-    strictly            = 0x00000010
-
-    # Require the use of a smart handler.
-    use_smart_handler   = 0x00000020
-
-    # Force packet scanning, don't use a smart handler.
-    use_packet_scanning = 0x00000040
-
-    # Only packet scan files known to need scanning.
-    limit_scanning      = 0x00000080
-
-    # Attempt to repair a file opened for update, default is to not open (raise
-    # an exception).
-    repair_file         = 0x00000100
-
-    # Set if calling from background thread.
-    # TODO:  is this ok from a python perspective?
-    in_background       = 0x10000000
-
-
-class CloseFileOptions(IntEnum):
-    """ Option bits for xmp_files_close library routine."""
-    # no close option
-    no_option = 0x0000
-
-    # Write into a temporary file and swap for crash safety.
-    safe_update = 0x0001
-
-
-class FileFormatOptions(IntEnum):
-    """TODO"""
-    can_inject_xmp        = 0x00000001
-    can_expand            = 0x00000002
-    can_rewrite           = 0x00000004
-    prefers_in_place      = 0x00000008
-    can_reconcile         = 0x00000010
-    allows_only_xmp       = 0x00000020
-    returns_raw_packet    = 0x00000040
-    handler_owns_file     = 0x00000100
-    allow_safe_update     = 0x00000200
-    needs_readonly_packet = 0x00000400
-    use_sidecar_xmp       = 0x00000800
-    folder_based_format   = 0x00001000
-
-
-class IterOptions(IntEnum):
-    """Flags for modifying iteration."""
-    # The low 8 bits are an enum of what data structure to iterate.
-    class_mask      = 0x00FF
-
-    # Iterate the property tree of a TXMPMeta object.
-    properties      = 0x0000
-
-    # Iterate the global alias table.
-    aliases         = 0x0001
-
-    # Iterate the global namespace table.
-    namespaces      = 0x0002
-
-    # Just do the immediate children * of the root, default is subtree.
-    just_children   = 0x0100
-
-    # Just do the leaf nodes, default * is all nodes in the subtree.
-    just_leaf_nodes = 0x0200
-
-    # Return just the leaf part of the * path, default is the full path.
-    just_leaf_names = 0x0400
-
-    # Include aliases, default is just * actual properties.
-    include_aliases = 0x0800
-
-    # Omit all qualifiers.
-    omit_qualifiers = 0x1000
-
-
-class XmpPropsBits(object):
-    """Options relating to the XML string form of the property value."""
-    # the value is a URI, use rdf:resource attribute.  DISCOURAGED
-    value_is_uri = 0x0002
-
-    # has qualifiers, includes rdf:type and xml:lang
-    has_qualifier = 0x0010
-
-    # is a qualifier, includes rdf:type and xml:lang
-    is_qualifier = 0x0020
-
-    # has xml:lang
-    has_lang = 0x0040
-
-    # has rdf:type
-    has_type = 0x0080
-
-    # The value is a structure.
-    value_is_struct = 0x0100
-
-    # The value is an array
-    value_is_array = 0x0200
-
-    # the item order does not matter
-    array_is_unordered = 0x0200
-
-    # item order matters
-    array_is_ordered = 0x0400
-
-    # items are alternates
-    array_is_alt = 0x0800
-
-    # items are localized text
-    array_is_alttext = 0x1000
-
-    # used by array functions
-    array_insert_before = 0x4000
-    array_insert_after = 0x8000
-
-    # is an alias name for another property
-    is_alias = 0x10000
-
-    # is the base value for a set of aliases
-    has_aliases = 0x20000
-
-    # this property is an "internal" property, owned by applications
-    is_internal = 0x40000
-
-    # this property is not derived from the document content
-    is_stable = 0x100000
-
-    # this property is derived from the document content
-    is_derived = 0x200000
-
-    array_form_mask = value_is_array | array_is_ordered | array_is_alt \
-                    | array_is_alttext
-    composite_mask = value_is_struct | array_form_mask
-
-    # reserved for transient use by the implementation
-    reserved_mask = 0x70000000
-
 
 class XmpDateTime(ctypes.Structure):
     """Corresponds to XmpDateTime type in exempi headers.
@@ -298,48 +145,6 @@ class XmpDateTime(ctypes.Structure):
         ("tzhour",      ctypes.c_int32),
         ("tzminute",    ctypes.c_int32),
         ("nanosecond",  ctypes.c_int32)]
-
-
-class TimeSign(IntEnum):
-    """Values used for tzSign field."""
-    west = -1
-    utc = 0
-    east = 1
-
-
-class Serialize(IntEnum):
-    """Options for xmp_serialize."""
-
-    # Omit the XML packet wrapper.
-    omit_packet_wrapper = 0x0010
-
-    # Default is a writeable packet.
-    read_only_packet = 0x0020
-
-    # Use a compact form of RDF
-    use_compact_format = 0x0040
-
-    # Include a padding allowance for a thumbnail image.
-    include_thumbnail_pad = 0x0100
-
-    # The padding parameter is the overall packet length.
-    exact_packet_length = 0x0200
-
-    # Show aliases as XML comments.
-    write_alias_comments = 0x0400
-
-    # Omit all formatting whitespace.
-    omit_all_formatting = 0x0800
-
-    # Don't use this directly.
-    _little_endian_bit = 0x0001
-
-    encoding_mask = 0x0007
-    encode_utf8 = 0x0000
-    encode_utf16_big = 0x0002
-    encode_utf16_little = encode_utf16_big | _little_endian_bit
-    encode_utf32_big = 0x0004
-    encode_utf16_little = encode_utf32_big | _little_endian_bit
 
 
 def append_array_item(xmp, schema, name, array_options, value, option_bits):
@@ -513,8 +318,8 @@ def files_close(xfptr, options):
     ----------
     xfptr : file pointer
         File pointer
-    options : CloseFileOptions
-        the options for closing
+    options : int
+        the options mask for closing the file
 
     Raises
     ------
@@ -559,11 +364,11 @@ def files_get_file_info(xfptr):
     -------
     file_path : str
         the file path object to store the path in.
-    options : XmpOpenFileOptions
+    options : OpenFileOptions enum
         the options for open.
     file_format : XmpFileType
         the detected file format.
-    handler_flags : XmpFileFormatOptions
+    handler_flags : int
         the format options like from files_get_format_info.
 
     Raises
@@ -590,8 +395,7 @@ def files_get_file_info(xfptr):
     file_path = string_cstr(_file_path)
     _string_free(_file_path)
 
-    options = OpenFileOptions[options.value]
-    return file_path, options, file_format.value, handler_flags.value
+    return file_path, options.value, file_format.value, handler_flags.value
 
 
 def files_get_new_xmp(xfptr):
@@ -655,8 +459,7 @@ def files_open(xfptr, filename, options):
     XMPError : if the corresponding library routine fails
     """
     if (((not os.path.exists(filename)) and
-         ((options == OpenFileOptions.no_option) or
-          (options & OpenFileOptions.read)))):
+         ((options == XMP_OPEN_NOOPTION) or (options & XMP_OPEN_READ)))):
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open.restype = check_error
     EXEMPI.xmp_files_open.argtypes = [ctypes.c_void_p,
@@ -694,7 +497,7 @@ def files_open_new(filename, options):
     xfptr : ctypes pointer
         File pointer.
     """
-    if not os.path.exists(filename) and options & OpenFileOptions.read:
+    if not os.path.exists(filename) and options & XMP_OPEN_READ:
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open_new.restype = ctypes.c_void_p
     EXEMPI.xmp_files_open_new.argtypes = [ctypes.c_void_p, ctypes.c_int32]
@@ -937,7 +740,7 @@ def get_property_date(xmp, schema, name):
 
     Returns
     -------
-    date : XmpTimeSign
+    date : datetime.datetime
         Date structure.
     prop_bits : unsigned int
         option bit mask

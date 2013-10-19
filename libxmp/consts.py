@@ -35,6 +35,7 @@
 ### XMP FILES
 
 """
+Constants from exempi headers.
 """
 
 #
@@ -176,7 +177,6 @@ XMP_IMPL_RESERVED_MASK    = 0x70000000   # Reserved for transient use by the imp
 # XML namespace constants for standard XMP schema.
 #
 XMP_NS_XMP = "http://ns.adobe.com/xap/1.0/"
-""" XMP Namespace """
 
 XMP_NS_XMP_Rights = "http://ns.adobe.com/xap/1.0/rights/"
 XMP_NS_XMP_MM = "http://ns.adobe.com/xap/1.0/mm/"

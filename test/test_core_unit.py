@@ -484,7 +484,6 @@ class UnicodeTestCase(unittest.TestCase):
 
         del xmp
 
-
     def test_parse_from_str_3_bytes_per_codepoint(self):
         """
         Verify that we can create and read back utf-8 where each character

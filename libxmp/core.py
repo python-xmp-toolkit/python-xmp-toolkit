@@ -69,7 +69,7 @@ def _remove_bom(xstr):
 
     return xstr
 
-def _force_rdf_to_unicode(xstr):
+def _force_rdf_to_utf8(xstr):
     """Force RDF to unicode on 2.7, removing BOM in the process."""
 
     xstr = _remove_bom(xstr)
@@ -604,7 +604,7 @@ class XMPMeta(object):
         :raises: IOError if operation fails.
         """
         if sys.hexversion < 0x03000000 and isinstance(xmp_packet_str, str):
-            xmp_packet_str = _force_rdf_to_unicode(xmp_packet_str)
+            xmp_packet_str = _force_rdf_to_utf8(xmp_packet_str)
         if xmpmeta_wrap:
             fmt = u"<x:xmpmeta xmlns:x='adobe:ns:meta/'>{0}</x:xmpmeta>"
             xmp_packet_str = fmt.format(xmp_packet_str)
@@ -800,14 +800,6 @@ class XMPIterator(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
-        """
-        Implements iterator protocol for 3.X
-
-        :raises: StopIteration
-        """
-        return self._next_common()
-
     def next(self):
         """
         Implements iterator protocol for 2.X
@@ -816,11 +808,11 @@ class XMPIterator(object):
 
         :raises: StopIteration
         """
-        return self._next_common()
+        return self.__next__()
 
-    def _next_common(self):
+    def __next__(self):
         """
-        Internal function.
+        Implements iterator protocol for 3.X
 
         :raises: StopIteration
         """

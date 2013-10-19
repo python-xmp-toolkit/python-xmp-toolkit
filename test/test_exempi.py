@@ -30,6 +30,12 @@ from libxmp.consts import XMP_NS_Photoshop as NS_PHOTOSHOP
 from libxmp.consts import XMP_NS_TIFF as NS_TIFF
 from libxmp.consts import XMP_NS_XMP as NS_XAP
 from libxmp.consts import XMP_NS_CameraRaw as NS_CAMERA_RAW_SETTINGS
+from libxmp.consts import XMP_ITERATOR_OPTIONS, XMP_SERIAL_OPTIONS
+from libxmp.consts import XMP_SKIP_OPTIONS
+from libxmp.consts import XMP_CLOSE_SAFEUPDATE, XMP_CLOSE_NOOPTION
+from libxmp.consts import XMP_OPEN_READ, XMP_OPEN_FORUPDATE
+from libxmp.consts import XMP_PROP_HAS_QUALIFIERS, XMP_PROP_IS_QUALIFIER
+from libxmp.consts import XMP_PROP_COMPOSITE_MASK
 
 
 class TestInit(unittest.TestCase):
@@ -70,8 +76,7 @@ class TestPythonXmpToolkit(unittest.TestCase):
         The library does not catch comfortably, so we perform our own check.
         """
         with self.assertRaises(IOError):
-            xfptr = exempi.files_open_new('notthere.xmp',
-                                          exempi.OpenFileOptions.read)
+            xfptr = exempi.files_open_new('notthere.xmp', XMP_OPEN_READ)
 
     def test_file_not_there_check_file_format(self):
         """
@@ -92,11 +97,10 @@ class TestExempi(unittest.TestCase):
 
     def test_bgo(self):
         """Corresponds to test-bgo.cpp
-        TODO:  test for non-existing file.
         """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/fdo18635.jpg")
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         xmp = exempi.files_get_new_xmp(xfptr)
         exempi.free(xmp)
         exempi.files_free(xfptr)
@@ -152,8 +156,8 @@ class TestExempi(unittest.TestCase):
         xmp = exempi.new_empty()
         exempi.parse(xmp, strbuffer)
 
-        iterator = exempi.iterator_new(xmp, None, None,
-                                       exempi.IterOptions.just_leaf_nodes)
+        options = XMP_ITERATOR_OPTIONS['iter_justleafnodes']
+        iterator = exempi.iterator_new(xmp, None, None, options)
 
         schemas = []
         paths = []
@@ -194,10 +198,10 @@ class TestExempi(unittest.TestCase):
 
         # Retrieves xml:lang attribute value of 1st rights element
         prop, mask = exempi.get_property(xmp, NS_DC, "rights[1]/?xml:lang")
-        self.assertTrue(mask & exempi.XmpPropsBits.is_qualifier)
+        self.assertTrue(mask & XMP_PROP_IS_QUALIFIER)
 
         prop, mask = exempi.get_property(xmp, NS_DC, "rights[1]")
-        self.assertTrue(mask & exempi.XmpPropsBits.has_qualifier)
+        self.assertTrue(mask & XMP_PROP_HAS_QUALIFIERS)
 
         item, mask, actual_lang = exempi.get_localized_text(xmp, NS_DC,
                                                             "rights",
@@ -225,11 +229,11 @@ class TestExempi(unittest.TestCase):
 
         exempi.set_array_item(xmp, NS_DC, "creator", 2, "foo", 0)
         the_prop, bits = exempi.get_array_item(xmp, NS_DC, "creator", 2)
-        self.assertTrue((bits & exempi.XmpPropsBits.composite_mask) == 0)
+        self.assertTrue((bits & XMP_PROP_COMPOSITE_MASK) == 0)
 
         exempi.append_array_item(xmp, NS_DC, "creator", 0, "bar", 0)
         the_prop, bits = exempi.get_array_item(xmp, NS_DC, "creator", 3)
-        self.assertTrue((bits & exempi.XmpPropsBits.composite_mask) == 0)
+        self.assertTrue((bits & XMP_PROP_COMPOSITE_MASK) == 0)
         self.assertEqual(the_prop, "bar")
 
         exempi.delete_property(xmp, NS_DC, "creator[3]")
@@ -292,31 +296,29 @@ class TestExempi(unittest.TestCase):
         fmt = exempi.files_check_file_format(filename)
         self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         xmp = exempi.files_get_new_xmp(xfptr)
         exempi.files_free(xfptr)
 
         with tempfile.NamedTemporaryFile(suffix=".jpg") as tfile:
             shutil.copyfile(filename, tfile.name)
 
-            xfptr = exempi.files_open_new(tfile.name,
-                                          exempi.OpenFileOptions.for_update)
+            xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
 
             exempi.set_property(xmp, NS_PHOTOSHOP, "ICCProfile", "foo", 0)
             self.assertTrue(exempi.files_can_put_xmp(xfptr, xmp))
             exempi.files_put_xmp(xfptr, xmp)
             exempi.free(xmp)
-            exempi.files_close(xfptr, exempi.CloseFileOptions.safe_update)
+            exempi.files_close(xfptr, XMP_CLOSE_SAFEUPDATE)
             exempi.files_free(xfptr)
 
-            xfptr = exempi.files_open_new(tfile.name,
-                                          exempi.OpenFileOptions.read)
+            xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_READ)
             xmp = exempi.files_get_new_xmp(xfptr)
             the_prop, _ = exempi.get_property(xmp, NS_PHOTOSHOP, "ICCProfile")
             self.assertEqual("foo", the_prop)
 
             exempi.free(xmp)
-            exempi.files_close(xfptr, exempi.CloseFileOptions.no_option)
+            exempi.files_close(xfptr, XMP_CLOSE_NOOPTION)
             exempi.files_free(xfptr)
 
 
@@ -335,7 +337,7 @@ class TestExempi(unittest.TestCase):
         exempi.parse(xmp, strbuffer)
         self.assertFalse(exempi.get_error())
 
-        options = exempi.Serialize.omit_packet_wrapper
+        options = XMP_SERIAL_OPTIONS['omit_packet_wrapper']
         # TODO:  test this somehow.
         output = exempi.serialize_and_format(xmp, options, 0, '\n', ' ', 0)
         self.assertFalse(exempi.get_error())
@@ -351,14 +353,13 @@ class TestExempi(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
             shutil.copyfile(orig_file, tfile.name)
 
-            xfptr = exempi.files_open_new(tfile.name,
-                                          exempi.OpenFileOptions.for_update)
+            xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
 
             xmp = exempi.files_get_new_xmp(xfptr)
             exempi.set_localized_text(xmp, NS_DC, "description", "en", "en-US",
                                       "foo", 0)
             exempi.files_put_xmp(xfptr, xmp)
-            exempi.files_close(xfptr, exempi.CloseFileOptions.no_option)
+            exempi.files_close(xfptr, XMP_CLOSE_NOOPTION)
             exempi.free(xmp)
             exempi.files_free(xfptr)
         self.assertTrue(True)
@@ -401,12 +402,12 @@ class TestExempi(unittest.TestCase):
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.jpg")
 
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
         self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
         file_path, options, file_format, flags = exempi.files_get_file_info(xfptr)
-        self.assertEqual(options, exempi.OpenFileOptions.read)
+        self.assertEqual(options, XMP_OPEN_READ)
         self.assertEqual(file_format, libxmp.consts.XMP_FT_JPEG)
         self.assertEqual(flags, 0x27f)  # 0x27f?
         self.assertEqual(filename, file_path)
@@ -433,8 +434,7 @@ class TestExempi(unittest.TestCase):
         for suffix, expected_format in pairs.items():
             relpath = os.path.join('samples', 'BlueSquare' + '.' + suffix)
             filename = pkg_resources.resource_filename(__name__, relpath)
-            xfptr = exempi.files_open_new(filename,
-                                          exempi.OpenFileOptions.read)
+            xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
             actual_format = exempi.files_check_file_format(filename)
             self.assertEqual(actual_format, expected_format)
             exempi.files_free(xfptr)
@@ -518,7 +518,7 @@ class TestIteration(unittest.TestCase):
 
     def test_single_namespace_single_path_leaf_nodes(self):
         """Get all the leaf nodes from a single path, single namespace."""
-        options = exempi.IterOptions.just_leaf_nodes
+        options = XMP_ITERATOR_OPTIONS['iter_justleafnodes']
         schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
 
         for j in range(len(props)):
@@ -534,7 +534,7 @@ class TestIteration(unittest.TestCase):
     def test_single_namespace_single_path_children(self):
         """Get just child nodes from a single path, single namespace."""
         # This does not result in retrieving dc:rights[1]/?xml:lang
-        options = exempi.IterOptions.just_children
+        options = XMP_ITERATOR_OPTIONS['iter_justchildren']
         schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
 
         self.assertEqual(schemas, [NS_DC])
@@ -545,7 +545,7 @@ class TestIteration(unittest.TestCase):
     def test_single_namespace_single_path_leaf_names(self):
         """Get just leaf names from a single path, single namespace."""
         # TODO:  why?
-        options = exempi.IterOptions.just_leaf_names
+        options = XMP_ITERATOR_OPTIONS['iter_justleafname']
         schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
 
         self.assertEqual(schemas, [NS_DC, NS_DC, NS_DC])
@@ -561,7 +561,7 @@ class TestIteration(unittest.TestCase):
 
     def test_single_namespace_leaf_nodes(self):
         """Get all the leaf nodes from a single namespace."""
-        options = exempi.IterOptions.just_leaf_nodes
+        options = XMP_ITERATOR_OPTIONS['iter_justleafnodes']
         schemas, paths, props = self.collect_iteration(NS_DC, None, options)
 
         for j in range(len(props)):
@@ -599,8 +599,8 @@ class TestIteration(unittest.TestCase):
     def test_single_namespace_leaf_nodes_omit_qualifiers(self):
         """Get all the leaf nodes (no qualifiers) from a single namespace."""
         # TODO:  explain
-        options = exempi.IterOptions.just_leaf_nodes
-        options &= exempi.IterOptions.omit_qualifiers
+        options = XMP_ITERATOR_OPTIONS['iter_justleafnodes']
+        options &= XMP_ITERATOR_OPTIONS['iter_omitqualifiers']
         schemas, paths, props = self.collect_iteration(NS_DC, None, options)
 
         self.assertEqual(schemas, [NS_DC] * 11)
@@ -630,7 +630,7 @@ class TestIteration(unittest.TestCase):
     def test_single_namespace_properties(self):
         """Get all the properties from a single namespace."""
         # TODO:  same as above, must explain
-        options = exempi.IterOptions.properties
+        options = XMP_ITERATOR_OPTIONS['iter_properties']
         schemas, paths, props = self.collect_iteration(NS_DC, None, options)
 
         self.assertEqual(schemas, [NS_DC] * 11)
@@ -657,3 +657,42 @@ class TestIteration(unittest.TestCase):
                                  'ottawa',
                                  'parliament of canada'])
 
+    def test_iter_skip_subtree(self):
+        """Alter the iteration midstream."""
+        options = XMP_ITERATOR_OPTIONS['iter_properties']
+
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+        xmp = exempi.new_empty()
+        exempi.parse(xmp, strbuffer)
+
+        iterator = exempi.iterator_new(xmp, None, None, options)
+
+        schemas = []
+        paths = []
+        props = []
+
+        while True:
+            try:
+                schema, path, prop, _ = exempi.iterator_next(iterator)
+
+                if schema == NS_TIFF:
+                    exempi.iterator_skip(iterator,
+                                         XMP_SKIP_OPTIONS['iter_skipsubtree'])
+                    continue
+
+                schemas.append(schema)
+                paths.append(path)
+                props.append(prop)
+
+            except StopIteration:
+                break
+
+        exempi.iterator_free(iterator)
+        exempi.free(xmp)
+
+        # If the iteration modification worked, there should be no TIFF 
+        # properties in the list of schemas.
+        self.assertTrue(NS_TIFF not in schemas)
