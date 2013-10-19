@@ -17,15 +17,6 @@ if sys.hexversion >= 0x02070000:
 else:
     import unittest2 as unittest
 
-try:
-    import numpy as np
-
-    import skimage
-    import skimage.io
-    TEST_REQUIREMENTS_NOT_MET = False
-except ImportError:
-    TEST_REQUIREMENTS_NOT_MET = True
-
 from libxmp import XMPFiles, XMPMeta
 from libxmp.consts import XMP_NS_CC as NS_CC
 from libxmp.consts import XMP_NS_DC as NS_DC
@@ -36,16 +27,18 @@ from libxmp.consts import XMP_NS_XMP as NS_XAP
 
 class TestRoundTrip(unittest.TestCase):
 
-    @unittest.skipIf(TEST_REQUIREMENTS_NOT_MET,
-                     "Requires numpy and scikit-image.")
     def test_tiff(self):
-        """Create a tiff from scratch with the intent of writing the XMP tag."""
-        data = np.zeros((32,32,3),dtype=np.uint8)
+        """Write to a TIFF that does not already have the XMP tag."""
+        srcfile = pkg_resources.resource_filename(__name__,
+                                                  "fixtures/zeros.tif")
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
-            skimage.io.imsave(tfile.name, data)
+            shutil.copyfile(srcfile, tfile.name)
 
             xmpf = XMPFiles()
             xmpf.open_file(file_path=tfile.name, open_forupdate=True)
+
+            # Since it's a TIFF, it already has everything possible from the
+            # TIFF IFD filled in into the TIFF namespace.
             xmp = xmpf.get_xmp()
             xmp.set_property(NS_DC, "rights", "no one in particular")
             xmpf.put_xmp(xmp)
@@ -61,13 +54,12 @@ class TestRoundTrip(unittest.TestCase):
             self.assertEqual(prop2, "no one in particular")
 
 
-    @unittest.skipIf(TEST_REQUIREMENTS_NOT_MET,
-                     "Requires numpy and scikit-image.")
     def test_sturm_und_drang(self):
         """Should be able to write a property which includes umlauts."""
-        data = np.zeros((32,32,3),dtype=np.uint8)
+        srcfile = pkg_resources.resource_filename(__name__,
+                                                  "fixtures/zeros.tif")
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
-            skimage.io.imsave(tfile.name, data)
+            shutil.copyfile(srcfile, tfile.name)
  
             expected_value = u'Stürm und Drang'
 
