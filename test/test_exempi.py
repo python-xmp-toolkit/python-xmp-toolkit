@@ -108,7 +108,6 @@ class TestExempi(unittest.TestCase):
 
     def test_write_new_property(self):
         """Corresponds to test-write-new-property.cpp"""
-
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
 

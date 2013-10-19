@@ -767,6 +767,7 @@ class XMPMeta(object):
             guaranteed it'll be the actual namespace's prefix
         :returns: the actual registered prefix for the namespace
         """
+        return _cexempi.register_namespace(namespace_uri, suggested_prefix)
 
 
 

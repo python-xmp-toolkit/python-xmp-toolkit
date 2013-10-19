@@ -32,6 +32,7 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
+import datetime
 import sys
 if sys.hexversion < 0x02070000:
     import unittest2 as unittest
@@ -56,6 +57,7 @@ from .samples import open_flags
 from . import xmpcoverage
 
 from libxmp.consts import XMP_NS_XMP as NS_XAP
+from libxmp.consts import XMP_NS_CC as NS_CC
 from libxmp.consts import XMP_NS_DC as NS_DC
 from libxmp.consts import XMP_NS_EXIF as NS_EXIF
 from libxmp.consts import XMP_NS_TIFF as NS_TIFF
@@ -253,7 +255,6 @@ class XMPMetaTestCase(unittest.TestCase):
         self.assertTrue( xmp_data.does_property_exist( "http://ns.adobe.com/photoshop/1.0/", 'Headline' ) )
 
 
-    @unittest.skip("unresolved failure")
     def test_write_new_property(self):
         """Corresponds to test-write-new-property.cpp"""
 
@@ -266,16 +267,26 @@ class XMPMetaTestCase(unittest.TestCase):
         xmp = XMPMeta()
         xmp.parse_from_str(strbuffer, xmpmeta_wrap=False)
 
-        #reg_prefix = exempi.register_namespace(exempi.NS_CC, "cc")
-        #self.assertEqual("cc:", reg_prefix)
-        XMPMeta.register_namespace(libxmp.consts.XMP_NS_CC, "cc")
-
-        #reg_prefix = exempi.prefix_namespace_uri("cc")
+        XMPMeta.register_namespace(NS_CC, "cc")
         reg_prefix = XMPMeta.get_namespace_for_prefix("cc")
-        self.assertEqual(libxmp.consts.XMP_NS_CC, reg_prefix)
+        self.assertEqual(reg_prefix, NS_CC)
 
-        reg_prefix = XMPMeta.get_prefix_for_namespace(exempi.NS_CC)
-        self.assertEqual("cc:", reg_prefix)
+        reg_prefix = XMPMeta.get_prefix_for_namespace(NS_CC)
+        self.assertEqual(reg_prefix, "cc:")
+
+        xmp.set_property(NS_CC, "License", "Foo")
+        self.assertEqual(xmp.get_property(NS_CC, "License"), "Foo")
+
+        the_dt = datetime.datetime(2005, 12, 25, 12, 42, 42, tzinfo=pytz.utc)
+        xmp.set_property_datetime(NS_EXIF, "DateTimeOriginal", the_dt)
+        self.assertEqual(xmp.get_property(NS_EXIF, "DateTimeOriginal"),
+                         "2005-12-25T12:42:42")
+
+        prop = xmp.get_property_datetime(NS_EXIF, "DateTimeOriginal")
+        self.assertEqual(prop.year, 2005)
+        self.assertEqual(prop.minute, 42)
+        self.assertEqual(prop.tzinfo, pytz.utc)
+
 
     def test_exempi_core(self):
         """Corresponds to test_exempi.TestExempi.test_exempi_core"""
