@@ -10,9 +10,9 @@ before_install:
 
 # command to install dependencies
 install:
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install --use-mirrors flufl.enum unittest2; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install --use-mirrors flufl.enum; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then pip install --use-mirrors flufl.enum; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install --use-mirrors pytz flufl.enum unittest2; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install --use-mirrors pytz flufl.enum; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then pip install --use-mirrors pytz flufl.enum; fi
 
 # command to run tests
 script:
