@@ -11,13 +11,18 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
-import sys, os
-import os.path
+import os
+import re
+import sys
 
 def read_version():
     try:
-        return open(os.path.join(os.path.pardir,'VERSION'), 'r').readline().strip()
-    except IOError, e:
+        version_file = os.path.join(os.path.pardir, 'libxmp', 'version.py')
+        with open(version_file, 'rt') as fptr:
+            contents = fptr.read()
+            match = re.search('VERSION\s*=\s*"(?P<version>\d*.\d*.\d*.*)"\n',
+                              contents)
+    except IOError as e:
         raise SystemExit(
             "Error: you must run setup from the root directory (%s)" % str(e))
 
