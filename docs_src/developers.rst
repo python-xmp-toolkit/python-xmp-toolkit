@@ -47,7 +47,9 @@ of how to write the documentation. Note that documentation is Python source
 files is not automatically included, as you have to specify which classes
 should go in the documentation.
 
-Note that all documentation is produced in ``docs_src/`` and then parts are copied to the text files (e.g. ``CHANGES``,``README`` and ``INSTALL``).
+Note that all documentation is produced in ``docs_src/`` and then
+parts are copied to the text files (e.g. ``CHANGES``,``README`` and
+``INSTALL``).
 
 Packaging a Distribution
 ------------------------
