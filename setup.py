@@ -37,6 +37,7 @@ Install script for libxmp.
 """
 import os
 import re
+import sys
 
 try:
     from setuptools import setup, find_packages
