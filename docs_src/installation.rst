@@ -5,7 +5,7 @@ Requirements
 ------------
 
  * Python 2.6, 2.7, or 3.3
- * Exempi 2.1.1 or higher
+ * Exempi 2.2.0 or higher
  * Linux or OS X (see notes below for Windows)
 
 
@@ -20,9 +20,9 @@ Note, in case you haven't installed Exempi you will get an
 
 Exempi
 ------
-Python XMP Toolkit requires Exempi 2.1.1 which can be downloaded from
-http://libopenraw.freedesktop.org/wiki/Exempi. To install Exempi, unpack the
-distribution and run::
+Python XMP Toolkit requires Exempi 2.2.0 or more recent, which can be
+downloaded from http://libopenraw.freedesktop.org/wiki/Exempi. To install
+Exempi, unpack the distribution and run::
 
   ./configure
   make
@@ -36,17 +36,6 @@ X you probably need to run configure with one of the following options.::
 
   ./configure --with-darwinports
   ./configure --with-fink 
-
-.. warning::
-   Only Exempi 2.1.1 or more recent compiles on OS X and Exempi 2.1.1
-   also fixes an issue over 2.1 that could lead to complete crash of
-   the Python interpreter.  To be safe, use version 2.2.1. 
-   
-.. note::
-   Exempi 2.1.1 uses the Carbon version of QuickTime API. In Mac OS X 10.6
-   however Carbon support for QuickTime was dropped, so Exempi 2.1.1 will
-   no longer compile out-of-the-box on Snow Leopard. If you install Exempi
-   via MacPorts, then a patch for this problem is automatically fixed.
 
 Windows 
 -------
