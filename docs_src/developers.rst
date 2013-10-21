@@ -13,7 +13,7 @@ Overview of Source Distribution
 
  * ``docs_src/`` -- Source code for documentation.
  * ``libxmp/`` -- Source files for XMP Toolkit
- * ``Makeile`` -- Makefile for producing documentation, distributions and cleaning directory.
+ * ``Makefile`` -- Makefile for producing documentation, distributions and cleaning directory.
  * ``setup.py`` -- Distutils configuration file.
  * ``MANIFEST.in`` -- Template for MANIFEST file used by Distutils.
  * ``test`` -- Tests
@@ -68,18 +68,20 @@ run a clean.
 
 Running Tests
 -------------
-Test are run by issuing the command::
+Test are run on Python 2.7 and 3.3 by issuing the command::
 
-  make runtests
+  python -m unittest discover
 
-This will run ``test/test_all.py``.
+With Python 2.6, you may instead issue the command::
+
+  unit2 discover
 
 Distribution Configuration
 --------------------------
 The file ``setup.py`` specify how the distribution is packed together. Most
-important to note is that version in formation is read from ``VERSION`` file,
-and that the file ``MANIFEST.in`` specifies which other files to include in
-the distribution besides the Python source.
+important to note is that version in formation is read from ``libxmp.version``
+file, and that the file ``MANIFEST.in`` specifies which other files to include
+in the distribution besides the Python source.
 
 References for Developers
 -------------------------
