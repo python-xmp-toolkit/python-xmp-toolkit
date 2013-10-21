@@ -51,7 +51,7 @@ LONG_DESC += "different file formats."
 DOWNLOAD_URL = 'http://code.google.com/p/python-xmp-toolkit/downloads/list'
 
 # Install requirements.
-install_requires = ['flufl.enum>4.0', 'pytz']
+install_requires = ['flufl.enum>=4.0', 'pytz']
 if sys.hexversion < 0x03030000:
     install_requires.append('mock>=1.0.1')
 if sys.hexversion < 0x02070000:
