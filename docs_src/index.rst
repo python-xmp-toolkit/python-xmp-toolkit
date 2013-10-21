@@ -1,12 +1,15 @@
 Welcome
 =======
 
-*Python XMP Toolkit* is a library for working with `XMP <http://www.adobe.com/products/xmp/>`_ metadata, as well as reading/writing XMP metadata stored in many different file formats. 
+*Python XMP Toolkit* is a library for working with
+`XMP <http://www.adobe.com/products/xmp/>`_ metadata, as well as
+reading/writing XMP metadata stored in many different file formats. 
 
 **Authors:**
  * Lars Holm Nielsen <lnielsen@eso.org>
  * Federico Caboni <federico.caboni@me.com>
  * Amit Kapadia <akapad@gmail.com>
+ * John Evans <john.g.evans.ne@gmail.com>
 
 Documentation
 =============

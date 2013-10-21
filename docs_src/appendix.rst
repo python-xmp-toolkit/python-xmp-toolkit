@@ -3,11 +3,8 @@ Appendix
 
 Known Issues
 ------------
- * The TIFF smart handler have troubles reading the XMP packet correctly - this is either due
-   to Exempi 2.1.1 being installed via MacPorts or it is a 64-bit issue. To circumvent the problem,
-   please use packet scanning when opening a TIFF file::
-   
-     xmp = XMPFiles(file_path="../test.tif", open_usepacketscanning=True )
+ * The version of libexempi that comes via Macports refuses to load via ctypes.
+   As a workaround, you should compile libexempi from source.
 
 Resources
 ---------

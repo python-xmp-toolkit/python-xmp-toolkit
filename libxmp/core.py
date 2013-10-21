@@ -384,7 +384,7 @@ class XMPMeta(object):
             general path expression, must not be None or the empty string.  Has
             the same namespace prefix usage as propName in GetProperty.
         :param str generic_lang:  The name of the generic language as an RFC
-            3066 primary subtag. May be null or the empty string if no generic
+            3066 primary subtag. May be None or the empty string if no generic
             language is wanted.
         :param str specific_lang: The name of the specific language as an RFC
             3066 tag. Must not be null or the empty string.
