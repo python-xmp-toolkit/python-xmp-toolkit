@@ -1,23 +1,42 @@
+Release 2.0.0 ( TBD )
+  * Added support for Python 3.3, dropped support for 2.5.
+  * All string outputs in 2.6 and 2.7 are unicode objects with UTF-8 encoding.
+  * Added exempi module, a low-level ctypes interface to exempi library.
+  * Most XMPMeta methods that formerly returned bool now raise exceptions in
+    case of failure, except for "does_property_exist", "does_array_item_exist".
+  * Added timezone support for datetime routines.
+  * Added delete_localized_text method to XMPMeta
+
 Release 1.0.2 ( June 21, 2011 )
-  * Fixed python 2.5 issue (ctypes.c_bool are not available in 2.5, so it was changed to ctypes.c_int).
+  * Fixed python 2.5 issue (ctypes.c_bool are not available in 2.5, so it was
+    changed to ctypes.c_int).
+
 Release 1.0.1 ( April 11, 2011 )
   * Fixed issue on 32-bit systems.
+
 Release 1.0 ( March 31, 2011 )
   * Known issue #7 documented - issue with TIFF smart handler.
   * Fixed issue #15 - 64-bit issues on Linux and Mac.
   * Fixed issue #11 - Typo in does_property_exist.
   * Thanks to marialaura.clemente for bug reports and patches.  
+
 Release 1.0rc2 (Feburary 16, 2010)
-  * Fixed issue #4, #5 and related to XMPIterator, file_to_dict and object_to_dict. 
-  * Fixed issue in file_to_dict which didn't pass parameters to XMPFiles.open_file() properly.
+  * Fixed issue #4, #5 and related to XMPIterator, file_to_dict and
+    object_to_dict. 
+  * Fixed issue in file_to_dict which didn't pass parameters to
+    XMPFiles.open_file() properly.
   * Fixed issue #9 file_to_dict now raises IOError instead of returning  
     an empty dictionary for non-existing files. (*backward incompatible*)
-  * Fixed issue #8 - spelling mistake in function call in XMPMeta.append_array_items
+  * Fixed issue #8 - spelling mistake in function call in
+    XMPMeta.append_array_items
   * Based on Exempi 2.1.1 and Adobe XMP Toolkit 4.4.2
-  * Thanks to olsenpk, pitymushroom, rmarianski, cfarrell1980 for bug reports and patches
+  * Thanks to olsenpk, pitymushroom, rmarianski, cfarrell1980 for bug reports
+    and patches
+
 Release 1.0rc1 (March 6, 2009)
   * Backwards incompatible with previous releases.
   * Based on Exempi 2.1.0 and Adobe XMP Toolkit 4.4.2
   * Initialise and Terminate should no longer be called before usage.
+
 Release 1.0beta1 (July 6, 2008)
   * First public release.
