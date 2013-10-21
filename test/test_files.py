@@ -281,6 +281,30 @@ class XMPFilesTestCase(unittest.TestCase):
         self.assertRaises( XMPError, xmpfile.put_xmp, xmp_data )
         self.assertEqual( xmpfile.can_put_xmp( xmp_data ), False )
 
+    def test_tiff_smarthandler(self):
+        """Verify action of TIFF smarthandler when tag length > 255"""
+        # See issue 12
+        srcfile = pkg_resources.resource_filename(__name__,
+                                                  "fixtures/zeros.tif")
+        with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
+            shutil.copyfile(srcfile, tfile.name)
+
+            # Create a tag with 280 chars.
+            xmpf = XMPFiles()
+            xmpf.open_file(tfile.name, open_forupdate=True)
+            xmp = xmpf.get_xmp()
+            blurb = "Some really long text blurb "
+            xmp.set_property(NS_PHOTOSHOP, 'Headline', blurb * 10)
+            xmpf.put_xmp(xmp)
+            xmpf.close_file()
+
+            xmpf.open_file(tfile.name, usesmarthandler=True)
+            xmp = xmpf.get_xmp()
+            prop = xmp.get_property(NS_PHOTOSHOP, "Headline")
+            xmpf.close_file()
+
+            self.assertEqual(prop, blurb * 10)
+
 
 
 def suite():

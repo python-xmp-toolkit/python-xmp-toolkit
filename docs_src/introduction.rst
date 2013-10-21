@@ -1,9 +1,16 @@
 Introduction
 ============
 
-*Python XMP Toolkit* is a library for working with `XMP <http://www.adobe.com/products/xmp/>`_ metadata, as well as reading/writing XMP metadata stored in many different file formats. 
+*Python XMP Toolkit* is a library for working with `XMP
+<http://www.adobe.com/products/xmp/>`_ metadata, as well as
+reading/writing XMP metadata stored in many different file formats.
 
-Python XMP Toolkit is wrapping `Exempi <http://libopenraw.freedesktop.org/wiki/Exempi>`_ (using `ctypes <http://docs.python.org/lib/module-ctypes.html>`_), a C/C++ XMP library based on `Adobe XMP Toolkit <http://www.adobe.com/devnet/xmp/>`_, ensuring that future updates to the XMP standard are easily incorporated into the library with a minimum amount of work.
+Python XMP Toolkit is wrapping `Exempi
+<http://libopenraw.freedesktop.org/wiki/Exempi>`_ (using `ctypes
+<http://docs.python.org/lib/module-ctypes.html>`_), a C/C++ XMP library
+based on `Adobe XMP Toolkit <http://www.adobe.com/devnet/xmp/>`_,
+ensuring that future updates to the XMP standard are easily incorporated
+into the library with a minimum amount of work.
 
 Python XMP Toolkit has been developed by:
 
@@ -30,12 +37,17 @@ Following important features from Adobe XMP Toolkit are not available in Python 
 
 What is XMP?
 ------------
-The Adobe Extensible Metadata Platform (XMP) specification describes a 
-widely used method for embedding descriptive metadata within images. XMP 
-tags are stored within the image header of all common image formats (JPEG, 
-TIFF, PNG, GIF, PSD) and can be read by popular image processing and 
-cataloging packages. The XMP standard is also widely used by photographers 
-and the publication industry. Users of consumer and professional digital cameras may already be familiar with Exchangeable Image File Format (EXIF) metadata tags that include camera and exposure information within the digital photo file as a set of XMP tags. In practice an XMP header is a block of XML text included in the header block of the image file and is only supported in image types with header/comment blocks.
+The Adobe Extensible Metadata Platform (XMP) specification describes a
+widely used method for embedding descriptive metadata within images. XMP
+tags are stored within the image header of all common image formats (JPEG,
+TIFF, PNG, GIF, PSD) and can be read by popular image processing and
+cataloging packages. The XMP standard is also widely used by photographers
+and the publication industry. Users of consumer and professional digital
+cameras may already be familiar with Exchangeable Image File Format
+(EXIF) metadata tags that include camera and exposure information within
+the digital photo file as a set of XMP tags. In practice an XMP header
+is a block of XML text included in the header block of the image file
+and is only supported in image types with header/comment blocks.
 
 The advantages of embedded image identity metadata are numerous. Including 
 metadata effectively makes the images self-documenting, which is particularly 
