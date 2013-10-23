@@ -117,15 +117,29 @@ class XMPMeta(object):
 
         return self.iterator
 
-    def __repr__(self):
-        """ Prints the serialization of the XMPMeta object.
+    def __unicode__(self):
+        """Return a unicode-friendly representation.
+        """
+        xstr = self.serialize_to_str()
+        return xstr
 
-        On Python 2.7, the byte order marker (BOM) is removed.
+    def __repr__(self):
+        """We should strive to make this eval-able, but here it really is not.
+        """
+        return '<XMPMeta>'
+
+    def __str__(self):
+        """ Prints a nice serialization of the XMPMeta object.
+
+        Must be a bytes string in Python 2.
         """
         xstr = self.serialize_to_str()
         if sys.hexversion < 0x03000000:
+            # The BOM is not important, just remove it.
             xstr = _remove_bom(xstr)
-        return xstr
+            return xstr.encode('UTF-8', 'replace')
+        else: 
+            return xstr
 
     def __eq__(self, other):
         """ Checks if two XMPMeta objects are equal."""
@@ -674,8 +688,6 @@ class XMPMeta(object):
         :rtype: `unicode` string.
         """
         obj =  self.serialize_to_str( **kwargs )
-        #if sys.hexversion < 0x03000000:
-        #    obj = obj.decode('utf-8')
         return obj
 
 

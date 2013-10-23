@@ -79,6 +79,14 @@ class XMPFiles(object):
             self.open_file( file_path, **kwargs )
 
 
+    def __repr__(self):
+        msg = "XMPFiles("
+        if self._file_path is None:
+            msg += ")"
+        else:
+            msg += "file_path='{0}')"
+            msg = msg.format(self._file_path)
+        return msg
     def __del__(self):
         """
         Free up the memory associated with the XMP file instance.

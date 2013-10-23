@@ -36,6 +36,7 @@ import os
 import os.path
 import pkg_resources
 import platform
+import re
 import shutil
 import sys
 import tempfile
@@ -73,9 +74,27 @@ class XMPFilesTestCase(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tempdir)
 
+    def test_repr(self):
+        """Test __repr__ and __str__ on XMPFiles objects."""
+        xmpf = XMPFiles()
+        self.assertEqual(str(xmpf), 'XMPFiles()')
+        self.assertEqual(repr(xmpf), 'XMPFiles()')
+
+        # If the XMPFiles object has a file associated with it, then use a
+        # regular expression to match the output.
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.jpg")
+        xmpf.open_file(file_path=filename)
+        actual_value = str(xmpf)
+
+        regex = re.compile(r"""XMPFiles\(file_path=""", re.VERBOSE)
+        self.assertIsNotNone(regex.match(actual_value))
+        self.assertTrue(actual_value.endswith("BlueSquare.jpg')"))
+
+
+
     def test_print_bom(self):
         """Should be able to print XMP packets despite BOM."""
-
         # The BOM cannot be decoded from utf-8 into ascii, so a 2.7 XMPMeta
         # object's __repr__ function would error out on it.
 
@@ -86,6 +105,7 @@ class XMPFilesTestCase(unittest.TestCase):
         xmp = xmpf.get_xmp()
         with patch('sys.stdout', new=StringIO()) as fake_out:
             print(xmp)
+            repr(xmp)
         self.assertTrue(True)
 
 
