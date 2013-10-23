@@ -527,6 +527,36 @@ class UnicodeTestCase(unittest.TestCase):
         """Verify that the version attribute is accessible."""
         self.assertTrue(hasattr(libxmp, '__version__'))
 
+    def test_xmpmeta_str(self):
+        """In 2.7, str must return a byte string.  In 3.x, it is a str."""
+        xmp = XMPMeta()
+        xmp.set_property(NS_DC, "Title", 'Huckleberry Finn')
+        self.assertTrue(isinstance(str(xmp), str))
+
+        xmp = XMPMeta()
+        xmp.set_property(NS_DC, "Title", u'Stürm und Drang')
+        self.assertTrue(isinstance(str(xmp), str))
+
+        # Something in Devanagari
+        xmp = XMPMeta()
+        xmp.set_property(NS_DC, "Title", u'शिव')
+        self.assertTrue(isinstance(str(xmp), str))
+
+    def test_xmpmeta_repr(self):
+        """Should be a str in both 2.x and 3.x"""
+        xmp = XMPMeta()
+        self.assertEqual(repr(xmp), '<XMPMeta>')
+
+    def test_xmpmeta_unicode_27(self):
+        """In 2.7, unicode(xmp) should return a unicode object."""
+        xmp = XMPMeta()
+        rdf = xmpcoverage.RDFCoverage
+        xmp.parse_from_str(rdf)
+        if sys.hexversion < 0x03000000:
+            self.assertTrue(isinstance(unicode(xmp), unicode))
+        else:
+            # It's a no-op in 3.x.
+            self.assertTrue(True)
 
 def suite():
     suite = unittest.TestSuite()
