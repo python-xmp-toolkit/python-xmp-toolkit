@@ -545,7 +545,7 @@ class UnicodeTestCase(unittest.TestCase):
     def test_xmpmeta_repr(self):
         """Should be a str in both 2.x and 3.x"""
         xmp = XMPMeta()
-        self.assertEqual(repr(xmp), '<XMPMeta>')
+        self.assertTrue(isinstance(repr(xmp), str))
 
     def test_xmpmeta_unicode_27(self):
         """In 2.7, unicode(xmp) should return a unicode object."""
