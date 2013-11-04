@@ -35,9 +35,8 @@
 """
 Wrapper functions for individual exempi library routines.
 """
-import ctypes
+import ctypes, ctypes.util
 import datetime
-from ctypes.util import find_library
 import os
 
 from flufl.enum import IntEnum
@@ -46,9 +45,14 @@ import pytz
 from . import XMPError, ExempiLoadError
 from .consts import XMP_OPEN_READ, XMP_OPEN_NOOPTION
 
-EXEMPI = ctypes.CDLL(find_library('exempi'))
-if not hasattr(EXEMPI, 'xmp_init'):
+path = ctypes.util.find_library('exempi')
+if path is None:
     raise ExempiLoadError('Exempi library not found.')
+
+if os.name != "nt":
+    EXEMPI = ctypes.CDLL(path)
+else:
+    EXEMPI = ctypes.WinDLL(path)
 
 class ErrorCodes(IntEnum):
     """
