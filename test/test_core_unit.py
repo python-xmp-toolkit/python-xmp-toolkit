@@ -455,7 +455,6 @@ class NegativeTestCases(unittest.TestCase):
 
 class UnicodeTestCase(unittest.TestCase):
 
-    # TODO:  need a latin-1 case, both positive and negative.
     def test_get_localized_text(self):
         """
         Verify that unicode string literals are properly interpreted.
