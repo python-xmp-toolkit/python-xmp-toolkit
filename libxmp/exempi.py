@@ -39,7 +39,6 @@ import ctypes, ctypes.util
 import datetime
 import os
 
-from flufl.enum import IntEnum
 import pytz
 
 from . import XMPError, ExempiLoadError
@@ -54,85 +53,44 @@ if os.name != "nt":
 else:
     EXEMPI = ctypes.WinDLL(path)
 
-class ErrorCodes(IntEnum):
-    """
-    Error codes defined by libexempi.  See "xmperrors.h"
-    """
-    unknown            =    0
-    tbd                =   -1
-    unavailable        =   -2
-    bad_object         =   -3
-    bad_param          =   -4
-    bad_value          =   -5
-    assert_failure     =   -6
-    enforce_failure    =   -7
-    unimplemented      =   -8
-    internal_failure   =   -9
-    deprecated         =  -10
-    external_failure   =  -11
-    user_abort         =  -12
-    std_exception      =  -13
-    unknown_exception  =  -14
-    no_memory          =  -15
-    bad_schema         = -101
-    bad_xpath          = -102
-    bad_options        = -103
-    bad_index          = -104
-    bad_iter_position  = -105
-    bad_parse          = -106
-    bad_serialize      = -107
-    bad_file_format    = -108
-    no_file_handler    = -109
-    too_large_for_jpeg = -110
-    bad_xml            = -201
-    bad_rdf            = -202
-    bad_xmp            = -203
-    empty_iterator     = -204
-    bad_unicode        = -205
-    bad_tiff           = -206
-    bad_jpeg           = -207
-    bad_psd            = -208
-    bad_psir           = -209
-    bad_iptc           = -210
-    bad_mpeg           = -211
-
-ERROR_MESSAGE = { int(ErrorCodes.unknown):            "unknown error",
-                  int(ErrorCodes.tbd):                "TBD",
-                  int(ErrorCodes.unavailable):        "unavailable",
-                  int(ErrorCodes.bad_object):         "bad object",
-                  int(ErrorCodes.bad_param):          "bad parameter",
-                  int(ErrorCodes.bad_value):          "bad value",
-                  int(ErrorCodes.assert_failure):     "assert failure",
-                  int(ErrorCodes.enforce_failure):    "enforce failure",
-                  int(ErrorCodes.unimplemented):      "unimplemented",
-                  int(ErrorCodes.internal_failure):   "internal failure",
-                  int(ErrorCodes.deprecated):         "deprecated",
-                  int(ErrorCodes.external_failure):   "external failure",
-                  int(ErrorCodes.user_abort):         "user abort",
-                  int(ErrorCodes.std_exception):      "std exception",
-                  int(ErrorCodes.unknown_exception):  "unknown exception",
-                  int(ErrorCodes.no_memory):          "no memory",
-                  int(ErrorCodes.bad_schema):         "bad schema",
-                  int(ErrorCodes.bad_xpath):          "bad XPath",
-                  int(ErrorCodes.bad_options):        "bad options",
-                  int(ErrorCodes.bad_index):          "bad index",
-                  int(ErrorCodes.bad_iter_position):  "bad iter position",
-                  int(ErrorCodes.bad_parse):          "bad parse",
-                  int(ErrorCodes.bad_serialize):      "bad serialize",
-                  int(ErrorCodes.bad_file_format):    "bad file format",
-                  int(ErrorCodes.no_file_handler):    "no file handler",
-                  int(ErrorCodes.too_large_for_jpeg): "too large for JPEG",
-                  int(ErrorCodes.bad_xml):            "bad XML",
-                  int(ErrorCodes.bad_rdf):            "bad RDF",
-                  int(ErrorCodes.bad_xmp):            "bad XMP",
-                  int(ErrorCodes.empty_iterator):     "empty iterator",
-                  int(ErrorCodes.bad_unicode):        "bad unicode",
-                  int(ErrorCodes.bad_tiff):           "bad TIFF",
-                  int(ErrorCodes.bad_jpeg):           "bad JPEG",
-                  int(ErrorCodes.bad_psd):            "bad PSD",
-                  int(ErrorCodes.bad_psir):           "bad PSIR",
-                  int(ErrorCodes.bad_iptc):           "bad IPTC",
-                  int(ErrorCodes.bad_mpeg):           "bad MPEG" }
+# Error codes defined by libexempi.  See "xmperrors.h"
+ERROR_MESSAGE = {    0: "unknown error",
+                    -1: "TBD",
+                    -2: "unavailable",
+                    -3: "bad object",
+                    -4: "bad parameter",
+                    -5: "bad value",
+                    -6: "assert failure",
+                    -7: "enforce failure",
+                    -8: "unimplemented",
+                    -9: "internal failure",
+                   -10: "deprecated",
+                   -11: "external failure",
+                   -12: "user abort",
+                   -13: "std exception",
+                   -14: "unknown exception",
+                   -15: "no memory",
+                  -101: "bad schema",
+                  -102: "bad XPath",
+                  -103: "bad options",
+                  -104: "bad index",
+                  -105: "bad iter position",
+                  -106: "bad parse",
+                  -107: "bad serialize",
+                  -108: "bad file format",
+                  -109: "no file handler",
+                  -110: "too large for JPEG",
+                  -201: "bad XML",
+                  -202: "bad RDF",
+                  -203: "bad XMP",
+                  -204: "empty iterator",
+                  -205: "bad unicode",
+                  -206: "bad TIFF",
+                  -207: "bad JPEG",
+                  -208: "bad PSD",
+                  -209: "bad PSIR",
+                  -210: "bad IPTC",
+                  -211: "bad MPEG" }
 
 
 class XmpDateTime(ctypes.Structure):
