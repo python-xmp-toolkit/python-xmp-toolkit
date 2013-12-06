@@ -288,8 +288,6 @@ class TestExempi(unittest.TestCase):
         self.assertTrue(True)
 
 
-    @unittest.skipIf(platform.system() == 'Darwin',
-                     'Segfaults on mac')
     def test_xmpfiles_write(self):
         """According to test-xmpfiles-write.cpp"""
         filename = pkg_resources.resource_filename(__name__,
@@ -347,8 +345,6 @@ class TestExempi(unittest.TestCase):
         exempi.free(xmp)
 
 
-    @unittest.skipIf(platform.system() == 'Darwin',
-                     'Segfaults on mac')
     def test_tiff_leak(self):
         """Corresponds to test-tiff-leak.cpp"""
         orig_file = pkg_resources.resource_filename(__name__,
