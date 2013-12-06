@@ -483,7 +483,7 @@ def files_put_xmp(xfptr, xmp):
     XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_files_put_xmp.restype = check_error
-    EXEMPI.xmp_files_put_xmp.argtypes = [ctypes.c_void_p, ctypes.c_int32]
+    EXEMPI.xmp_files_put_xmp.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
     EXEMPI.xmp_files_put_xmp(xfptr, xmp)
 
 

@@ -247,7 +247,7 @@ class XMPFilesTestCase(unittest.TestCase):
                  (flg == 'open_limitscanning')))
 
     @unittest.skipIf(platform.system() == 'Darwin',
-                     'Does not error out as expected on mac')
+                     'Fails on mac')
     def test_exempi_bad_combinations(self):
         """
         Verify bad combinations of formats and open flags.
@@ -292,7 +292,7 @@ class XMPFilesTestCase(unittest.TestCase):
         xmpfile.can_put_xmp( xmp )
 
     @unittest.skipIf(platform.system() == 'Darwin',
-                     'Segfaults on mac')
+                     'Fails on mac')
     def test_write_in_readonly(self):
         """If not "open_forupdate = True", should raise exception"""
         # Note, the file should have been opened with "open_forupdate = True"
@@ -305,8 +305,6 @@ class XMPFilesTestCase(unittest.TestCase):
         self.assertRaises( XMPError, xmpfile.put_xmp, xmp_data )
         self.assertEqual( xmpfile.can_put_xmp( xmp_data ), False )
 
-    @unittest.skipIf(platform.system() == 'Darwin',
-                     'Segfaults on mac')
     def test_tiff_smarthandler(self):
         """Verify action of TIFF smarthandler when tag length > 255"""
         # See issue 12
