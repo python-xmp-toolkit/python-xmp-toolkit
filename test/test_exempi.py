@@ -9,6 +9,7 @@ Test suites for exempi routine wrappers.
 import datetime
 import os
 import pkg_resources
+import platform
 import shutil
 import sys
 import tempfile
@@ -287,6 +288,8 @@ class TestExempi(unittest.TestCase):
         self.assertTrue(True)
 
 
+    @unittest.skipIf(platform.system() == 'Darwin',
+                     'Segfaults on mac')
     def test_xmpfiles_write(self):
         """According to test-xmpfiles-write.cpp"""
         filename = pkg_resources.resource_filename(__name__,
@@ -344,6 +347,8 @@ class TestExempi(unittest.TestCase):
         exempi.free(xmp)
 
 
+    @unittest.skipIf(platform.system() == 'Darwin',
+                     'Segfaults on mac')
     def test_tiff_leak(self):
         """Corresponds to test-tiff-leak.cpp"""
         orig_file = pkg_resources.resource_filename(__name__,
@@ -444,9 +449,9 @@ class TestExempi(unittest.TestCase):
         """Verify that check_file_format function works on PDF."""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.pdf")
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, exempi.FileType.pdf)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_PDF)
         exempi.files_free(xfptr)
 
     @unittest.skip("Unresolved failure")
@@ -454,9 +459,9 @@ class TestExempi(unittest.TestCase):
         """Verify that check_file_format function works on Adobe Illustrator."""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.ai")
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, exempi.FileType.illustrator)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_ILLUSTRATOR)
         exempi.files_free(xfptr)
 
     @unittest.skip("Unresolved failure")
@@ -464,9 +469,9 @@ class TestExempi(unittest.TestCase):
         """Verify that check_file_format function works on XMP."""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.xmp")
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, exempi.FileType.xml)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_XML)
         exempi.files_free(xfptr)
 
 

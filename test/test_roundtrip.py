@@ -6,6 +6,7 @@ Test suite for round trip workflows.
 import datetime
 import os
 import pkg_resources
+import platform
 import shutil
 import sys
 import tempfile
@@ -27,6 +28,8 @@ from libxmp.consts import XMP_NS_XMP as NS_XAP
 
 class TestRoundTrip(unittest.TestCase):
 
+    @unittest.skipIf(platform.system() == 'Darwin',
+                     'Segfaults on mac')
     def test_tiff(self):
         """Write to a TIFF that does not already have the XMP tag."""
         srcfile = pkg_resources.resource_filename(__name__,
@@ -54,6 +57,8 @@ class TestRoundTrip(unittest.TestCase):
             self.assertEqual(prop2, "no one in particular")
 
 
+    @unittest.skipIf(platform.system() == 'Darwin',
+                     'Segfaults on mac')
     def test_sturm_und_drang(self):
         """Should be able to write a property which includes umlauts."""
         srcfile = pkg_resources.resource_filename(__name__,
@@ -79,6 +84,8 @@ class TestRoundTrip(unittest.TestCase):
             self.assertEqual(actual_value, expected_value)
 
 
+    @unittest.skipIf(platform.system() == 'Darwin',
+                     'Segfaults on mac')
     def test_jpeg(self):
         """Create XMP from scratch to store in a jpeg."""
 
