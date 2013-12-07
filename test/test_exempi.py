@@ -441,8 +441,9 @@ class TestExempi(unittest.TestCase):
 
 
     @unittest.skip("Unresolved failure")
-    def test_format_pdf(self):
-        """Verify that check_file_format function works on PDF."""
+    def test_bad_formats(self):
+        """Verify check_file_format on PDF, Adobe Illustrator, XMP."""
+        # Issue 26
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.pdf")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
@@ -450,9 +451,6 @@ class TestExempi(unittest.TestCase):
         self.assertEqual(fmt, libxmp.consts.XMP_FT_PDF)
         exempi.files_free(xfptr)
 
-    @unittest.skip("Unresolved failure")
-    def test_format_illustrator(self):
-        """Verify that check_file_format function works on Adobe Illustrator."""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.ai")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
@@ -460,9 +458,6 @@ class TestExempi(unittest.TestCase):
         self.assertEqual(fmt, libxmp.consts.XMP_FT_ILLUSTRATOR)
         exempi.files_free(xfptr)
 
-    @unittest.skip("Unresolved failure")
-    def test_format_xmp(self):
-        """Verify that check_file_format function works on XMP."""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.xmp")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
