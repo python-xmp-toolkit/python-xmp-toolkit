@@ -483,7 +483,7 @@ def files_put_xmp(xfptr, xmp):
     XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_files_put_xmp.restype = check_error
-    EXEMPI.xmp_files_put_xmp.argtypes = [ctypes.c_void_p, ctypes.c_int32]
+    EXEMPI.xmp_files_put_xmp.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
     EXEMPI.xmp_files_put_xmp(xfptr, xmp)
 
 
@@ -1643,8 +1643,17 @@ def check_error(success):
     functions that return a boolean value.  This way we do not have to check
     for error status in each wrapping function and an exception will always be
     appropriately raised.
+
+    Parameters
+    ----------
+    success : bool
+        Return value from library function indicating success or failure.
     """
-    if not success:
-        error_msg = ERROR_MESSAGE[EXEMPI.xmp_get_error()]
+
+    # Unfortunately the success parameter does not seem to always be reliable
+    # so we supplement it by explicitly checking the error code.
+    ecode = EXEMPI.xmp_get_error()
+    if not success or ecode != 0:
+        error_msg = ERROR_MESSAGE[ecode]
         msg = 'Exempi function failure ("{0}").'.format(error_msg)
         raise XMPError(msg)
