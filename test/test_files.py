@@ -301,7 +301,7 @@ class XMPFilesTestCase(unittest.TestCase):
         filename = os.path.join(self.tempdir, 'sig05-002a.tif')
         xmpfile.open_file(filename)
         xmp_data = xmpfile.get_xmp()
-        xmp_data.set_property( NS_PHOTOSHOP, 'Headline', "Some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times." )
+        xmp_data.set_property( NS_PHOTOSHOP, 'Headline', "Some text")
         self.assertRaises( XMPError, xmpfile.put_xmp, xmp_data )
         self.assertEqual( xmpfile.can_put_xmp( xmp_data ), False )
 
