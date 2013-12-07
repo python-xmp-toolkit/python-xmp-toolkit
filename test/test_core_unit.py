@@ -443,14 +443,14 @@ class NegativeTestCases(unittest.TestCase):
         xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True )
         xmp.delete_property(xmpcoverage.NS1, "NotReallyThere" )
 
-    @unittest.skip("Does not error out.")
     def test_delete_property_bad_schema(self):
         """
-        Specifying a bad schema should be bad, right?  Does not error out.
+        Specifying a bad schema trigger an exception.
         """
         xmp = XMPMeta()
         xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True )
-        xmp.delete_property("not really a schema", "NotReallyThere" )
+        with self.assertRaises(XMPError):
+            xmp.delete_property("not really a schema", "NotReallyThere" )
 
 
 class UnicodeTestCase(unittest.TestCase):
