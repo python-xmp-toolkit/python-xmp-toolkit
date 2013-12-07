@@ -226,28 +226,18 @@ class XMPFilesTestCase(unittest.TestCase):
                     else:
                         self.assertFalse( xmpfile.can_put_xmp( xmp ) )
 
-    def test_put_xmp(self):
-        pass
-
     def flg_fmt_combi( self, flg, fmt ):
         """ See test_exempi_bad_combinations """
-        # Note, exempi for OS X 10.6 don't have smart handlers for MOV due to
-        # large changes in Quicktime from 10.5 to 10.6
-        is_snow_leopard = ((platform.system() == 'Darwin') and
-                           (int(platform.release().split(".")[0]) >= 10))
+        if flg == 'open_usesmarthandler':
+            if fmt in [XMP_FT_TEXT, XMP_FT_PDF, XMP_FT_ILLUSTRATOR]:
+                return True
 
-        return ((((fmt == XMP_FT_TEXT or
-                   fmt == XMP_FT_PDF or
-                   fmt == XMP_FT_ILLUSTRATOR) or
-                  (fmt == XMP_FT_MOV and is_snow_leopard)) and
-                 (flg == 'open_usesmarthandler')) or
-                (((fmt == XMP_FT_TEXT) or
-                  (fmt == XMP_FT_PDF) or
-                  (fmt == XMP_FT_MOV and is_snow_leopard)) and
-                 (flg == 'open_limitscanning')))
+        if flg == 'open_limitscanning':
+            if fmt in [XMP_FT_TEXT, XMP_FT_PDF]:
+                return True
 
-    @unittest.skipIf(platform.system() == 'Darwin',
-                     'Fails on mac')
+        return False
+
     def test_exempi_bad_combinations(self):
         """
         Verify bad combinations of formats and open flags.
@@ -291,8 +281,6 @@ class XMPFilesTestCase(unittest.TestCase):
         xmp = xmpfile.get_xmp()
         xmpfile.can_put_xmp( xmp )
 
-    @unittest.skipIf(platform.system() == 'Darwin',
-                     'Fails on mac')
     def test_write_in_readonly(self):
         """If not "open_forupdate = True", should raise exception"""
         # Note, the file should have been opened with "open_forupdate = True"
