@@ -440,7 +440,7 @@ class TestExempi(unittest.TestCase):
             exempi.files_free(xfptr)
 
 
-    @unittest.skip("Unresolved failure")
+    @unittest.skip("Issue 26")
     def test_bad_formats(self):
         """Verify check_file_format on PDF, Adobe Illustrator, XMP."""
         # Issue 26
