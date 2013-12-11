@@ -2,22 +2,18 @@ Developers
 ==========
 This section is intended for developers of Python XMP Toolkit.
 
-To obtain a source distribution go to the project website at
-http://code.google.com/p/python-xmp-toolkit/source/checkout and follow the
-instructions to checkout the most recent version. You may also find source
-distribution for specific releases at
-http://code.google.com/p/python-xmp-toolkit/downloads/list.
+To obtain a source distribution go to GitHub at
+https://github.com/python-xmp-toolkit/python-xmp-toolkit and clone the
+repository.
 
 Overview of Source Distribution
 -------------------------------
 
- * ``docs_src/`` -- Source code for documentation.
+ * ``docs/`` -- Source code for documentation.
  * ``libxmp/`` -- Source files for XMP Toolkit
- * ``Makefile`` -- Makefile for producing documentation, distributions and cleaning directory.
  * ``setup.py`` -- Distutils configuration file.
  * ``MANIFEST.in`` -- Template for MANIFEST file used by Distutils.
  * ``test`` -- Tests
-
 
 Documentation
 -------------
@@ -25,58 +21,33 @@ Documentation is prepared using Sphinx Python Documentation Generator (see
 http://sphinx.pocoo.org/). To make the documentation run the following command
 in the root directory::
 
-  make docs
-
-This will create a directory ``docs/`` with HTML and PDF version of the
-documentation. If more formats need to be created, edit the ``Makefile`` in
-the root directory.
-
-To compile only a specific documentation version, go to ``docs_src/`` and
-type::
-
-  make <format>
-
-where ``<format>`` is one of the supported Sphinx documentation formats.
-
-Installing Sphinx is pretty easy, just run::
-
-  sudo easy_install sphinx
-
-See the source code of both libraries and also the documentation for examples
-of how to write the documentation. Note that documentation is Python source
-files is not automatically included, as you have to specify which classes
-should go in the documentation.
-
-Note that all documentation is produced in ``docs_src/`` and then
-parts are copied to the text files (e.g. ``CHANGES``,``README`` and
-``INSTALL``).
+  pip install sphinx
+  python setup.py build_sphinx
 
 Packaging a Distribution
 ------------------------
 To package a distribution run::
 
-  make sdist
+  python setup.py sdist
 
 This will prepare the documentation and use distutils to package together a
 distribution that will be placed in ``dist/``.
 
-To clean up files produced by packaging the distribution, run::
-
-  make clean
-
-This will remove all prepared documentation, build directories and
-distribution files, so remember to move the just produced tar-ball before you
-run a clean.
-
 Running Tests
 -------------
-Test are run on Python 2.7 and 3.3 by issuing the command::
+Tests are run by issuing the command::
 
-  python -m unittest discover
+  python setup.py test
 
-With Python 2.6, you may instead issue the command::
+For test coverage, run::
 
-  unit2 discover
+  pip install coverage
+  source run-coverage.sh
+
+To run tests in Python 2.6, 2.7 and 3.3 using tox, run::
+
+  pip install tox
+  tox
 
 Distribution Configuration
 --------------------------
