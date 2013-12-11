@@ -4,7 +4,7 @@ Installation
 Requirements
 ------------
 
- * Python 2.6+
+ * Python 2.6, 2.7, or 3.3
  * Exempi 2.2.0+
  * Linux or OS X (see notes below for Windows)
 
@@ -14,6 +14,10 @@ Python XMP Toolkit
 The short version of installation is::
 
   python setup.py install
+
+or if you use pip::
+
+  pip install python-xmp-toolkit
 
 Note, in case you haven't installed Exempi you will get an
 :exc:`ExempiLoadError` exception once you try to load :mod:`libxmp`.
@@ -30,17 +34,22 @@ To install Exempi, unpack the distribution and run::
   make
   sudo make install
 
-Versions below 2.2.0 will not work.
+Versions below 2.2.0 will not work. Note, Exempi may also be available in your
+systems package manager, e.g.::
 
-Mac OS X 
+    sudo apt-get install libexempi3  # (Ubuntu/Debian)
+    brew install exempi  # (Homebrew on OS X)
+
+Mac OS X
 --------
-Note Exempi requires boost (http://www.boost.org/) to compile, so on OS X you
-probably need to run configure with one of the following options.::
+Note Exempi requires boost (http://www.boost.org/) to compile, so on OS
+X you probably need to run configure with one of the following options::
 
+  ./configure --with-boost=/usr/local # (for Homebrew)
   ./configure --with-darwinports
-  ./configure --with-fink 
+  ./configure --with-fink
 
-Windows 
+Windows
 -------
 The library has not been tested on Windows, and nor has any serious effort
 been made to test it. Hence, developers wanting to use the library on Windows

@@ -31,29 +31,5 @@
 # WHETHER # IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-
-
-.PHONY: all docs sdist runtests clean
-
-all: docs sdist
-
-docs: clean
-	make -C docs_src/ html
-#	make -C docs_src/ latex
-#	make -C docs_src/.build/latex/ all-pdf
-	mkdir docs/
-	cp -Rf docs_src/.build/html docs/
-#	cp docs_src/.build/latex/*.pdf docs/
-
-sdist: docs clean
-	python setup.py sdist
-
-runtests: 
-	python -m unittest discover
-
-clean:
-	rm -f libxmp/*.pyc
-	rm -rf docs_src/.build
-	rm -rf dist
-	rm -rf docs
-	rm -f MANIFEST
+coverage run setup.py test
+coverage report -m
