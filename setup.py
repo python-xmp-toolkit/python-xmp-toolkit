@@ -45,11 +45,11 @@ except ImportError:
     from distutils.core import setup, find_packages
 
 # Install requirements.
-install_requires = ['pytz']
+test_requires = []
 if sys.hexversion < 0x03030000:
-    install_requires.append('mock>=1.0.1')
+    test_requires.append('mock>=1.0.1')
 if sys.hexversion < 0x02070000:
-    install_requires.append('unittest2>=0.5.1')
+    test_requires.append('unittest2>=0.5.1')
 
 KWARGS = {
     'name': 'python-xmp-toolkit',
@@ -60,10 +60,10 @@ KWARGS = {
     'long_description': open('README.rst').read(),
     'download_url': 'https://pypi.python.org/pypi/python-xmp-toolkit',
     'license': 'New BSD License',
-    'install_requires': install_requires,
+    'install_requires': ['pytz'],
     'packages': find_packages(exclude=["*test*"]),
-    'test_suite': 'nose.collector',
-    'tests_require': ['nose'],
+    'test_suite': 'test',
+    'tests_require': test_requires,
 }
 
 # Get the version string.  Cannot do this by importing libxmp!
