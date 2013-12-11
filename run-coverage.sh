@@ -31,52 +31,5 @@
 # WHETHER # IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-
-"""
-Install script for libxmp.
-"""
-import os
-import re
-import sys
-
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from distutils.core import setup, find_packages
-
-LONG_DESC = "Python XMP Toolkit is a library for working with XMP metadata, "
-LONG_DESC += "as well as reading/writing XMP metadata stored in many "
-LONG_DESC += "different file formats."
-
-DOWNLOAD_URL = 'http://code.google.com/p/python-xmp-toolkit/downloads/list'
-
-# Install requirements.
-install_requires = ['pytz']
-if sys.hexversion < 0x03030000:
-    install_requires.append('mock>=1.0.1')
-if sys.hexversion < 0x02070000:
-    install_requires.append('unittest2>=0.5.1')
-
-KWARGS = {
-    'name': 'python-xmp-toolkit',
-    'description': 'Python XMP Toolkit for working with metadata.',
-    'author': 'Lars Holm Nielsen, Federico Caboni & Amit Kapadia',
-    'author_email': 'lnielsen@eso.org,federico.caboni@me.com,akapad@gmail.com',
-    'url': 'http://code.google.com/p/python-xmp-toolkit/',
-    'long_description': LONG_DESC,
-    'download_url': DOWNLOAD_URL,
-    'license': 'New BSD License',
-    'install_requires': install_requires,
-    'packages': find_packages(exclude=["*test*"]),
-    'test_suite': 'nose.collector',
-    'tests_require': ['nose'],
-}
-
-# Get the version string.  Cannot do this by importing glymur!
-version_file = os.path.join('libxmp', 'version.py')
-with open(version_file, 'rt') as fptr:
-    contents = fptr.read()
-    match = re.search('VERSION\s*=\s*"(?P<version>\d*.\d*.\d*.*)"\n', contents)
-    KWARGS['version'] = match.group('version')
-
-setup(**KWARGS)
+coverage run setup.py test
+coverage report -m
