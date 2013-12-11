@@ -44,12 +44,6 @@ try:
 except ImportError:
     from distutils.core import setup, find_packages
 
-LONG_DESC = "Python XMP Toolkit is a library for working with XMP metadata, "
-LONG_DESC += "as well as reading/writing XMP metadata stored in many "
-LONG_DESC += "different file formats."
-
-DOWNLOAD_URL = 'http://code.google.com/p/python-xmp-toolkit/downloads/list'
-
 # Install requirements.
 install_requires = ['pytz']
 if sys.hexversion < 0x03030000:
@@ -62,9 +56,9 @@ KWARGS = {
     'description': 'Python XMP Toolkit for working with metadata.',
     'author': 'Lars Holm Nielsen, Federico Caboni & Amit Kapadia',
     'author_email': 'lnielsen@eso.org,federico.caboni@me.com,akapad@gmail.com',
-    'url': 'http://code.google.com/p/python-xmp-toolkit/',
-    'long_description': LONG_DESC,
-    'download_url': DOWNLOAD_URL,
+    'url': 'https://github.com/python-xmp-toolkit/python-xmp-toolkit',
+    'long_description': open('README.rst').read(),
+    'download_url': 'https://pypi.python.org/pypi/python-xmp-toolkit',
     'license': 'New BSD License',
     'install_requires': install_requires,
     'packages': find_packages(exclude=["*test*"]),
@@ -72,7 +66,7 @@ KWARGS = {
     'tests_require': ['nose'],
 }
 
-# Get the version string.  Cannot do this by importing glymur!
+# Get the version string.  Cannot do this by importing libxmp!
 version_file = os.path.join('libxmp', 'version.py')
 with open(version_file, 'rt') as fptr:
     contents = fptr.read()
