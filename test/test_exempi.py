@@ -9,6 +9,7 @@ Test suites for exempi routine wrappers.
 import datetime
 import os
 import pkg_resources
+import platform
 import shutil
 import sys
 import tempfile
@@ -439,34 +440,29 @@ class TestExempi(unittest.TestCase):
             exempi.files_free(xfptr)
 
 
-    @unittest.skip("Unresolved failure")
-    def test_format_pdf(self):
-        """Verify that check_file_format function works on PDF."""
+    @unittest.skip("Issue 26")
+    def test_bad_formats(self):
+        """Verify check_file_format on PDF, Adobe Illustrator, XMP."""
+        # Issue 26
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.pdf")
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, exempi.FileType.pdf)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_PDF)
         exempi.files_free(xfptr)
 
-    @unittest.skip("Unresolved failure")
-    def test_format_illustrator(self):
-        """Verify that check_file_format function works on Adobe Illustrator."""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.ai")
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, exempi.FileType.illustrator)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_ILLUSTRATOR)
         exempi.files_free(xfptr)
 
-    @unittest.skip("Unresolved failure")
-    def test_format_xmp(self):
-        """Verify that check_file_format function works on XMP."""
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.xmp")
-        xfptr = exempi.files_open_new(filename, exempi.OpenFileOptions.read)
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, exempi.FileType.xml)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_XML)
         exempi.files_free(xfptr)
 
 
@@ -509,10 +505,10 @@ class TestIteration(unittest.TestCase):
 
         return schemas, paths, props
 
-    @unittest.skip("Segfaults.")
+    @unittest.skip("Issue 27")
     def test_namespaces(self):
         """Iterate through the namespaces."""
-        options = exempi.IterOptions.namespaces
+        options = XMP_ITERATOR_OPTIONS['iter_namespaces']
         schemas, paths, props = self.collect_iteration(None, None, options)
 
     def test_single_namespace_single_path_leaf_nodes(self):
@@ -585,15 +581,11 @@ class TestIteration(unittest.TestCase):
         self.assertEqual(props[5], "ottawa")
         self.assertEqual(props[6], "parliament of canada")
 
-    @unittest.skip("Segfaults.")
+    @unittest.skip("Issue 28.")
     def test_no_namespace_single_prop_leaf_nodes(self):
         """Get all the leaf nodes from a single property."""
-        options = exempi.IterOptions.just_leaf_nodes
+        options = XMP_ITERATOR_OPTIONS['iter_justleafnodes']
         schemas, paths, props = self.collect_iteration(None, "rights", options)
-
-        print(schemas)
-        print(paths)
-        print(props)
 
     def test_single_namespace_leaf_nodes_omit_qualifiers(self):
         """Get all the leaf nodes (no qualifiers) from a single namespace."""

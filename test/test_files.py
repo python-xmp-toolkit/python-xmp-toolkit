@@ -36,6 +36,7 @@ import os
 import os.path
 import pkg_resources
 import platform
+import re
 import shutil
 import sys
 import tempfile
@@ -73,9 +74,27 @@ class XMPFilesTestCase(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tempdir)
 
+    def test_repr(self):
+        """Test __repr__ and __str__ on XMPFiles objects."""
+        xmpf = XMPFiles()
+        self.assertEqual(str(xmpf), 'XMPFiles()')
+        self.assertEqual(repr(xmpf), 'XMPFiles()')
+
+        # If the XMPFiles object has a file associated with it, then use a
+        # regular expression to match the output.
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.jpg")
+        xmpf.open_file(file_path=filename)
+        actual_value = str(xmpf)
+
+        regex = re.compile(r"""XMPFiles\(file_path=""", re.VERBOSE)
+        self.assertIsNotNone(regex.match(actual_value))
+        self.assertTrue(actual_value.endswith("BlueSquare.jpg')"))
+
+
+
     def test_print_bom(self):
         """Should be able to print XMP packets despite BOM."""
-
         # The BOM cannot be decoded from utf-8 into ascii, so a 2.7 XMPMeta
         # object's __repr__ function would error out on it.
 
@@ -86,6 +105,7 @@ class XMPFilesTestCase(unittest.TestCase):
         xmp = xmpf.get_xmp()
         with patch('sys.stdout', new=StringIO()) as fake_out:
             print(xmp)
+            repr(xmp)
         self.assertTrue(True)
 
 
@@ -206,25 +226,17 @@ class XMPFilesTestCase(unittest.TestCase):
                     else:
                         self.assertFalse( xmpfile.can_put_xmp( xmp ) )
 
-    def test_put_xmp(self):
-        pass
-
     def flg_fmt_combi( self, flg, fmt ):
         """ See test_exempi_bad_combinations """
-        # Note, exempi for OS X 10.6 don't have smart handlers for MOV due to
-        # large changes in Quicktime from 10.5 to 10.6
-        is_snow_leopard = ((platform.system() == 'Darwin') and
-                           (int(platform.release().split(".")[0]) >= 10))
+        if flg == 'open_usesmarthandler':
+            if fmt in [XMP_FT_TEXT, XMP_FT_PDF, XMP_FT_ILLUSTRATOR]:
+                return True
 
-        return ((((fmt == XMP_FT_TEXT or
-                   fmt == XMP_FT_PDF or
-                   fmt == XMP_FT_ILLUSTRATOR) or
-                  (fmt == XMP_FT_MOV and is_snow_leopard)) and
-                 (flg == 'open_usesmarthandler')) or
-                (((fmt == XMP_FT_TEXT) or
-                  (fmt == XMP_FT_PDF) or
-                  (fmt == XMP_FT_MOV and is_snow_leopard)) and
-                 (flg == 'open_limitscanning')))
+        if flg == 'open_limitscanning':
+            if fmt in [XMP_FT_TEXT, XMP_FT_PDF]:
+                return True
+
+        return False
 
     def test_exempi_bad_combinations(self):
         """
@@ -277,9 +289,33 @@ class XMPFilesTestCase(unittest.TestCase):
         filename = os.path.join(self.tempdir, 'sig05-002a.tif')
         xmpfile.open_file(filename)
         xmp_data = xmpfile.get_xmp()
-        xmp_data.set_property( NS_PHOTOSHOP, 'Headline', "Some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times because it is some really long text blurb which clearly goes longer than 255 characters because it repeats three times." )
+        xmp_data.set_property( NS_PHOTOSHOP, 'Headline', "Some text")
         self.assertRaises( XMPError, xmpfile.put_xmp, xmp_data )
         self.assertEqual( xmpfile.can_put_xmp( xmp_data ), False )
+
+    def test_tiff_smarthandler(self):
+        """Verify action of TIFF smarthandler when tag length > 255"""
+        # See issue 12
+        srcfile = pkg_resources.resource_filename(__name__,
+                                                  "fixtures/zeros.tif")
+        with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
+            shutil.copyfile(srcfile, tfile.name)
+
+            # Create a tag with 280 chars.
+            xmpf = XMPFiles()
+            xmpf.open_file(tfile.name, open_forupdate=True)
+            xmp = xmpf.get_xmp()
+            blurb = "Some really long text blurb "
+            xmp.set_property(NS_PHOTOSHOP, 'Headline', blurb * 10)
+            xmpf.put_xmp(xmp)
+            xmpf.close_file()
+
+            xmpf.open_file(tfile.name, usesmarthandler=True)
+            xmp = xmpf.get_xmp()
+            prop = xmp.get_property(NS_PHOTOSHOP, "Headline")
+            xmpf.close_file()
+
+            self.assertEqual(prop, blurb * 10)
 
 
 

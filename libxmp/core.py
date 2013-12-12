@@ -69,6 +69,24 @@ def _remove_bom(xstr):
 
     return xstr
 
+def _remove_trailing_whitespace(xstr):
+    """Remove trailing white space.
+    
+    There is a lot of white space between </x:xmpmeta> and <?xpacket end="w"?>,
+    but we don't need that for presentation purposes.
+    """
+    regex = re.compile(r"""</x:xmpmeta>
+                           (?P<whitespace>\s*)
+                           <\?xpacket\s
+                           end="w"\?>""", re.UNICODE | re.VERBOSE)
+    match = regex.search(xstr)
+    if match is not None:
+        # Ok we matched up to the whitespace, get rid of it.
+        ws_start, ws_end = match.span('whitespace')
+        xstr = xstr[0:ws_start] + '\n' + xstr[ws_end:]
+
+    return xstr
+
 def _force_rdf_to_utf8(xstr):
     """Force RDF to unicode on 2.7, removing BOM in the process."""
 
@@ -117,15 +135,30 @@ class XMPMeta(object):
 
         return self.iterator
 
-    def __repr__(self):
-        """ Prints the serialization of the XMPMeta object.
-
-        On Python 2.7, the byte order marker (BOM) is removed.
+    def __unicode__(self):
+        """Return a unicode-friendly representation.
         """
         xstr = self.serialize_to_str()
-        if sys.hexversion < 0x03000000:
-            xstr = _remove_bom(xstr)
         return xstr
+
+    def __repr__(self):
+        """We should strive to make this eval-able, but here it is difficult.
+        """
+        return str(self)
+
+    def __str__(self):
+        """ Prints a nice serialization of the XMPMeta object.
+
+        Must be a bytes string in Python 2.
+        """
+        xstr = self.serialize_to_str()
+        xstr = _remove_trailing_whitespace(xstr)
+        if sys.hexversion < 0x03000000:
+            # The BOM is not important, just remove it.
+            xstr = _remove_bom(xstr)
+            return xstr.encode('UTF-8', 'replace')
+        else: 
+            return xstr
 
     def __eq__(self, other):
         """ Checks if two XMPMeta objects are equal."""
@@ -384,7 +417,7 @@ class XMPMeta(object):
             general path expression, must not be None or the empty string.  Has
             the same namespace prefix usage as propName in GetProperty.
         :param str generic_lang:  The name of the generic language as an RFC
-            3066 primary subtag. May be null or the empty string if no generic
+            3066 primary subtag. May be None or the empty string if no generic
             language is wanted.
         :param str specific_lang: The name of the specific language as an RFC
             3066 tag. Must not be null or the empty string.
@@ -674,8 +707,6 @@ class XMPMeta(object):
         :rtype: `unicode` string.
         """
         obj =  self.serialize_to_str( **kwargs )
-        #if sys.hexversion < 0x03000000:
-        #    obj = obj.decode('utf-8')
         return obj
 
 

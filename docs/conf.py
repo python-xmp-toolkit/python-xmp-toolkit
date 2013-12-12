@@ -11,13 +11,19 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
-import sys, os
-import os.path
+import os
+import re
+import sys
 
 def read_version():
     try:
-        return open(os.path.join(os.path.pardir,'VERSION'), 'r').readline().strip()
-    except IOError, e:
+        version_file = os.path.join(os.path.pardir, 'libxmp', 'version.py')
+        with open(version_file, 'rt') as fptr:
+            contents = fptr.read()
+            match = re.search('VERSION\s*=\s*"(?P<version>\d*.\d*.\d*.*)"\n',
+                              contents)
+            return match.group('version')
+    except IOError as e:
         raise SystemExit(
             "Error: you must run setup from the root directory (%s)" % str(e))
 
@@ -31,7 +37,8 @@ sys.path.append( os.path.abspath(os.path.pardir) )
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo',]
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo',
+              'sphinx.ext.coverage']
 
 todo_include_todos = True
 
@@ -52,7 +59,7 @@ copyright = '2008-2009 European Space Agency, European Southern Observatory AND 
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '1.0'
+version = '2.0'
 # The full version, including alpha/beta/rc tags.
 release = read_version()
 

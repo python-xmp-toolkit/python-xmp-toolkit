@@ -31,46 +31,5 @@
 # WHETHER # IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-
-"""
-Install script for libxmp.
-"""
-import os
-import re
-import sys
-
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from distutils.core import setup, find_packages
-
-# Install requirements.
-test_requires = []
-if sys.hexversion < 0x03030000:
-    test_requires.append('mock>=1.0.1')
-if sys.hexversion < 0x02070000:
-    test_requires.append('unittest2>=0.5.1')
-
-KWARGS = {
-    'name': 'python-xmp-toolkit',
-    'description': 'Python XMP Toolkit for working with metadata.',
-    'author': 'Lars Holm Nielsen, Federico Caboni & Amit Kapadia',
-    'author_email': 'lnielsen@eso.org,federico.caboni@me.com,akapad@gmail.com',
-    'url': 'https://github.com/python-xmp-toolkit/python-xmp-toolkit',
-    'long_description': open('README.rst').read(),
-    'download_url': 'https://pypi.python.org/pypi/python-xmp-toolkit',
-    'license': 'New BSD License',
-    'install_requires': ['pytz'],
-    'packages': find_packages(exclude=["*test*"]),
-    'test_suite': 'test',
-    'tests_require': test_requires,
-}
-
-# Get the version string.  Cannot do this by importing libxmp!
-version_file = os.path.join('libxmp', 'version.py')
-with open(version_file, 'rt') as fptr:
-    contents = fptr.read()
-    match = re.search('VERSION\s*=\s*"(?P<version>\d*.\d*.\d*.*)"\n', contents)
-    KWARGS['version'] = match.group('version')
-
-setup(**KWARGS)
+coverage run setup.py test
+coverage report -m

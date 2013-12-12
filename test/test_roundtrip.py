@@ -6,6 +6,7 @@ Test suite for round trip workflows.
 import datetime
 import os
 import pkg_resources
+import platform
 import shutil
 import sys
 import tempfile
