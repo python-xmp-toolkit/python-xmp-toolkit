@@ -54,8 +54,8 @@ if sys.hexversion < 0x02070000:
 KWARGS = {
     'name': 'python-xmp-toolkit',
     'description': 'Python XMP Toolkit for working with metadata.',
-    'author': 'Lars Holm Nielsen, Federico Caboni & Amit Kapadia',
-    'author_email': 'lnielsen@eso.org,federico.caboni@me.com,akapad@gmail.com',
+    'author': 'Lars Holm Nielsen, John Evans, Federico Caboni & Amit Kapadia',
+    'author_email': 'lars@hankat.dk',
     'url': 'https://github.com/python-xmp-toolkit/python-xmp-toolkit',
     'long_description': open('README.rst').read(),
     'download_url': 'https://pypi.python.org/pypi/python-xmp-toolkit',
@@ -64,6 +64,19 @@ KWARGS = {
     'packages': find_packages(exclude=["*test*"]),
     'test_suite': 'test',
     'tests_require': test_requires,
+    'classifiers': [
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+        'Topic :: Multimedia',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Utilities',
+    ],
 }
 
 # Get the version string.  Cannot do this by importing libxmp!
