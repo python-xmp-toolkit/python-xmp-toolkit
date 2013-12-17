@@ -38,20 +38,35 @@ Wrapper functions for individual exempi library routines.
 import ctypes, ctypes.util
 import datetime
 import os
+import platform
 
 import pytz
 
 from . import XMPError, ExempiLoadError
 from .consts import XMP_OPEN_READ, XMP_OPEN_NOOPTION
 
-path = ctypes.util.find_library('exempi')
-if path is None:
-    raise ExempiLoadError('Exempi library not found.')
+def _load_exempi():
+    """
+    Loads exempi library.
+    """
+    path = ctypes.util.find_library('exempi')
+    if path is None:
+        if platform.system().startswith('Darwin'):
+            if os.path.exists('/opt/local/lib/libexempi.dylib'):
+                # MacPorts starndard location.
+                path = '/opt/local/lib/libexempi.dylib'
+            
+    if path is None:
+        raise ExempiLoadError('Exempi library not found.')
 
-if os.name != "nt":
-    EXEMPI = ctypes.CDLL(path)
-else:
-    EXEMPI = ctypes.WinDLL(path)
+    if os.name != "nt":
+        EXEMPI = ctypes.CDLL(path)
+    else:
+        EXEMPI = ctypes.WinDLL(path)
+
+    return EXEMPI
+
+EXEMPI = _load_exempi()
 
 # Error codes defined by libexempi.  See "xmperrors.h"
 ERROR_MESSAGE = {    0: "unknown error",
