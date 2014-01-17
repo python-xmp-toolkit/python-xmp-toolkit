@@ -1,4 +1,4 @@
-Release 2.0.0 ( TBD )
+Release 2.0.0 ( January 17, 2013 )
   * Added support for Python 3.3, dropped support for 2.5.
   * All string outputs in 2.6 and 2.7 are unicode objects with UTF-8 encoding.
   * Added exempi module, a low-level ctypes interface to exempi library.
@@ -18,14 +18,14 @@ Release 1.0 ( March 31, 2011 )
   * Known issue #7 documented - issue with TIFF smart handler.
   * Fixed issue #15 - 64-bit issues on Linux and Mac.
   * Fixed issue #11 - Typo in does_property_exist.
-  * Thanks to marialaura.clemente for bug reports and patches.  
+  * Thanks to marialaura.clemente for bug reports and patches.
 
 Release 1.0rc2 (Feburary 16, 2010)
   * Fixed issue #4, #5 and related to XMPIterator, file_to_dict and
-    object_to_dict. 
+    object_to_dict.
   * Fixed issue in file_to_dict which didn't pass parameters to
     XMPFiles.open_file() properly.
-  * Fixed issue #9 file_to_dict now raises IOError instead of returning  
+  * Fixed issue #9 file_to_dict now raises IOError instead of returning
     an empty dictionary for non-existing files. (*backward incompatible*)
   * Fixed issue #8 - spelling mistake in function call in
     XMPMeta.append_array_items
