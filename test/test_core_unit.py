@@ -290,6 +290,39 @@ class XMPMetaTestCase(unittest.TestCase):
         self.assertEqual(prop.tzinfo, pytz.utc)
 
 
+    def test_write_new_struct_in_array(self):
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+
+        xmp = XMPMeta()
+        xmp.parse_from_str(strbuffer)
+
+        prefix = xmp.get_prefix_for_namespace(NS_DC)
+
+        xmp.append_array_item(NS_DC, prefix + 'creator', None, prop_value_is_struct=True)
+        xmp.set_property(NS_DC, prefix + 'creator[2]/' + prefix + 'TestProp', '100')
+        self.assertTrue(xmp.does_property_exist(NS_DC, prefix + 'creator[2]'))
+        prop = xmp.get_property(NS_DC, prefix + 'creator[2]/%sTestProp' % prefix)
+        self.assertEqual(prop, '100')
+
+        xpath = prefix + 'creator'
+        print "xpath", xpath
+        xmp.set_array_item(NS_DC, xpath, 3, None, prop_value_is_struct=True)
+        xpath += '[3]/%sTestProp' % prefix
+        xmp.set_property(NS_DC, xpath, '200')
+        self.assertTrue(xmp.does_property_exist(NS_DC, xpath))
+        prop = xmp.get_property(NS_DC, xpath)
+        self.assertEqual(prop, '200')
+
+        xpath = prefix + 'TestStruct/' + prefix + 'TestValue'
+        xmp.set_property(NS_DC, xpath, '300')
+        self.assertTrue(xmp.does_property_exist(NS_DC, xpath))
+        prop = xmp.get_property(NS_DC, xpath)
+        self.assertEqual(prop, '300')
+
     def test_exempi_core(self):
         """Corresponds to test_exempi.TestExempi.test_exempi_core"""
         filename = pkg_resources.resource_filename(__name__,
