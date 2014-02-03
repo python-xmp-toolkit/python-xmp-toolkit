@@ -149,19 +149,33 @@ def append_array_item(xmp, schema, name, array_options, value, option_bits):
     XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_append_array_item.restype = check_error
-    EXEMPI.xmp_append_array_item.argtypes = [ctypes.c_void_p,
-                                             ctypes.c_char_p,
-                                             ctypes.c_char_p,
-                                             ctypes.c_uint32,
-                                             ctypes.c_char_p,
-                                             ctypes.c_uint32]
+    if value is None:
+        EXEMPI.xmp_append_array_item.argtypes = [ctypes.c_void_p,
+                                                 ctypes.c_char_p,
+                                                 ctypes.c_char_p,
+                                                 ctypes.c_uint32,
+                                                 ctypes.c_uint32,
+                                                 ctypes.c_uint32]
+        EXEMPI.xmp_append_array_item(xmp,
+                                     schema.encode('utf-8'),
+                                     name.encode('utf-8'),
+                                     array_options,
+                                     ctypes.c_uint32(0),
+                                     option_bits)
+    else:
+        EXEMPI.xmp_append_array_item.argtypes = [ctypes.c_void_p,
+                                                 ctypes.c_char_p,
+                                                 ctypes.c_char_p,
+                                                 ctypes.c_uint32,
+                                                 ctypes.c_char_p,
+                                                 ctypes.c_uint32]
 
-    EXEMPI.xmp_append_array_item(xmp,
-                                 schema.encode('utf-8'),
-                                 name.encode('utf-8'),
-                                 array_options,
-                                 value.encode('utf-8'),
-                                 option_bits)
+        EXEMPI.xmp_append_array_item(xmp,
+                                     schema.encode('utf-8'),
+                                     name.encode('utf-8'),
+                                     array_options,
+                                     value.encode('utf-8'),
+                                     option_bits)
 
 
 def copy(xmp):
@@ -1295,18 +1309,32 @@ def set_array_item(xmp, schema, name, index, value, option_bits):
     XMPError : if the corresponding library routine fails
     """
     EXEMPI.xmp_set_array_item.restype = check_error
-    EXEMPI.xmp_set_array_item.argtypes = [ctypes.c_void_p,
-                                          ctypes.c_char_p,
-                                          ctypes.c_char_p,
-                                          ctypes.c_int32,
-                                          ctypes.c_char_p,
-                                          ctypes.c_uint32]
-    EXEMPI.xmp_set_array_item(xmp,
-                              schema.encode('utf-8'),
-                              name.encode('utf-8'),
-                              ctypes.c_int32(index),
-                              value.encode('utf-8'),
-                              option_bits)
+    if value is None:
+        EXEMPI.xmp_set_array_item.argtypes = [ctypes.c_void_p,
+                                              ctypes.c_char_p,
+                                              ctypes.c_char_p,
+                                              ctypes.c_int32,
+                                              ctypes.c_uint32,
+                                              ctypes.c_uint32]
+        EXEMPI.xmp_set_array_item(xmp,
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
+                                  ctypes.c_int32(index),
+                                  ctypes.c_uint32(0),
+                                  option_bits)
+    else:
+        EXEMPI.xmp_set_array_item.argtypes = [ctypes.c_void_p,
+                                              ctypes.c_char_p,
+                                              ctypes.c_char_p,
+                                              ctypes.c_int32,
+                                              ctypes.c_char_p,
+                                              ctypes.c_uint32]
+        EXEMPI.xmp_set_array_item(xmp,
+                                  schema.encode('utf-8'),
+                                  name.encode('utf-8'),
+                                  ctypes.c_int32(index),
+                                  value.encode('utf-8'),
+                                  option_bits)
 
 
 def set_localized_text(xmp, schema, name, generic_lang, specific_lang, value,
