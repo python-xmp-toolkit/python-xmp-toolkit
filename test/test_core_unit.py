@@ -309,7 +309,6 @@ class XMPMetaTestCase(unittest.TestCase):
         self.assertEqual(prop, '100')
 
         xpath = prefix + 'creator'
-        print "xpath", xpath
         xmp.set_array_item(NS_DC, xpath, 3, None, prop_value_is_struct=True)
         xpath += '[3]/%sTestProp' % prefix
         xmp.set_property(NS_DC, xpath, '200')
