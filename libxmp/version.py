@@ -40,5 +40,5 @@ from distutils.version import LooseVersion
 
 # Do not change the format of this next line!  Doing so risks breaking
 # setup.py
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 VERSION_TUPLE = LooseVersion(VERSION).version
