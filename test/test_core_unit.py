@@ -53,6 +53,7 @@ from libxmp.utils import file_to_dict, object_to_dict
 from .common_fixtures import setup_sample_files
 from . import xmpcoverage
 
+from libxmp.consts import XMP_ITERATOR_OPTIONS, XMP_SKIP_OPTIONS
 from libxmp.consts import XMP_NS_XMP as NS_XAP
 from libxmp.consts import XMP_NS_CC as NS_CC
 from libxmp.consts import XMP_NS_DC as NS_DC
@@ -217,7 +218,6 @@ class XMPMetaTestCase(unittest.TestCase):
         del xmp2
 
     def test_text_property_450_file(self):
-        # Currently fails on OS X 10.6 with Exempi installed from MacPorts
         files = ["fixtures/BlueSquare450.xmp",
                  "fixtures/BlueSquare450.tif"]
         options = ['open_nooption',        'open_read',
@@ -289,6 +289,38 @@ class XMPMetaTestCase(unittest.TestCase):
         self.assertEqual(prop.minute, 42)
         self.assertEqual(prop.tzinfo, pytz.utc)
 
+
+    def test_write_new_struct_in_array(self):
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+
+        xmp = XMPMeta()
+        xmp.parse_from_str(strbuffer)
+
+        prefix = xmp.get_prefix_for_namespace(NS_DC)
+
+        xmp.append_array_item(NS_DC, prefix + 'creator', None, prop_value_is_struct=True)
+        xmp.set_property(NS_DC, prefix + 'creator[2]/' + prefix + 'TestProp', '100')
+        self.assertTrue(xmp.does_property_exist(NS_DC, prefix + 'creator[2]'))
+        prop = xmp.get_property(NS_DC, prefix + 'creator[2]/%sTestProp' % prefix)
+        self.assertEqual(prop, '100')
+
+        xpath = prefix + 'creator'
+        xmp.set_array_item(NS_DC, xpath, 3, None, prop_value_is_struct=True)
+        xpath += '[3]/%sTestProp' % prefix
+        xmp.set_property(NS_DC, xpath, '200')
+        self.assertTrue(xmp.does_property_exist(NS_DC, xpath))
+        prop = xmp.get_property(NS_DC, xpath)
+        self.assertEqual(prop, '200')
+
+        xpath = prefix + 'TestStruct/' + prefix + 'TestValue'
+        xmp.set_property(NS_DC, xpath, '300')
+        self.assertTrue(xmp.does_property_exist(NS_DC, xpath))
+        prop = xmp.get_property(NS_DC, xpath)
+        self.assertEqual(prop, '300')
 
     def test_exempi_core(self):
         """Corresponds to test_exempi.TestExempi.test_exempi_core"""
@@ -399,6 +431,36 @@ class XMPMetaTestCase(unittest.TestCase):
         xmp.append_array_item(NS_DC, "creator", "donuts")
         self.assertEqual(xmp.count_array_items(NS_DC, "creator"), 4)
 
+    def test_skip(self):
+        """Verify usage of XMPMeta skip method.
+        """
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/test1.xmp")
+        with open(filename, 'r') as fptr:
+            strbuffer = fptr.read()
+
+        xmp = XMPMeta()
+        xmp.parse_from_str(strbuffer)
+
+        iterator = iterator = iter(xmp)
+
+        schemas = []
+        paths = []
+        props = []
+
+        for schema, path, prop, options in iterator:
+
+            if schema == NS_TIFF:
+                iterator.skip(iter_skipsubtree=True)
+            else:
+                schemas.append(schema)
+                paths.append(path)
+                props.append(prop)
+
+        # If the iteration modification worked, there should be no TIFF 
+        # properties in the list of schemas.
+        self.assertTrue(NS_TIFF not in schemas)
+        self.assertTrue(NS_EXIF in schemas)
     
 
 class UtilsTestCase(unittest.TestCase):
