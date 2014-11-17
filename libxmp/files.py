@@ -40,12 +40,11 @@ core pacakage can then be used to manipulate the individual XMP properties.
 efficiently access the XMP in specific file formats. It also includes a
 fallback packet scanner that can be used for unknown file formats.
 """
+import sys
 
 from . import XMPError, XMPMeta
 from .consts import options_mask
-from .consts import XMP_CLOSE_NOOPTION
-from .consts import XMP_OPEN_OPTIONS
-from .consts import XMP_OPEN_NOOPTION
+from .consts import XMP_CLOSE_NOOPTION, XMP_OPEN_OPTIONS, XMP_OPEN_NOOPTION
 from . import exempi as _cexempi
 
 __all__ = ['XMPFiles']
@@ -80,13 +79,16 @@ class XMPFiles(object):
 
 
     def __repr__(self):
-        msg = "XMPFiles("
         if self._file_path is None:
-            msg += ")"
+            msg = "XMPFiles()"
         else:
-            msg += "file_path='{0}')"
-            msg = msg.format(self._file_path)
+            if sys.hexversion < 0x03000000 and type(self._file_path) is unicode:
+                fmt = u"XMPFiles(file_path='{0}')"
+            else:
+                fmt = "XMPFiles(file_path='{0}')"
+            msg = fmt.format(self._file_path)
         return msg
+
     def __del__(self):
         """
         Free up the memory associated with the XMP file instance.

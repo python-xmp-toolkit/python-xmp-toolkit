@@ -108,6 +108,24 @@ class XMPFilesTestCase(unittest.TestCase):
             repr(xmp)
         self.assertTrue(True)
 
+    def test_repr_on_latin1_filename(self):
+        """
+        should be able to echo a filename with latin1 characters
+
+        See issue#36
+        """
+        srcfile = pkg_resources.resource_filename(__name__,
+                                                  "samples/BlueSquare.jpg")
+        latin1_name = u"éà*çc! teeest!!.jpg"
+
+        dest = os.path.join(self.tempdir, latin1_name)
+        shutil.copyfile(srcfile, dest)
+        xmpf = XMPFiles()
+        xmpf.open_file(file_path=dest)
+        # If we don't error out when the __repr__ method is invoked, then
+        # we're gold.
+        xmpf
+        self.assertTrue(True)
 
     def test_init_del(self):
         xmpfile = XMPFiles()
