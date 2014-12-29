@@ -78,6 +78,15 @@ class XMPFiles(object):
             self.open_file( file_path, **kwargs )
 
 
+    def __unicode__(self):
+        if self._file_path is None:
+            return unicode("XMPFiles()")
+
+        value = (unicode("XMPFiles(file_path='") +
+                 unicode(self._file_path) +
+                 unicode("'"))
+        return value
+
     def __repr__(self):
         if self._file_path is None:
             return "XMPFiles()"

@@ -32,7 +32,7 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-#TODO: make a proper testsuite for core using unittest
+# TODO: make a proper testsuite for core using unittest
 
 import sys
 import os
@@ -40,33 +40,20 @@ import os.path
 
 sys.path.append(os.path.pardir)
 
-from libxmp import *
-from libxmp.core import XMPIterator, XMPMeta
-from libxmp.consts import *
+from libxmp import XMPFiles
+from libxmp.consts import XMP_OPEN_FORUPDATE
+
 
 def main():
-    #tests_xmp_core()
     from libxmp import utils
 
     xmpfile = XMPFiles()
-    xmpfile.open_file( 'samples/img1.png', XMP_OPEN_FORUPDATE )
+    xmpfile.open_file('samples/img1.png', XMP_OPEN_FORUPDATE)
     xmp = xmpfile.get_xmp()
-#
-
 
     print(utils.object_to_dict(xmp))
     print("---")
-    print(xmp.register_namespace('http://purl.org/dc/elements/1.1/','dc'))
-#    xmpfile.close_file()
-#
-#
-#    xmpfile = XMPFiles()
-#    xmpfile.open_file( 'samples/img1.png', XMP_OPEN_READ )
-#    xmp = xmpfile.get_xmp()
-
+    print(xmp.register_namespace('http://purl.org/dc/elements/1.1/', 'dc'))
 
     print(xmp.get_prefix_for_namespace('http://purl.org/dc/elements/1.1/'))
     print(xmp.get_namespace_for_prefix('dc:'))
-
-if __name__ == "__main__":
-    main()

@@ -59,28 +59,27 @@ sampledir = '.tempsamples/'
 """
 Definitions of test files
 """
-samplefiles = {
-    'sig05-002a.tif'  : libxmp.consts.XMP_FT_TIFF,
-    'sig05-002a.xmp'  : libxmp.consts.XMP_FT_TEXT,
-    'BlueSquare.ai'   : libxmp.consts.XMP_FT_ILLUSTRATOR,
-    'BlueSquare.avi'  : libxmp.consts.XMP_FT_AVI,
-    'BlueSquare.eps'  : libxmp.consts.XMP_FT_EPS,
-    'BlueSquare.gif'  : libxmp.consts.XMP_FT_GIF,
-    'BlueSquare.indd' : libxmp.consts.XMP_FT_INDESIGN,
-    'BlueSquare.jpg'  : libxmp.consts.XMP_FT_JPEG,
-    'BlueSquare.mov'  : libxmp.consts.XMP_FT_MOV,
-    'BlueSquare.mp3'  : libxmp.consts.XMP_FT_MP3,
-    'BlueSquare.pdf'  : libxmp.consts.XMP_FT_PDF,
-    'BlueSquare.png'  : libxmp.consts.XMP_FT_PNG,
-    'BlueSquare.psd'  : libxmp.consts.XMP_FT_PHOTOSHOP,
-    'BlueSquare.tif'  : libxmp.consts.XMP_FT_TIFF,
-    'BlueSquare.wav'  : libxmp.consts.XMP_FT_WAV,
-}
+samplefiles = {'sig05-002a.tif':  libxmp.consts.XMP_FT_TIFF,
+               'sig05-002a.xmp':  libxmp.consts.XMP_FT_TEXT,
+               'BlueSquare.ai':   libxmp.consts.XMP_FT_ILLUSTRATOR,
+               'BlueSquare.avi':  libxmp.consts.XMP_FT_AVI,
+               'BlueSquare.eps':  libxmp.consts.XMP_FT_EPS,
+               'BlueSquare.gif':  libxmp.consts.XMP_FT_GIF,
+               'BlueSquare.indd': libxmp.consts.XMP_FT_INDESIGN,
+               'BlueSquare.jpg':  libxmp.consts.XMP_FT_JPEG,
+               'BlueSquare.mov':  libxmp.consts.XMP_FT_MOV,
+               'BlueSquare.mp3':  libxmp.consts.XMP_FT_MP3,
+               'BlueSquare.pdf':  libxmp.consts.XMP_FT_PDF,
+               'BlueSquare.png':  libxmp.consts.XMP_FT_PNG,
+               'BlueSquare.psd':  libxmp.consts.XMP_FT_PHOTOSHOP,
+               'BlueSquare.tif':  libxmp.consts.XMP_FT_TIFF,
+               'BlueSquare.wav':  libxmp.consts.XMP_FT_WAV}
 
 files = {}
-for k,v in samplefiles.items():
+for k, v in samplefiles.items():
     files[sampledir + k] = v
 samplefiles = files
+
 
 def make_temp_samples():
     global sampledir
@@ -89,9 +88,12 @@ def make_temp_samples():
 
     shutil.copytree('samples', sampledir)
 
+
 def remove_temp_samples():
     global sampledir
-    if os.path.exists( sampledir ):
-        if not os.path.isdir( sampledir):
-            raise StandardError('Cannot remove .tempsamples - it is not a directory. Please manually remove it.')
-        shutil.rmtree( sampledir )
+    if os.path.exists(sampledir):
+        if not os.path.isdir(sampledir):
+            msg = 'Cannot remove .tempsamples - it is not a directory.  '
+            msg += 'Please manually remove it.'
+            raise RuntimeError(msg)
+        shutil.rmtree(sampledir)
