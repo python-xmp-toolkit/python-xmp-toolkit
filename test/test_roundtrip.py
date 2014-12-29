@@ -3,27 +3,19 @@
 Test suite for round trip workflows.
 """
 
-import datetime
-import os
 import pkg_resources
-import platform
 import shutil
 import sys
 import tempfile
-
-import pytz
 
 if sys.hexversion >= 0x02070000:
     import unittest
 else:
     import unittest2 as unittest
 
-from libxmp import XMPFiles, XMPMeta
-from libxmp.consts import XMP_NS_CC as NS_CC
+from libxmp import XMPFiles
 from libxmp.consts import XMP_NS_DC as NS_DC
-from libxmp.consts import XMP_NS_EXIF as NS_EXIF
 from libxmp.consts import XMP_NS_TIFF as NS_TIFF
-from libxmp.consts import XMP_NS_XMP as NS_XAP
 
 
 class TestRoundTrip(unittest.TestCase):
@@ -50,10 +42,10 @@ class TestRoundTrip(unittest.TestCase):
             xmpf.close_file()
 
             # TODO:  explain why this happened.
-            prop = xmp.get_property(NS_DC, "rights")
+            xmp.get_property(NS_DC, "rights")
+
             prop2 = xmp.get_localized_text(NS_DC, "rights", None, "x-default")
             self.assertEqual(prop2, "no one in particular")
-
 
     def test_sturm_und_drang(self):
         """Should be able to write a property which includes umlauts."""
@@ -61,7 +53,7 @@ class TestRoundTrip(unittest.TestCase):
                                                   "fixtures/zeros.tif")
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
             shutil.copyfile(srcfile, tfile.name)
- 
+
             expected_value = u'Stürm und Drang'
 
             xmpf = XMPFiles()
@@ -76,9 +68,8 @@ class TestRoundTrip(unittest.TestCase):
             xmp = xmpf.get_xmp()
             actual_value = xmp.get_property(NS_DC, "Title")
             xmpf.close_file()
-            
-            self.assertEqual(actual_value, expected_value)
 
+            self.assertEqual(actual_value, expected_value)
 
     def test_jpeg(self):
         """Create XMP from scratch to store in a jpeg."""
@@ -88,7 +79,7 @@ class TestRoundTrip(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix='.tif', mode='wb') as tfile:
 
             # Do some surgery on the file, remove existing xmp.
-            # The APP1 marker segment in question starts at byte 2156, has 
+            # The APP1 marker segment in question starts at byte 2156, has
             # length of 4813
             with open(srcfile, 'rb') as infptr:
 
@@ -99,7 +90,6 @@ class TestRoundTrip(unittest.TestCase):
                 infptr.seek(21619)
                 tfile.write(infptr.read())
                 tfile.flush()
-
 
             xmpf = XMPFiles()
             xmpf.open_file(file_path=tfile.name, open_forupdate=True)
@@ -136,5 +126,3 @@ class TestRoundTrip(unittest.TestCase):
             self.assertEqual(prop, "2")
 
             xmpf.close_file()
-
-

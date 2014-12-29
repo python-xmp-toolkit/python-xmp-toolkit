@@ -78,16 +78,27 @@ class XMPFiles(object):
             self.open_file( file_path, **kwargs )
 
 
+    def __unicode__(self):
+        if self._file_path is None:
+            return unicode("XMPFiles()")
+
+        value = (unicode("XMPFiles(file_path='") +
+                 unicode(self._file_path) +
+                 unicode("'"))
+        return value
+
     def __repr__(self):
         if self._file_path is None:
-            msg = "XMPFiles()"
-        else:
-            if sys.hexversion < 0x03000000 and type(self._file_path) is unicode:
-                fmt = u"XMPFiles(file_path='{0}')"
-            else:
-                fmt = "XMPFiles(file_path='{0}')"
-            msg = fmt.format(self._file_path)
-        return msg
+            return "XMPFiles()"
+
+        # Have an associated file, but it could be un-repr-able unicode.
+        if sys.hexversion < 0x03000000 and type(self._file_path) is unicode:
+            msg = "XMPFiles(file_path='< unicode filename >')"
+            return msg
+
+        # Python 3, or Python 2 with a safe ASCII filename.
+        fmt = "XMPFiles(file_path='{0}')"
+        return fmt.format(self._file_path)
 
     def __del__(self):
         """
