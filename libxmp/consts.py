@@ -284,7 +284,7 @@ XMP_PROP_OPTIONS = {
     'prop_has_aliases'        : XMP_PROP_HAS_ALIASES,
     'prop_is_internal'        : XMP_PROP_IS_INTERNAL,
     'prop_is_stable'          : XMP_PROP_IS_STABLE,
-    'prop_is_deriver'         : XMP_PROP_IS_DERIVED,
+    'prop_is_derived'         : XMP_PROP_IS_DERIVED,
     'prop_is_schema'          : XMP_PROP_IS_SCHEMA,
 }
 
