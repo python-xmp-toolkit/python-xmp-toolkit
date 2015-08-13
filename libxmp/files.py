@@ -40,6 +40,7 @@ core pacakage can then be used to manipulate the individual XMP properties.
 efficiently access the XMP in specific file formats. It also includes a
 fallback packet scanner that can be used for unknown file formats.
 """
+import os
 
 from . import XMPError, XMPMeta
 from .consts import options_mask
@@ -144,14 +145,18 @@ class XMPFiles(object):
         else:
             return None
 
-    def put_xmp( self, xmp_obj ):
+    def put_xmp(self, xmp_obj):
         """
         Write XMPMeta object to file. See also :func:`can_put_xmp`.
 
         :param xmp_obj: An :class:`libxmp.core.XMPMeta` object
         """
         xmpptr = xmp_obj.xmpptr
-        _cexempi.files_put_xmp( self.xmpfileptr, xmpptr )
+        if not self.can_put_xmp(xmp_obj):
+            msg = 'Cannot write XMP packet into {}'
+            msg = msg.format(os.path.basename(self._file_path))
+            raise XMPError(msg)
+        _cexempi.files_put_xmp(self.xmpfileptr, xmpptr)
 
     def can_put_xmp( self, xmp_obj ):
         """Determine if XMP can be written into the file.
