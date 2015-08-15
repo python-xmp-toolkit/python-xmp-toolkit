@@ -153,8 +153,8 @@ class XMPFiles(object):
         """
         xmpptr = xmp_obj.xmpptr
         if not self.can_put_xmp(xmp_obj):
-            msg = 'Cannot write XMP packet into {}'
-            msg = msg.format(os.path.basename(self._file_path))
+            msg = 'Cannot write XMP packet into {filename}'
+            msg = msg.format(filename=os.path.basename(self._file_path))
             raise XMPError(msg)
         _cexempi.files_put_xmp(self.xmpfileptr, xmpptr)
 
