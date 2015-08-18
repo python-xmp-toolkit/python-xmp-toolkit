@@ -5,6 +5,9 @@ Known Issues
 ------------
  * The version of libexempi that comes via Macports refuses to load via ctypes.
    As a workaround, you should compile libexempi from source.
+ * The exempi library can add XMP to PDF files that already have an XMP packet
+   but cannot inject XMP into PDFs that do not; therefore, neither can the
+   Python XMP Toolkit. 
 
 Resources
 ---------

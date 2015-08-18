@@ -34,7 +34,7 @@
 
 import os
 import os.path
-import pkg_resources
+import pkg_resources as pkg
 import platform
 import re
 import shutil
@@ -82,8 +82,7 @@ class XMPFilesTestCase(unittest.TestCase):
 
         # If the XMPFiles object has a file associated with it, then use a
         # regular expression to match the output.
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.jpg")
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.jpg")
         xmpf.open_file(file_path=filename)
         actual_value = str(xmpf)
 
@@ -98,8 +97,7 @@ class XMPFilesTestCase(unittest.TestCase):
         # The BOM cannot be decoded from utf-8 into ascii, so a 2.7 XMPMeta
         # object's __repr__ function would error out on it.
 
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.jpg")
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.jpg")
         xmpf = XMPFiles()
         xmpf.open_file(file_path=filename)
         xmp = xmpf.get_xmp()
@@ -164,12 +162,9 @@ class XMPFilesTestCase(unittest.TestCase):
     def test_open_use_smarthandler(self):
         """Verify this library failure."""
         # Issue 5
-        filenames = [pkg_resources.resource_filename(__name__,
-                                                     "samples/BlueSquare.pdf"),
-                     pkg_resources.resource_filename(__name__,
-                                                     "samples/BlueSquare.ai"),
-                     pkg_resources.resource_filename(__name__,
-                                                     "samples/BlueSquare.xmp")]
+        filenames = [pkg.resource_filename(__name__, "samples/BlueSquare.pdf"),
+                     pkg.resource_filename(__name__, "samples/BlueSquare.ai"),
+                     pkg.resource_filename(__name__, "samples/BlueSquare.xmp")]
         xmpfile = XMPFiles()
         for filename in filenames:
             with self.assertRaises(XMPError):
@@ -179,10 +174,8 @@ class XMPFilesTestCase(unittest.TestCase):
     def test_open_open_limitscanning(self):
         """Verify this library failure."""
         # Issue 5
-        filenames = [pkg_resources.resource_filename(__name__,
-                                                     "samples/BlueSquare.pdf"),
-                     pkg_resources.resource_filename(__name__,
-                                                     "samples/BlueSquare.xmp")]
+        filenames = [pkg.resource_filename(__name__, "samples/BlueSquare.pdf"),
+                     pkg.resource_filename(__name__, "samples/BlueSquare.xmp")]
         xmpfile = XMPFiles()
         for filename in filenames:
             with self.assertRaises(XMPError):
@@ -274,8 +267,7 @@ class XMPFilesTestCase(unittest.TestCase):
         So loading a sidecar file and call can_put_xmp will kill python
         interpreter since a C++ exception is thrown.
         """
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/sig05-002a.xmp")
+        filename = pkg.resource_filename(__name__, "samples/sig05-002a.xmp")
         xmpfile = XMPFiles()
         xmpfile.open_file(filename, open_forupdate = True )
         xmp = xmpfile.get_xmp()
@@ -296,8 +288,7 @@ class XMPFilesTestCase(unittest.TestCase):
     def test_tiff_smarthandler(self):
         """Verify action of TIFF smarthandler when tag length > 255"""
         # See issue 12
-        srcfile = pkg_resources.resource_filename(__name__,
-                                                  "fixtures/zeros.tif")
+        srcfile = pkg.resource_filename(__name__, "fixtures/zeros.tif")
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
             shutil.copyfile(srcfile, tfile.name)
 
@@ -317,7 +308,45 @@ class XMPFilesTestCase(unittest.TestCase):
 
             self.assertEqual(prop, blurb * 10)
 
+    def test_cannot_inject_xmp_info_pdf(self):
+        """Verify behavior of not being able to inject XMP into barren PDF"""
+        # See issue 40
+        srcfile = pkg.resource_filename(__name__, os.path.join("fixtures",
+                                                               "zeros.pdf"))
 
+        with tempfile.NamedTemporaryFile() as tfile:
+            shutil.copyfile(srcfile, tfile.name)
+
+            xmpf = XMPFiles()
+            xmpf.open_file(tfile.name, open_forupdate=True)
+            xmp = XMPMeta()
+            xmp.set_property(NS_PHOTOSHOP, "ICCProfile", "foo")
+            with self.assertRaises(XMPError):
+                xmpf.put_xmp(xmp)
+            xmpf.close_file()
+
+    def test_can_inject_xmp_info_png(self):
+        """Verify behavior of being able to inject XMP into barren PNG"""
+        # See issue 40
+        srcfile = pkg.resource_filename(__name__, os.path.join("fixtures",
+                                                               "zeros.png"))
+
+        with tempfile.NamedTemporaryFile() as tfile:
+            shutil.copyfile(srcfile, tfile.name)
+
+            xmpf = XMPFiles()
+            xmpf.open_file(tfile.name, open_forupdate=True)
+            xmp = XMPMeta()
+            xmp.set_property(NS_PHOTOSHOP, "ICCProfile", "foo")
+            xmpf.put_xmp(xmp)
+            xmpf.close_file()
+
+            xmpf.open_file(tfile.name, usesmarthandler=True)
+            xmp = xmpf.get_xmp()
+            prop = xmp.get_property(NS_PHOTOSHOP, "ICCProfile")
+            xmpf.close_file()
+
+            self.assertEqual(prop, "foo")
 
 def suite():
     the_suite = unittest.TestSuite()
