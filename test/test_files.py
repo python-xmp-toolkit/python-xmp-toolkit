@@ -90,8 +90,6 @@ class XMPFilesTestCase(unittest.TestCase):
         self.assertIsNotNone(regex.match(actual_value))
         self.assertTrue(actual_value.endswith("BlueSquare.jpg')"))
 
-
-
     def test_print_bom(self):
         """Should be able to print XMP packets despite BOM."""
         # The BOM cannot be decoded from utf-8 into ascii, so a 2.7 XMPMeta
@@ -307,6 +305,44 @@ class XMPFilesTestCase(unittest.TestCase):
             xmpf.close_file()
 
             self.assertEqual(prop, blurb * 10)
+
+    def test_non_ascii_filename(self):
+        """
+        repr must not fail on files with non-ascii characters
+
+        See issue 36
+        """
+        # Rename one of the test files to use non-ascii characters.
+        relpath = os.path.join('samples', 'BlueSquare.tif')
+        srcfile = pkg.resource_filename(__name__, relpath)
+        tdir = tempfile.mkdtemp()
+        destdir = os.path.join(tdir, u"éà*çc! teeest!!")
+        os.makedirs(destdir)
+
+        with tempfile.NamedTemporaryFile(dir=destdir,
+                                         prefix="image",
+                                         suffix=".tif") as tfile:
+            with open(srcfile, 'rb') as srcfile:
+                tfile.write(srcfile.read())
+                tfile.seek(0)
+            xf = XMPFiles()
+            xf.open_file(file_path=tfile.name)
+
+            # This was the point of failure in python2
+            actual = repr(xf)
+
+            self.assertTrue(actual.startswith("XMPFiles(file_path="))
+
+            if sys.hexversion < 0x03000000:
+                # The directory path (up to the non-ascii portion) should be
+                # in the output.
+                self.assertIn(tdir, actual)
+            else:
+                # The complete directory path should be present in the repr-ed
+                # string under python3.
+                self.assertIn(destdir, actual)
+
+        shutil.rmtree(tdir)
 
     def test_cannot_inject_xmp_info_pdf(self):
         """Verify behavior of not being able to inject XMP into barren PDF"""
