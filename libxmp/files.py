@@ -41,6 +41,7 @@ efficiently access the XMP in specific file formats. It also includes a
 fallback packet scanner that can be used for unknown file formats.
 """
 import os
+import sys
 
 from . import XMPError, XMPMeta
 from .consts import options_mask
@@ -79,15 +80,25 @@ class XMPFiles(object):
 
             self.open_file( file_path, **kwargs )
 
-
     def __repr__(self):
-        msg = "XMPFiles("
         if self._file_path is None:
-            msg += ")"
+            return "XMPFiles()"
+
+        msg = "XMPFiles(file_path='{0}')"
+        if sys.hexversion < 0x03000000 and isinstance(self._file_path,
+                                                      unicode):
+            # Unicode filenames can cause trouble in python2 because __repr__
+            # must return byte strings, not unicode. Get around this by
+            # turning the unicode filename into escaped ASCII.  This means that
+            # in this case, the result cannot be used to recreate the object
+            # with the same value.
+            msg = msg.format(repr(self._file_path))
         else:
-            msg += "file_path='{0}')"
+            # Python3 does not suffer from this problem.
             msg = msg.format(self._file_path)
+
         return msg
+
     def __del__(self):
         """
         Free up the memory associated with the XMP file instance.
