@@ -8,7 +8,7 @@ Test suites for exempi routine wrappers.
 
 import datetime
 import os
-import pkg_resources
+import pkg_resources as pkg
 import platform
 import shutil
 import sys
@@ -38,6 +38,9 @@ from libxmp.consts import XMP_OPEN_READ, XMP_OPEN_FORUPDATE
 from libxmp.consts import XMP_PROP_HAS_QUALIFIERS, XMP_PROP_IS_QUALIFIER
 from libxmp.consts import XMP_PROP_COMPOSITE_MASK
 
+CYGWIN_PLATFORM = sys.platform == 'cygwin'
+CYGWIN_MSG = "blah"
+
 
 class TestInit(unittest.TestCase):
     """Corresponds to testinit.cpp.
@@ -47,8 +50,7 @@ class TestInit(unittest.TestCase):
     """
     def test_init(self):
         """TODO:  fill in the docstring"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
+        filename = pkg.resource_filename(__name__, "samples/test1.xmp")
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
 
@@ -99,8 +101,7 @@ class TestExempi(unittest.TestCase):
     def test_bgo(self):
         """Corresponds to test-bgo.cpp
         """
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/fdo18635.jpg")
+        filename = pkg.resource_filename(__name__, "samples/fdo18635.jpg")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         xmp = exempi.files_get_new_xmp(xfptr)
         exempi.free(xmp)
@@ -109,8 +110,7 @@ class TestExempi(unittest.TestCase):
 
     def test_write_new_property(self):
         """Corresponds to test-write-new-property.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
+        filename = pkg.resource_filename(__name__, "samples/test1.xmp")
 
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
@@ -149,7 +149,7 @@ class TestExempi(unittest.TestCase):
 
     def test_3(self):
         """Corresponds to test3.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
+        filename = pkg.resource_filename(__name__,
                                                    "samples/test1.xmp")
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
@@ -180,7 +180,7 @@ class TestExempi(unittest.TestCase):
 
     def test_exempi_core(self):
         """According to test-exempi-core.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
+        filename = pkg.resource_filename(__name__,
                                                    "samples/test1.xmp")
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
@@ -287,14 +287,48 @@ class TestExempi(unittest.TestCase):
         exempi.free(xmp)
         self.assertTrue(True)
 
+    def test_files_check_file_format(self):
+        """
+        Nail down behavior on CYGWIN.
+
+        files_check_file_format is not present in the
+        libexempi DLL, but seem to be present on other platforms
+        """
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.jpg")
+
+        if CYGWIN_PLATFORM:
+            with self.assertRaises(AttributeError):
+                exempi.files_check_file_format(filename)
+        else:
+            exempi.files_check_file_format(filename)
+
+    def test_files_get_file_info(self):
+        """
+        Nail down behavior on CYGWIN.
+
+        files_get_file_info routine is not present in the
+        libexempi DLL, but seem to be present on other platforms
+        """
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.jpg")
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
+
+        if CYGWIN_PLATFORM:
+            with self.assertRaises(AttributeError):
+                exempi.files_get_file_info(xfptr)
+        else:
+            exempi.files_get_file_info(xfptr)
+
+        exempi.files_free(xfptr)
 
     def test_xmpfiles_write(self):
-        """According to test-xmpfiles-write.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.jpg")
+        """
+        According to test-xmpfiles-write.cpp in libexempi test suite
+        """
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.jpg")
 
-        fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
+        if not CYGWIN_PLATFORM:
+            fmt = exempi.files_check_file_format(filename)
+            self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         xmp = exempi.files_get_new_xmp(xfptr)
@@ -324,7 +358,7 @@ class TestExempi(unittest.TestCase):
 
     def test_serialize(self):
         """Corresponds to test-serialize.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
+        filename = pkg.resource_filename(__name__,
                                                    "samples/test1.xmp")
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
@@ -347,7 +381,7 @@ class TestExempi(unittest.TestCase):
 
     def test_tiff_leak(self):
         """Corresponds to test-tiff-leak.cpp"""
-        orig_file = pkg_resources.resource_filename(__name__,
+        orig_file = pkg.resource_filename(__name__,
                                                     "samples/BlueSquare.tif")
 
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
@@ -364,13 +398,11 @@ class TestExempi(unittest.TestCase):
             exempi.files_free(xfptr)
         self.assertTrue(True)
 
-
     def test_write_new_date_property(self):
         """
         TODO:  fill in the doc string
         """
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
+        filename = pkg.resource_filename(__name__, "samples/test1.xmp")
 
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
@@ -395,28 +427,29 @@ class TestExempi(unittest.TestCase):
 
         exempi.free(xmp)
 
-
-
     def test_xmp_files(self):
         """Corresponds to test_xmp_files.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.jpg")
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.jpg")
 
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
-        fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
-        file_path, options, file_format, flags = exempi.files_get_file_info(xfptr)
-        self.assertEqual(options, XMP_OPEN_READ)
-        self.assertEqual(file_format, libxmp.consts.XMP_FT_JPEG)
-        self.assertEqual(flags, 0x27f)  # 0x27f?
-        self.assertEqual(filename, file_path)
+        if not CYGWIN_PLATFORM:
+            # see issue 41
+            fmt = exempi.files_check_file_format(filename)
+            self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
+
+            file_path, options, file_format, flags = exempi.files_get_file_info(xfptr)
+            self.assertEqual(options, XMP_OPEN_READ)
+            self.assertEqual(file_format, libxmp.consts.XMP_FT_JPEG)
+            self.assertEqual(flags, 0x27f)  # 0x27f?
+            self.assertEqual(filename, file_path)
 
         xmp = exempi.files_get_xmp(xfptr)
         the_prop, _ = exempi.get_property(xmp, NS_PHOTOSHOP, "ICCProfile")
         self.assertEqual(the_prop, "sRGB IEC61966-2.1")
         exempi.files_free(xfptr)
 
+    @unittest.skipIf(CYGWIN_PLATFORM, CYGWIN_MSG)
     def test_formats(self):
         """Verify that check_file_format function works as expected."""
         pairs = { 'avi':  libxmp.consts.XMP_FT_AVI,
@@ -433,7 +466,7 @@ class TestExempi(unittest.TestCase):
                   }
         for suffix, expected_format in pairs.items():
             relpath = os.path.join('samples', 'BlueSquare' + '.' + suffix)
-            filename = pkg_resources.resource_filename(__name__, relpath)
+            filename = pkg.resource_filename(__name__, relpath)
             xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
             actual_format = exempi.files_check_file_format(filename)
             self.assertEqual(actual_format, expected_format)
@@ -444,22 +477,19 @@ class TestExempi(unittest.TestCase):
     def test_bad_formats(self):
         """Verify check_file_format on PDF, Adobe Illustrator, XMP."""
         # Issue 26
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.pdf")
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.pdf")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
         self.assertEqual(fmt, libxmp.consts.XMP_FT_PDF)
         exempi.files_free(xfptr)
 
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.ai")
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.ai")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
         self.assertEqual(fmt, libxmp.consts.XMP_FT_ILLUSTRATOR)
         exempi.files_free(xfptr)
 
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.xmp")
+        filename = pkg.resource_filename(__name__, "samples/BlueSquare.xmp")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
         self.assertEqual(fmt, libxmp.consts.XMP_FT_XML)
@@ -475,8 +505,7 @@ class TestIteration(unittest.TestCase):
 
     def collect_iteration(self, schema, prop, options):
         """Run thru an iteration for a given configuration."""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
+        filename = pkg.resource_filename(__name__, "samples/test1.xmp")
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
         xmp = exempi.new_empty()
@@ -652,8 +681,7 @@ class TestIteration(unittest.TestCase):
         """Alter the iteration midstream."""
         options = XMP_ITERATOR_OPTIONS['iter_properties']
 
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
+        filename = pkg.resource_filename(__name__, "samples/test1.xmp")
         with open(filename, 'r') as fptr:
             strbuffer = fptr.read()
         xmp = exempi.new_empty()
