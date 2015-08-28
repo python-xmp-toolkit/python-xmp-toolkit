@@ -39,7 +39,7 @@ from libxmp.consts import XMP_PROP_HAS_QUALIFIERS, XMP_PROP_IS_QUALIFIER
 from libxmp.consts import XMP_PROP_COMPOSITE_MASK
 
 CYGWIN_PLATFORM = sys.platform == 'cygwin'
-CYGWIN_MSG = "blah"
+CYGWIN_MSG = "functionality not available on cygwin"
 
 
 class TestInit(unittest.TestCase):
