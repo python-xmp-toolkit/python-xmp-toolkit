@@ -43,7 +43,8 @@ import platform
 import pytz
 
 from . import XMPError, ExempiLoadError
-from .consts import XMP_OPEN_READ, XMP_OPEN_NOOPTION, XMP_ITER_NAMESPACES
+from . import consts
+from .consts import XMP_ITER_CLASSMASK
 
 def _load_exempi():
     """
@@ -489,7 +490,7 @@ def files_open_new(filename, options):
     xfptr : ctypes pointer
         File pointer.
     """
-    if not os.path.exists(filename) and options & XMP_OPEN_READ:
+    if not os.path.exists(filename) and options & consts.XMP_OPEN_READ:
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open_new.restype = ctypes.c_void_p
     EXEMPI.xmp_files_open_new.argtypes = [ctypes.c_void_p, ctypes.c_int32]

@@ -3,9 +3,6 @@
 Test suites for exempi routine wrappers.
 """
 
-# R0904:  Not too many methods in unittest.
-# pylint: disable=R0904
-
 import datetime
 import os
 import pkg_resources
@@ -587,11 +584,16 @@ class TestIteration(unittest.TestCase):
         self.assertEqual(props[5], "ottawa")
         self.assertEqual(props[6], "parliament of canada")
 
-    @unittest.skip("Issue 28.")
-    def test_no_namespace_single_prop_leaf_nodes(self):
-        """Get all the leaf nodes from a single property."""
-        options = XMP_ITERATOR_OPTIONS['iter_justleafnodes']
-        schemas, paths, props = self.collect_iteration(None, "rights", options)
+    def test_no_namespace_single_prop(self):
+        """
+        Do not allow iteration with null NS but non-null property.
+
+        Go thru each option, make sure we error out the the same way.
+        """
+        for key in XMP_ITERATOR_OPTIONS.keys():
+            options = XMP_ITERATOR_OPTIONS[key]
+            with self.assertRaises(RuntimeError):
+                self.collect_iteration(None, "rights", options)
 
     def test_single_namespace_leaf_nodes_omit_qualifiers(self):
         """Get all the leaf nodes (no qualifiers) from a single namespace."""
