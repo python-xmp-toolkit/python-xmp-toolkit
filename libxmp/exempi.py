@@ -43,7 +43,7 @@ import platform
 import pytz
 
 from . import XMPError, ExempiLoadError
-from .consts import XMP_OPEN_READ, XMP_OPEN_NOOPTION
+from .consts import XMP_OPEN_READ, XMP_OPEN_NOOPTION, XMP_ITER_NAMESPACES
 
 def _load_exempi():
     """
@@ -450,7 +450,8 @@ def files_open(xfptr, filename, options):
     XMPError : if the corresponding library routine fails
     """
     if (((not os.path.exists(filename)) and
-         ((options == XMP_OPEN_NOOPTION) or (options & XMP_OPEN_READ)))):
+         ((options == consts.XMP_OPEN_NOOPTION) or
+          (options & consts.XMP_OPEN_READ)))):
         raise IOError("{0} does not exist.".format(filename))
     EXEMPI.xmp_files_open.restype = check_error
     EXEMPI.xmp_files_open.argtypes = [ctypes.c_void_p,
@@ -1039,6 +1040,14 @@ def iterator_new(xmp, schema, propname, options):
 
     if propname is not None:
         propname = propname.encode('utf-8')
+
+    if schema is None and propname is not None:
+        msg = "If you set schema to None, propname must also be None."
+        raise RuntimeError(msg)
+
+    if options & consts.XMP_ITER_NAMESPACES:
+        msg = '"XMP_ITER_NAMESPACES" is not supported at this time.'
+        raise RuntimeError(msg)
 
     iterator = EXEMPI.xmp_iterator_new(xmp, schema, propname, options)
     return iterator
