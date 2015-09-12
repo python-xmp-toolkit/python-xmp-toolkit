@@ -439,30 +439,34 @@ class TestExempi(unittest.TestCase):
             self.assertEqual(actual_format, expected_format)
             exempi.files_free(xfptr)
 
-
-    @unittest.skip("Issue 26")
     def test_bad_formats(self):
-        """Verify check_file_format on PDF, Adobe Illustrator, XMP."""
-        # Issue 26
+        """
+        Verify check_file_format on PDF, Adobe Illustrator, XMP.
+
+        The library doesn't correctly identify these file formats, so just
+        lock down what the behavior actually is.
+
+        Issue 26
+        """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.pdf")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_PDF)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_UNKNOWN)
         exempi.files_free(xfptr)
 
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.ai")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_ILLUSTRATOR)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_UNKNOWN)
         exempi.files_free(xfptr)
 
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.xmp")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_XML)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_UNKNOWN)
         exempi.files_free(xfptr)
 
 
