@@ -107,6 +107,13 @@ class TestExempi(unittest.TestCase):
         exempi.files_free(xfptr)
         self.assertTrue(True)
 
+    def test_get_property_datetime(self):
+        """
+
+        See issue #48
+        """
+        pass
+
     def test_write_new_property(self):
         """Corresponds to test-write-new-property.cpp"""
         filename = pkg_resources.resource_filename(__name__,
@@ -242,10 +249,14 @@ class TestExempi(unittest.TestCase):
         the_prop, _ = exempi.get_property(xmp, NS_EXIF, "DateTimeOriginal")
         self.assertEqual(the_prop, "2006-12-07T23:20:43-05:00")
 
-        # When the time information is read back, it is UTC.
+        # When the time information is read back, it is UTC -5
         the_prop, _ = exempi.get_property_date(xmp, NS_EXIF, "DateTimeOriginal")
         self.assertEqual(the_prop.year, 2006)
+        self.assertEqual(the_prop.month, 12)
+        self.assertEqual(the_prop.day, 8)
+        self.assertEqual(the_prop.hour, 4)
         self.assertEqual(the_prop.minute, 20)
+        self.assertEqual(the_prop.second, 43)
         self.assertEqual(the_prop.tzinfo, pytz.utc)
 
         the_prop, _ = exempi.get_property(xmp, NS_XAP, "Rating")

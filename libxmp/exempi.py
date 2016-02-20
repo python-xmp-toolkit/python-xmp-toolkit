@@ -755,10 +755,13 @@ def get_property_date(xmp, schema, name):
                                minutes=xmp_date_time.tzminute,
                                microseconds=xmp_date_time.nanosecond * 1000)
 
+    # If the time being described is one hour ahead of UTC, the offset is
+    # typically given as "+01".  So subtract to get UTC.
+    # pla
     if xmp_date_time.tzsign < 0:
-        the_date = utc_date - delta
-    else:
         the_date = utc_date + delta
+    else:
+        the_date = utc_date - delta
 
     return the_date, prop_bits.value
 
