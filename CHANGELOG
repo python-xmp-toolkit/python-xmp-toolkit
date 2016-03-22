@@ -1,4 +1,10 @@
-Release 2.0.0 ( TBD )
+Release 2.0.x ( March 21, 2016 )
+  * Qualify on Python 3.5, exempi 2.3.0
+
+Release 2.0.1 ( March 9, 2014 )
+  * Fix file_to_dict import
+
+Release 2.0.0 ( Jan 17, 2014 )
   * Added support for Python 3.3, dropped support for 2.5.
   * All string outputs in 2.6 and 2.7 are unicode objects with UTF-8 encoding.
   * Added exempi module, a low-level ctypes interface to exempi library.
