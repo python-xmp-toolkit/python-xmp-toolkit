@@ -2,14 +2,10 @@
 """
 Test suites for exempi routine wrappers.
 """
-
-# R0904:  Not too many methods in unittest.
-# pylint: disable=R0904
-
 import datetime
 import os
 import pkg_resources
-import platform
+import re
 import shutil
 import sys
 import tempfile
@@ -22,7 +18,6 @@ else:
 import pytz
 
 import libxmp
-from libxmp import consts
 from libxmp import exempi
 from libxmp.consts import XMP_NS_CC as NS_CC
 from libxmp.consts import XMP_NS_DC as NS_DC
@@ -68,16 +63,38 @@ class TestInit(unittest.TestCase):
         exempi.terminate()
         self.assertTrue(True)
 
+
 class TestPythonXmpToolkit(unittest.TestCase):
     """
     Test suite for cases added by python xmp toolkit devs.
     """
+    @unittest.skipIf(re.match('2.[3-9]', exempi._libexempi_version),
+                     'Requires exempi < 2.3')
+    def test_do_not_run_when_libexempi_lt_2p3(self):
+        """
+        Error out when library version not at least 2.3
+
+        files_get_xmp_xmpstring method is not available until exempi version
+        2.3
+        """
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.jpg")
+
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as tfile:
+            shutil.copyfile(filename, tfile.name)
+
+            xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
+            xmp = exempi.files_get_new_xmp(xfptr)
+
+            with self.assertRaises(NotImplementedError):
+                exempi.files_get_xmp_xmpstring(xfptr, xmp)
+
     def test_file_not_there_open_new(self):
         """
         The library does not catch comfortably, so we perform our own check.
         """
         with self.assertRaises(IOError):
-            xfptr = exempi.files_open_new('notthere.xmp', XMP_OPEN_READ)
+            exempi.files_open_new('notthere.xmp', XMP_OPEN_READ)
 
     def test_file_not_there_check_file_format(self):
         """
@@ -85,6 +102,7 @@ class TestPythonXmpToolkit(unittest.TestCase):
         """
         with self.assertRaises(IOError):
             exempi.files_check_file_format('notthere.xmp')
+
 
 class TestExempi(unittest.TestCase):
     """
@@ -97,7 +115,8 @@ class TestExempi(unittest.TestCase):
         exempi.terminate()
 
     def test_bgo(self):
-        """Corresponds to test-bgo.cpp
+        """
+        Corresponds to test-bgo.cpp
         """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/fdo18635.jpg")
@@ -109,13 +128,14 @@ class TestExempi(unittest.TestCase):
 
     def test_get_property_datetime(self):
         """
-
         See issue #48
         """
         pass
 
     def test_write_new_property(self):
-        """Corresponds to test-write-new-property.cpp"""
+        """
+        Corresponds to test-write-new-property.cpp
+        """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
 
@@ -146,16 +166,17 @@ class TestExempi(unittest.TestCase):
         the_prop, _ = exempi.get_property(xmp, NS_EXIF, "DateTimeOriginal")
         self.assertEqual("2005-12-25T12:42:42", the_prop)
 
-        the_prop, _ = exempi.get_property_date(xmp, NS_EXIF, "DateTimeOriginal")
-        self.assertEqual(the_prop.year, 2005)
-        self.assertEqual(the_prop.minute, 42)
-        self.assertEqual(the_prop.tzinfo, pytz.utc)
+        prop, _ = exempi.get_property_date(xmp, NS_EXIF, "DateTimeOriginal")
+        self.assertEqual(prop.year, 2005)
+        self.assertEqual(prop.minute, 42)
+        self.assertEqual(prop.tzinfo, pytz.utc)
 
         exempi.free(xmp)
 
-
     def test_3(self):
-        """Corresponds to test3.cpp"""
+        """
+        Corresponds to test3.cpp
+        """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
         with open(filename, 'r') as fptr:
@@ -183,7 +204,6 @@ class TestExempi(unittest.TestCase):
 
         exempi.iterator_free(iterator)
         exempi.free(xmp)
-
 
     def test_exempi_core(self):
         """According to test-exempi-core.cpp"""
@@ -250,57 +270,94 @@ class TestExempi(unittest.TestCase):
         self.assertEqual(the_prop, "2006-12-07T23:20:43-05:00")
 
         # When the time information is read back, it is UTC -5
-        the_prop, _ = exempi.get_property_date(xmp, NS_EXIF, "DateTimeOriginal")
-        self.assertEqual(the_prop.year, 2006)
-        self.assertEqual(the_prop.month, 12)
-        self.assertEqual(the_prop.day, 8)
-        self.assertEqual(the_prop.hour, 4)
-        self.assertEqual(the_prop.minute, 20)
-        self.assertEqual(the_prop.second, 43)
-        self.assertEqual(the_prop.tzinfo, pytz.utc)
+        prop, _ = exempi.get_property_date(xmp, NS_EXIF, "DateTimeOriginal")
+        self.assertEqual(prop.year, 2006)
+        self.assertEqual(prop.month, 12)
+        self.assertEqual(prop.day, 8)
+        self.assertEqual(prop.hour, 4)
+        self.assertEqual(prop.minute, 20)
+        self.assertEqual(prop.second, 43)
+        self.assertEqual(prop.tzinfo, pytz.utc)
 
-        the_prop, _ = exempi.get_property(xmp, NS_XAP, "Rating")
-        self.assertEqual(the_prop, "3")
+        prop, _ = exempi.get_property(xmp, NS_XAP, "Rating")
+        self.assertEqual(prop, "3")
 
         # testing float get set
-        the_prop, _ = exempi.get_property_float(xmp,
-                                                NS_CAMERA_RAW_SETTINGS,
-                                                "SharpenRadius")
-        self.assertEqual(the_prop, 1.0)
+        prop, _ = exempi.get_property_float(xmp, NS_CAMERA_RAW_SETTINGS,
+                                            "SharpenRadius")
+        self.assertEqual(prop, 1.0)
+
         exempi.set_property_float(xmp, NS_CAMERA_RAW_SETTINGS,
                                   "SharpenRadius", 2.5, 0)
-        the_prop, _ = exempi.get_property_float(xmp, NS_CAMERA_RAW_SETTINGS,
-                                                "SharpenRadius")
-        self.assertEqual(the_prop, 2.5)
+        prop, _ = exempi.get_property_float(xmp, NS_CAMERA_RAW_SETTINGS,
+                                            "SharpenRadius")
+        self.assertEqual(prop, 2.5)
 
         # testing bool get set
-        the_prop, _ = exempi.get_property_bool(xmp, NS_CAMERA_RAW_SETTINGS,
-                                               "AlreadyApplied")
-        self.assertFalse(the_prop)
+        prop, _ = exempi.get_property_bool(xmp, NS_CAMERA_RAW_SETTINGS,
+                                           "AlreadyApplied")
+        self.assertFalse(prop)
+
         exempi.set_property_bool(xmp, NS_CAMERA_RAW_SETTINGS,
                                  "AlreadyApplied", True, 0)
-        the_prop, _ = exempi.get_property_bool(xmp, NS_CAMERA_RAW_SETTINGS,
-                                               "AlreadyApplied")
-        self.assertTrue(the_prop)
-
+        prop, _ = exempi.get_property_bool(xmp, NS_CAMERA_RAW_SETTINGS,
+                                           "AlreadyApplied")
+        self.assertTrue(prop)
 
         # testing int get set
-        the_prop, _ = exempi.get_property_int32(xmp, NS_EXIF, "MeteringMode")
-        self.assertEqual(the_prop, 5)
+        prop, _ = exempi.get_property_int32(xmp, NS_EXIF, "MeteringMode")
+        self.assertEqual(prop, 5)
         exempi.set_property_int32(xmp, NS_EXIF, "MeteringMode", 10, 0)
-        the_prop, _ = exempi.get_property_int64(xmp, NS_EXIF, "MeteringMode")
-        self.assertEqual(the_prop, 10)
+        prop, _ = exempi.get_property_int64(xmp, NS_EXIF, "MeteringMode")
+        self.assertEqual(prop, 10)
         exempi.set_property_int64(xmp, NS_EXIF, "MeteringMode", 32, 0)
-        the_prop, _ = exempi.get_property_int32(xmp, NS_EXIF, "MeteringMode")
-        self.assertEqual(the_prop, 32)
-
+        prop, _ = exempi.get_property_int32(xmp, NS_EXIF, "MeteringMode")
+        self.assertEqual(prop, 32)
 
         exempi.free(xmp)
         self.assertTrue(True)
 
+    def test_xmpfiles(self):
+        """
+        Corresponds to test-xmpfiles.cpp
+        """
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.jpg")
+
+        fmt = exempi.files_check_file_format(filename)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
+
+        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
+
+        lst = exempi.files_get_file_info(xfptr)
+        file_path, options, file_format, flags = lst
+
+        self.assertEqual(file_path, filename)
+        self.assertEqual(options, XMP_OPEN_READ)
+        self.assertEqual(file_format, libxmp.consts.XMP_FT_JPEG)
+
+        # This value might break at each SDK update.
+        self.assertEqual(flags, 0x27f)
+
+        xmp = exempi.files_get_xmp(xfptr)
+
+        if exempi._libexempi_version.startswith('2.3'):
+            xmpstr, packet_info = exempi.files_get_xmp_xmpstring(xfptr)
+            self.assertEqual(packet_info.offset, 2189)
+            self.assertEqual(packet_info.length, 4782)
+            self.assertEqual(packet_info.pad_size, 2049)
+            self.assertTrue(packet_info.has_wrapper)
+
+        the_prop, _ = exempi.get_property(xmp, NS_PHOTOSHOP, "ICCProfile")
+        self.assertEqual("sRGB IEC61966-2.1", the_prop)
+
+        exempi.free(xmp)
+        exempi.files_free(xfptr)
 
     def test_xmpfiles_write(self):
-        """According to test-xmpfiles-write.cpp"""
+        """
+        Corresponds to test-xmpfiles-write.cpp
+        """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.jpg")
 
@@ -315,6 +372,7 @@ class TestExempi(unittest.TestCase):
             shutil.copyfile(filename, tfile.name)
 
             xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
+            xmp = exempi.files_get_new_xmp(xfptr)
 
             exempi.set_property(xmp, NS_PHOTOSHOP, "ICCProfile", "foo", 0)
             self.assertTrue(exempi.files_can_put_xmp(xfptr, xmp))
@@ -332,9 +390,10 @@ class TestExempi(unittest.TestCase):
             exempi.files_close(xfptr, XMP_CLOSE_NOOPTION)
             exempi.files_free(xfptr)
 
-
     def test_serialize(self):
-        """Corresponds to test-serialize.cpp"""
+        """
+        Corresponds to test-serialize.cpp
+        """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
         with open(filename, 'r') as fptr:
@@ -350,14 +409,16 @@ class TestExempi(unittest.TestCase):
 
         options = XMP_SERIAL_OPTIONS['omit_packet_wrapper']
         # TODO:  test this somehow.
-        output = exempi.serialize_and_format(xmp, options, 0, '\n', ' ', 0)
+        # output = exempi.serialize_and_format(xmp, options, 0, '\n', ' ', 0)
+        exempi.serialize_and_format(xmp, options, 0, '\n', ' ', 0)
         self.assertFalse(exempi.get_error())
 
         exempi.free(xmp)
 
-
     def test_tiff_leak(self):
-        """Corresponds to test-tiff-leak.cpp"""
+        """
+        Corresponds to test-tiff-leak.cpp
+        """
         orig_file = pkg_resources.resource_filename(__name__,
                                                     "samples/BlueSquare.tif")
 
@@ -374,7 +435,6 @@ class TestExempi(unittest.TestCase):
             exempi.free(xmp)
             exempi.files_free(xfptr)
         self.assertTrue(True)
-
 
     def test_write_new_date_property(self):
         """
@@ -398,15 +458,14 @@ class TestExempi(unittest.TestCase):
         the_prop, _ = exempi.get_property(xmp, NS_EXIF, "DateTimeOriginal")
         self.assertEqual("2005-12-25T12:42:42", the_prop)
 
-        the_prop, _ = exempi.get_property_date(xmp, NS_EXIF, "DateTimeOriginal")
-        self.assertEqual(the_prop.year, 2005)
-        self.assertEqual(the_prop.minute, 42)
-        self.assertEqual(the_prop, datetime.datetime(2005, 12, 25, 12, 42, 42,
-                                   tzinfo=pytz.utc))
+        prop, _ = exempi.get_property_date(xmp, NS_EXIF, "DateTimeOriginal")
+        self.assertEqual(prop.year, 2005)
+        self.assertEqual(prop.minute, 42)
+
+        exp_date = datetime.datetime(2005, 12, 25, 12, 42, 42, tzinfo=pytz.utc)
+        self.assertEqual(prop, exp_date)
 
         exempi.free(xmp)
-
-
 
     def test_xmp_files(self):
         """Corresponds to test_xmp_files.cpp"""
@@ -417,7 +476,9 @@ class TestExempi(unittest.TestCase):
         fmt = exempi.files_check_file_format(filename)
         self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
-        file_path, options, file_format, flags = exempi.files_get_file_info(xfptr)
+        lst = exempi.files_get_file_info(xfptr)
+        file_path, options, file_format, flags = lst
+
         self.assertEqual(options, XMP_OPEN_READ)
         self.assertEqual(file_format, libxmp.consts.XMP_FT_JPEG)
         self.assertEqual(flags, 0x27f)  # 0x27f?
@@ -430,18 +491,20 @@ class TestExempi(unittest.TestCase):
 
     def test_formats(self):
         """Verify that check_file_format function works as expected."""
-        pairs = { 'avi':  libxmp.consts.XMP_FT_AVI,
-                  'eps':  libxmp.consts.XMP_FT_EPS,
-                  'gif':  libxmp.consts.XMP_FT_GIF,
-                  'indd': libxmp.consts.XMP_FT_INDESIGN,
-                  'jpg':  libxmp.consts.XMP_FT_JPEG,
-                  'mov':  libxmp.consts.XMP_FT_MOV,
-                  'mp3':  libxmp.consts.XMP_FT_MP3,
-                  'png':  libxmp.consts.XMP_FT_PNG,
-                  'psd':  libxmp.consts.XMP_FT_PHOTOSHOP,
-                  'tif':  libxmp.consts.XMP_FT_TIFF,
-                  'wav':  libxmp.consts.XMP_FT_WAV,
-                  }
+        pairs = {
+            'avi':  libxmp.consts.XMP_FT_AVI,
+            'eps':  libxmp.consts.XMP_FT_EPS,
+            'gif':  libxmp.consts.XMP_FT_GIF,
+            'indd': libxmp.consts.XMP_FT_INDESIGN,
+            'jpg':  libxmp.consts.XMP_FT_JPEG,
+            'mov':  libxmp.consts.XMP_FT_MOV,
+            'mp3':  libxmp.consts.XMP_FT_MP3,
+            'png':  libxmp.consts.XMP_FT_PNG,
+            'psd':  libxmp.consts.XMP_FT_PHOTOSHOP,
+            'tif':  libxmp.consts.XMP_FT_TIFF,
+            'wav':  libxmp.consts.XMP_FT_WAV,
+        }
+
         for suffix, expected_format in pairs.items():
             relpath = os.path.join('samples', 'BlueSquare' + '.' + suffix)
             filename = pkg_resources.resource_filename(__name__, relpath)
@@ -449,7 +512,6 @@ class TestExempi(unittest.TestCase):
             actual_format = exempi.files_check_file_format(filename)
             self.assertEqual(actual_format, expected_format)
             exempi.files_free(xfptr)
-
 
     @unittest.skip("Issue 26")
     def test_bad_formats(self):
@@ -513,7 +575,6 @@ class TestIteration(unittest.TestCase):
         exempi.iterator_free(iterator)
         exempi.free(xmp)
 
-
         return schemas, paths, props
 
     @unittest.skip("Issue 27")
@@ -525,7 +586,8 @@ class TestIteration(unittest.TestCase):
     def test_single_namespace_single_path_leaf_nodes(self):
         """Get all the leaf nodes from a single path, single namespace."""
         options = XMP_ITERATOR_OPTIONS['iter_justleafnodes']
-        schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
+        lst = self.collect_iteration(NS_DC, "rights", options)
+        schemas, paths, props = lst
 
         for j in range(len(props)):
             self.assertEqual(schemas[j], NS_DC)
@@ -536,34 +598,27 @@ class TestIteration(unittest.TestCase):
         self.assertEqual(props[0], "2006, Hubert Figuiere")
         self.assertEqual(props[1], "x-default")
 
-
     def test_single_namespace_single_path_children(self):
         """Get just child nodes from a single path, single namespace."""
         # This does not result in retrieving dc:rights[1]/?xml:lang
         options = XMP_ITERATOR_OPTIONS['iter_justchildren']
-        schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
+        lst = self.collect_iteration(NS_DC, "rights", options)
+        schemas, paths, props = lst
 
         self.assertEqual(schemas, [NS_DC])
         self.assertEqual(paths, ["dc:rights[1]"])
         self.assertEqual(props, ["2006, Hubert Figuiere"])
 
-
     def test_single_namespace_single_path_leaf_names(self):
         """Get just leaf names from a single path, single namespace."""
         # TODO:  why?
         options = XMP_ITERATOR_OPTIONS['iter_justleafname']
-        schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
+        lst = self.collect_iteration(NS_DC, "rights", options)
+        schemas, paths, props = lst
 
         self.assertEqual(schemas, [NS_DC, NS_DC, NS_DC])
-        self.assertEqual(paths,
-                         ['dc:rights',
-                          '[1]',
-                          'xml:lang'])
-        self.assertEqual(props,
-                         ['',
-                          '2006, Hubert Figuiere',
-                          'x-default'])
-
+        self.assertEqual(paths, ['dc:rights', '[1]', 'xml:lang'])
+        self.assertEqual(props, ['', '2006, Hubert Figuiere', 'x-default'])
 
     def test_single_namespace_leaf_nodes(self):
         """Get all the leaf nodes from a single namespace."""
@@ -695,6 +750,6 @@ class TestIteration(unittest.TestCase):
         exempi.iterator_free(iterator)
         exempi.free(xmp)
 
-        # If the iteration modification worked, there should be no TIFF 
+        # If the iteration modification worked, there should be no TIFF
         # properties in the list of schemas.
         self.assertTrue(NS_TIFF not in schemas)
