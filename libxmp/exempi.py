@@ -68,6 +68,11 @@ def _load_exempi():
 
 EXEMPI = _load_exempi()
 
+if hasattr(EXEMPI, 'xmp_files_get_xmp_xmpstring'):
+    _libexempi_version = '2.3'
+else:
+    _libexempi_version = '2.2'
+
 # Error codes defined by libexempi.  See "xmperrors.h"
 ERROR_MESSAGE = {    0: "unknown error",
                     -1: "TBD",
