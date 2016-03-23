@@ -185,6 +185,20 @@ def copy(xmp):
     return newxmp
 
 
+class PacketInfoType(ctypes.Structure):
+    """
+    Corresponds to XmpPacketInfo type.
+    """
+    _fields_ = [
+        ("offset", ctypes.c_int64),
+        ("length", ctypes.c_int32),
+        ("pad_size", ctypes.c_int32),
+        ("char_form", ctypes.c_uint8),
+        ("writeable", ctypes.c_int32),
+        ("has_wrapper", ctypes.c_int32),
+        ("pad", ctypes.c_uint8),
+    ]
+
 def files_can_put_xmp(xfptr, xmp):
     """Wrapper for xmp_files_can_put_xmp library routine.
 
@@ -204,23 +218,6 @@ def files_can_put_xmp(xfptr, xmp):
     EXEMPI.xmp_files_can_put_xmp.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
     value = EXEMPI.xmp_files_can_put_xmp(xfptr, xmp)
     return value == 1
-
-
-def files_check_file_format(filename):
-    """Check the file format of a file.
-
-    Wrapper for xmp_check_file_format library routine.
-
-    Parameters
-    ----------
-    filename : str
-        Path to file.
-    """
-    if not os.path.exists(filename):
-        raise IOError("{0} does not exist.".format(filename))
-    EXEMPI.xmp_files_check_file_format.restype = ctypes.c_int32
-    EXEMPI.xmp_files_check_file_format.argtypes = [ctypes.c_char_p]
-    return EXEMPI.xmp_files_check_file_format(filename.encode('utf-8'))
 
 
 def delete_localized_text(xmp, schema, name, generic_lang, specific_lang):
@@ -284,6 +281,23 @@ def delete_property(xmp, schema, name):
                                            ctypes.c_char_p,
                                            ctypes.c_char_p]
     EXEMPI.xmp_delete_property(xmp, schema.encode('utf-8'), name.encode('utf-8'))
+
+
+def files_check_file_format(filename):
+    """Check the file format of a file.
+
+    Wrapper for xmp_check_file_format library routine.
+
+    Parameters
+    ----------
+    filename : str
+        Path to file.
+    """
+    if not os.path.exists(filename):
+        raise IOError("{0} does not exist.".format(filename))
+    EXEMPI.xmp_files_check_file_format.restype = ctypes.c_int32
+    EXEMPI.xmp_files_check_file_format.argtypes = [ctypes.c_char_p]
+    return EXEMPI.xmp_files_check_file_format(filename.encode('utf-8'))
 
 
 def files_close(xfptr, options):
@@ -417,6 +431,24 @@ def files_get_xmp(xfptr):
     xmp = new_empty()
     EXEMPI.xmp_files_get_xmp(xfptr, xmp)
     return xmp
+
+
+def files_get_xmp_xmpstring(xfptr, xmp):
+    """
+    Returns
+    -------
+    packet_info : 
+    """
+    EXEMPI.xmp_files_get_xmp_xmpstring.restype = check_error
+    EXEMPI.xmp_files_get_xmp_xmpstring.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.POINTER(PacketInfoType)
+    ]
+
+    packet_info = PacketInfoType()
+    EXEMPI.xmp_files_get_xmp_xmpstring(xfptr, xmp, ctypes.byref(packet_info))
+    return packet_info
 
 
 def files_open(xfptr, filename, options):
