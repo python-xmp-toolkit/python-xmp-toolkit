@@ -203,8 +203,8 @@ class PacketInfoType(ctypes.Structure):
         ("length", ctypes.c_int32),
         ("pad_size", ctypes.c_int32),
         ("char_form", ctypes.c_uint8),
-        ("writeable", ctypes.c_int32),
-        ("has_wrapper", ctypes.c_int32),
+        ("writeable", ctypes.c_bool),
+        ("has_wrapper", ctypes.c_bool),
         ("pad", ctypes.c_uint8),
     ]
 
