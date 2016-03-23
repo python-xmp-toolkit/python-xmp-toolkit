@@ -35,7 +35,8 @@
 """
 Wrapper functions for individual exempi library routines.
 """
-import ctypes, ctypes.util
+import ctypes
+import ctypes.util
 import datetime
 import os
 import platform
@@ -44,6 +45,7 @@ import pytz
 
 from . import XMPError, ExempiLoadError
 from .consts import XMP_OPEN_READ, XMP_OPEN_NOOPTION
+
 
 def _load_exempi():
     """
@@ -55,7 +57,7 @@ def _load_exempi():
             if os.path.exists('/opt/local/lib/libexempi.dylib'):
                 # MacPorts starndard location.
                 path = '/opt/local/lib/libexempi.dylib'
-            
+
     if path is None:
         raise ExempiLoadError('Exempi library not found.')
 
@@ -74,43 +76,45 @@ else:
     _libexempi_version = '2.2'
 
 # Error codes defined by libexempi.  See "xmperrors.h"
-ERROR_MESSAGE = {    0: "unknown error",
-                    -1: "TBD",
-                    -2: "unavailable",
-                    -3: "bad object",
-                    -4: "bad parameter",
-                    -5: "bad value",
-                    -6: "assert failure",
-                    -7: "enforce failure",
-                    -8: "unimplemented",
-                    -9: "internal failure",
-                   -10: "deprecated",
-                   -11: "external failure",
-                   -12: "user abort",
-                   -13: "std exception",
-                   -14: "unknown exception",
-                   -15: "no memory",
-                  -101: "bad schema",
-                  -102: "bad XPath",
-                  -103: "bad options",
-                  -104: "bad index",
-                  -105: "bad iter position",
-                  -106: "bad parse",
-                  -107: "bad serialize",
-                  -108: "bad file format",
-                  -109: "no file handler",
-                  -110: "too large for JPEG",
-                  -201: "bad XML",
-                  -202: "bad RDF",
-                  -203: "bad XMP",
-                  -204: "empty iterator",
-                  -205: "bad unicode",
-                  -206: "bad TIFF",
-                  -207: "bad JPEG",
-                  -208: "bad PSD",
-                  -209: "bad PSIR",
-                  -210: "bad IPTC",
-                  -211: "bad MPEG" }
+ERROR_MESSAGE = {
+    0: "unknown error",
+    -1: "TBD",
+    -2: "unavailable",
+    -3: "bad object",
+    -4: "bad parameter",
+    -5: "bad value",
+    -6: "assert failure",
+    -7: "enforce failure",
+    -8: "unimplemented",
+    -9: "internal failure",
+    -10: "deprecated",
+    -11: "external failure",
+    -12: "user abort",
+    -13: "std exception",
+    -14: "unknown exception",
+    -15: "no memory",
+    -101: "bad schema",
+    -102: "bad XPath",
+    -103: "bad options",
+    -104: "bad index",
+    -105: "bad iter position",
+    -106: "bad parse",
+    -107: "bad serialize",
+    -108: "bad file format",
+    -109: "no file handler",
+    -110: "too large for JPEG",
+    -201: "bad XML",
+    -202: "bad RDF",
+    -203: "bad XMP",
+    -204: "empty iterator",
+    -205: "bad unicode",
+    -206: "bad TIFF",
+    -207: "bad JPEG",
+    -208: "bad PSD",
+    -209: "bad PSIR",
+    -210: "bad IPTC",
+    -211: "bad MPEG"
+}
 
 
 class XmpDateTime(ctypes.Structure):
@@ -204,6 +208,7 @@ class PacketInfoType(ctypes.Structure):
         ("pad", ctypes.c_uint8),
     ]
 
+
 def files_can_put_xmp(xfptr, xmp):
     """Wrapper for xmp_files_can_put_xmp library routine.
 
@@ -285,7 +290,9 @@ def delete_property(xmp, schema, name):
     EXEMPI.xmp_delete_property.argtypes = [ctypes.c_void_p,
                                            ctypes.c_char_p,
                                            ctypes.c_char_p]
-    EXEMPI.xmp_delete_property(xmp, schema.encode('utf-8'), name.encode('utf-8'))
+    EXEMPI.xmp_delete_property(xmp,
+                               schema.encode('utf-8'),
+                               name.encode('utf-8'))
 
 
 def files_check_file_format(filename):
@@ -442,8 +449,12 @@ def files_get_xmp_xmpstring(xfptr, xmp):
     """
     Returns
     -------
-    packet_info : 
+    packet_info :
     """
+    if _libexempi_version.startswith('2.2'):
+        message = 'This method requires exempi version 2.3 or higher.'
+        raise NotImplementedError(message)
+
     EXEMPI.xmp_files_get_xmp_xmpstring.restype = check_error
     EXEMPI.xmp_files_get_xmp_xmpstring.argtypes = [
         ctypes.c_void_p,
@@ -587,6 +598,7 @@ def get_array_item(xmp, schema, name, index):
     _string_free(_item)
 
     return item, property_bits.value
+
 
 def get_localized_text(xmp, schema, name, generic_lang, specific_lang):
     """Get a localised text from a localisable property.
@@ -828,11 +840,13 @@ def get_property_int32(xmp, schema, name):
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_get_property_int32.restype = check_error
-    EXEMPI.xmp_get_property_int32.argtypes = [ctypes.c_void_p,
-                                             ctypes.c_char_p,
-                                             ctypes.c_char_p,
-                                             ctypes.POINTER(ctypes.c_int32),
-                                             ctypes.POINTER(ctypes.c_uint32)]
+    EXEMPI.xmp_get_property_int32.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.c_int32),
+        ctypes.POINTER(ctypes.c_uint32)
+    ]
 
     ivalue = ctypes.c_int32(0)
     prop_bits = ctypes.c_uint32(0)
@@ -870,11 +884,13 @@ def get_property_int64(xmp, schema, name):
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_get_property_int64.restype = check_error
-    EXEMPI.xmp_get_property_int64.argtypes = [ctypes.c_void_p,
-                                             ctypes.c_char_p,
-                                             ctypes.c_char_p,
-                                             ctypes.POINTER(ctypes.c_int64),
-                                             ctypes.POINTER(ctypes.c_uint32)]
+    EXEMPI.xmp_get_property_int64.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_uint32)
+    ]
 
     ivalue = ctypes.c_int64(0)
     prop_bits = ctypes.c_uint32(0)
@@ -1015,8 +1031,9 @@ def iterator_next(iterator):
     _propvalue = _string_new()
     options = ctypes.c_uint32(0)
 
-    success = EXEMPI.xmp_iterator_next(iterator, _schema, _propname, _propvalue,
-                                   ctypes.byref(options))
+    success = EXEMPI.xmp_iterator_next(iterator, _schema, _propname,
+                                       _propvalue,
+                                       ctypes.byref(options))
 
     if not success:
         _string_free(_schema)
@@ -1232,6 +1249,7 @@ def register_namespace(namespace_uri, prefix):
 
     return registered_prefix
 
+
 def serialize(xmp, options, padding):
     """Serialize the XMP Packet.
 
@@ -1306,7 +1324,9 @@ def serialize_and_format(xmp, options, padding, newline, tab, indent):
                                                 ctypes.c_int32]
     _item = _string_new()
     EXEMPI.xmp_serialize_and_format(xmp, _item, options, padding,
-                                    newline.encode('utf-8'), tab.encode('utf-8'), indent)
+                                    newline.encode('utf-8'),
+                                    tab.encode('utf-8'),
+                                    indent)
 
     item = string_cstr(_item)
     _string_free(_item)
@@ -1396,6 +1416,7 @@ def set_localized_text(xmp, schema, name, generic_lang, specific_lang, value,
                                   specific_lang.encode('utf-8'),
                                   value.encode('utf-8'),
                                   mask)
+
 
 def set_property(xmp, schema, name, value, option_bits=0):
     """Set an XMP property in the XMP packet.
@@ -1496,11 +1517,13 @@ def set_property_date(xmp, schema, name, the_date, option_bits=0):
     """
     # Use a function callback instead of returning a boolean value.
     EXEMPI.xmp_set_property_date.restype = check_error
-    EXEMPI.xmp_set_property_date.argtypes = [ctypes.c_void_p,
-                                              ctypes.c_char_p,
-                                              ctypes.c_char_p,
-                                              ctypes.POINTER(XmpDateTime),
-                                              ctypes.c_uint32]
+    EXEMPI.xmp_set_property_date.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+        ctypes.POINTER(XmpDateTime),
+        ctypes.c_uint32
+    ]
 
     if the_date.tzinfo is not None:
         the_date = the_date.astimezone(pytz.utc)

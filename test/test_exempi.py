@@ -2,14 +2,11 @@
 """
 Test suites for exempi routine wrappers.
 """
-
-# R0904:  Not too many methods in unittest.
-# pylint: disable=R0904
-
 import datetime
 import os
 import pkg_resources
 import platform
+import re
 import shutil
 import sys
 import tempfile
@@ -72,6 +69,27 @@ class TestPythonXmpToolkit(unittest.TestCase):
     """
     Test suite for cases added by python xmp toolkit devs.
     """
+    @unittest.skipIf(re.match('2.[3-9]', exempi._libexempi_version),
+                     'Requires exempi < 2.3')
+    def test_do_not_run_when_libexempi_lt_2p3(self):
+        """
+        Error out when library version not at least 2.3
+
+        files_get_xmp_xmpstring method is not available until exempi version
+        2.3
+        """
+        filename = pkg_resources.resource_filename(__name__,
+                                                   "samples/BlueSquare.jpg")
+
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as tfile:
+            shutil.copyfile(filename, tfile.name)
+
+            xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
+            xmp = exempi.files_get_new_xmp(xfptr)
+
+            with self.assertRaises(NotImplementedError):
+                exempi.files_get_xmp_xmpstring(xfptr, xmp)
+
     def test_file_not_there_open_new(self):
         """
         The library does not catch comfortably, so we perform our own check.
@@ -97,7 +115,8 @@ class TestExempi(unittest.TestCase):
         exempi.terminate()
 
     def test_bgo(self):
-        """Corresponds to test-bgo.cpp
+        """
+        Corresponds to test-bgo.cpp
         """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/fdo18635.jpg")
@@ -109,13 +128,14 @@ class TestExempi(unittest.TestCase):
 
     def test_get_property_datetime(self):
         """
-
         See issue #48
         """
         pass
 
     def test_write_new_property(self):
-        """Corresponds to test-write-new-property.cpp"""
+        """
+        Corresponds to test-write-new-property.cpp
+        """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/test1.xmp")
 
@@ -300,7 +320,9 @@ class TestExempi(unittest.TestCase):
 
 
     def test_xmpfiles_write(self):
-        """According to test-xmpfiles-write.cpp"""
+        """
+        Corresponds to test-xmpfiles-write.cpp
+        """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.jpg")
 
