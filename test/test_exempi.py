@@ -68,8 +68,6 @@ class TestPythonXmpToolkit(unittest.TestCase):
     """
     Test suite for cases added by python xmp toolkit devs.
     """
-    @unittest.skipIf(re.match('2.[3-9]', exempi._libexempi_version),
-                     'Requires exempi < 2.3')
     def test_do_not_run_when_libexempi_lt_2p3(self):
         """
         Error out when library version not at least 2.3
@@ -84,10 +82,15 @@ class TestPythonXmpToolkit(unittest.TestCase):
             shutil.copyfile(filename, tfile.name)
 
             xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
-            xmp = exempi.files_get_new_xmp(xfptr)
 
-            with self.assertRaises(NotImplementedError):
-                exempi.files_get_xmp_xmpstring(xfptr, xmp)
+            if re.match('2.[3-9]', exempi._libexempi_version) is not None:
+                # Library API includes xmp_files_get_xmp_xmpstring
+                xmpstr, packet_info = exempi.files_get_xmp_xmpstring(xfptr)
+                self.assertEqual(packet_info.offset, 2189)
+            else:
+                # Library API does not include xmp_files_get_xmp_xmpstring
+                with self.assertRaises(NotImplementedError):
+                    exempi.files_get_xmp_xmpstring(xfptr)
 
     def test_file_not_there_open_new(self):
         """

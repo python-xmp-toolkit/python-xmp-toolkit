@@ -467,14 +467,6 @@ def files_get_xmp(xfptr):
     return xmp
 
 
-EXEMPI.xmp_files_get_xmp_xmpstring.restype = check_error
-EXEMPI.xmp_files_get_xmp_xmpstring.argtypes = [
-    ctypes.c_void_p,
-    ctypes.c_void_p,
-    ctypes.POINTER(PacketInfoType)
-]
-
-
 def files_get_xmp_xmpstring(xfptr):
     """
     Wrapper for xmp_files_get_xmp_xmpstring.
@@ -489,6 +481,13 @@ def files_get_xmp_xmpstring(xfptr):
     if _libexempi_version.startswith('2.2'):
         message = 'This method requires exempi version 2.3 or higher.'
         raise NotImplementedError(message)
+
+    EXEMPI.xmp_files_get_xmp_xmpstring.restype = check_error
+    EXEMPI.xmp_files_get_xmp_xmpstring.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.POINTER(PacketInfoType)
+    ]
 
     _item = _string_new()
 
