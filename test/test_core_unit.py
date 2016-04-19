@@ -79,6 +79,12 @@ class XMPMetaTestCase(unittest.TestCase):
         self.assertTrue( xmp.xmpptr )
         del xmp
 
+    def test_del_free(self, arg = libxmp.XMPMeta()):
+        # The default-argument object is deleted after the _cexempi module it
+        # depends on in its __del__ method has already been deleted, which
+        # eventually causes an AttributeError. XMPIterator has the same issue.
+        iterator = iter(arg)
+
     def test_test_files(self):
         for f in self.samplefiles:
             self.assertTrue( os.path.exists(f), "Test file does not exists." )
