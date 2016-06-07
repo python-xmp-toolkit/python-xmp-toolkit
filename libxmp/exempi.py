@@ -402,7 +402,7 @@ def files_get_new_xmp(xfptr):
     xmp_ptr : ctypes pointer
         XMP pointer
     """
-    EXEMPI.xmp_files_get_new_xmp.restype = ctypes.c_void_p
+    EXEMPI.xmp_files_get_new_xmp.restype = check_error
     EXEMPI.xmp_files_get_new_xmp.argtypes = [ctypes.c_void_p]
     xmp_ptr = EXEMPI.xmp_files_get_new_xmp(xfptr)
     return xmp_ptr
