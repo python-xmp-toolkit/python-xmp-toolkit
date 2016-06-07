@@ -408,8 +408,6 @@ def files_get_new_xmp(xfptr):
 
     ecode = get_error()
     if ecode != 0:
-        import ipdb
-        ipdb.set_trace()
         error_msg = ERROR_MESSAGE[ecode]
         msg = 'Exempi function failure ("{0}").'.format(error_msg)
         raise XMPError(msg)
