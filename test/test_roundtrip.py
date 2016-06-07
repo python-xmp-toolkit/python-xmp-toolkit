@@ -61,7 +61,7 @@ class TestRoundTrip(unittest.TestCase):
                                                   "fixtures/zeros.tif")
         with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
             shutil.copyfile(srcfile, tfile.name)
- 
+
             expected_value = u'Stürm und Drang'
 
             xmpf = XMPFiles()
@@ -76,7 +76,7 @@ class TestRoundTrip(unittest.TestCase):
             xmp = xmpf.get_xmp()
             actual_value = xmp.get_property(NS_DC, "Title")
             xmpf.close_file()
-            
+
             self.assertEqual(actual_value, expected_value)
 
 
@@ -88,7 +88,7 @@ class TestRoundTrip(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix='.tif', mode='wb') as tfile:
 
             # Do some surgery on the file, remove existing xmp.
-            # The APP1 marker segment in question starts at byte 2156, has 
+            # The APP1 marker segment in question starts at byte 2156, has
             # length of 4813
             with open(srcfile, 'rb') as infptr:
 
@@ -99,7 +99,6 @@ class TestRoundTrip(unittest.TestCase):
                 infptr.seek(21619)
                 tfile.write(infptr.read())
                 tfile.flush()
-
 
             xmpf = XMPFiles()
             xmpf.open_file(file_path=tfile.name, open_forupdate=True)
