@@ -239,7 +239,7 @@ class XMPMeta(object):
             get_property() for namespace prefix usage.
         :param str prop_value: The new item value.
         :param **kwargs: Optional keyword arguments describing the options;
-            must much an already existing option from consts.XMP_PROP_OPTIONS
+            must match an already existing option from consts.XMP_PROP_OPTIONS
 
         :raises: IOError if exempi library routine fails.
         """
@@ -441,7 +441,7 @@ class XMPMeta(object):
             get_property() for namespace prefix usage.
         :param bool prop_value: The new item value.
         :param **kwargs: Optional keyword arguments describing the options;
-            must much an already existing option from consts.XMP_PROP_OPTIONS
+            must match an already existing option from consts.XMP_PROP_OPTIONS
 
         :raises: IOError if exempi library routine fails.
         """
@@ -458,7 +458,7 @@ class XMPMeta(object):
             get_property() for namespace prefix usage.
         :param int prop_value: The new item value.
         :param **kwargs: Optional keyword arguments describing the options;
-            must much an already existing option from consts.XMP_PROP_OPTIONS
+            must match an already existing option from consts.XMP_PROP_OPTIONS
 
         :raises: IOError if exempi library routine fails.
         """
@@ -475,7 +475,7 @@ class XMPMeta(object):
             get_property() for namespace prefix usage.
         :param long prop_value: The new item value.
         :param **kwargs: Optional keyword arguments describing the options;
-            must much an already existing option from consts.XMP_PROP_OPTIONS
+            must match an already existing option from consts.XMP_PROP_OPTIONS
 
         :raises: IOError if exempi library routine fails.
         """
@@ -492,7 +492,7 @@ class XMPMeta(object):
             get_property() for namespace prefix usage.
         :param float prop_value: The new item value.
         :param **kwargs: Optional keyword arguments describing the options;
-            must much an already existing option from consts.XMP_PROP_OPTIONS
+            must match an already existing option from consts.XMP_PROP_OPTIONS
 
         :raises: IOError if exempi library routine fails.
         """
@@ -533,7 +533,7 @@ class XMPMeta(object):
             specification (i.e en-US for US English).
         :param str prop_value:    Item value
         :param **kwargs:          Optional keyword arguments describing the
-            options; must much an already existing option from
+            options; must match an already existing option from
             consts.XMP_PROP_OPTIONS
 
         :raises: IOError if exempi library routine fails.
