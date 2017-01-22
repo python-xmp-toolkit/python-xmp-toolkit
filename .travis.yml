@@ -10,7 +10,7 @@ before_install:
 
 # command to install dependencies
 install:
-  - pip install coveralls --use-mirrors
+  - pip install coveralls
   - pip install .
 
 # command to run tests
