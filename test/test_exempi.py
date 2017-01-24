@@ -30,6 +30,7 @@ from libxmp.consts import XMP_NS_EXIF as NS_EXIF
 from libxmp.consts import XMP_NS_Photoshop as NS_PHOTOSHOP
 from libxmp.consts import XMP_NS_TIFF as NS_TIFF
 from libxmp.consts import XMP_NS_XMP as NS_XAP
+from libxmp.consts import XMP_NS_XML as NS_XML
 from libxmp.consts import XMP_NS_CameraRaw as NS_CAMERA_RAW_SETTINGS
 from libxmp.consts import XMP_ITERATOR_OPTIONS, XMP_SERIAL_OPTIONS
 from libxmp.consts import XMP_SKIP_OPTIONS
@@ -543,7 +544,10 @@ class TestIteration(unittest.TestCase):
         options = XMP_ITERATOR_OPTIONS['iter_justleafname']
         schemas, paths, props = self.collect_iteration(NS_DC, "rights", options)
 
-        self.assertEqual(schemas, [NS_DC, NS_DC, NS_DC])
+        # in Exempi 2.4.0 and later, the actual namespace is returned.
+        # This was fixed in the Adobe SDK CS6 (version 5.4.0)
+        # So we test for both values since we can't check the version at runtime.
+        self.assertTrue(schemas == [NS_DC, NS_DC, NS_DC] or schemas == [NS_DC, '', NS_XML])
         self.assertEqual(paths,
                          ['dc:rights',
                           '[1]',
