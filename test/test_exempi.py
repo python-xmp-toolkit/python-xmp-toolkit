@@ -489,18 +489,20 @@ class TestIteration(unittest.TestCase):
         paths = []
         props = []
 
-        while True:
-            try:
-                schema, path, prop, _ = exempi.iterator_next(iterator)
+        if iterator:
+            while True:
+                try:
+                    schema, path, prop, _ = exempi.iterator_next(iterator)
 
-                schemas.append(schema)
-                paths.append(path)
-                props.append(prop)
+                    schemas.append(schema)
+                    paths.append(path)
+                    props.append(prop)
 
-            except StopIteration:
-                break
+                except StopIteration:
+                    break
 
-        exempi.iterator_free(iterator)
+            exempi.iterator_free(iterator)
+
         exempi.free(xmp)
 
 
