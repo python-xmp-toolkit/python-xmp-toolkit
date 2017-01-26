@@ -44,7 +44,7 @@ For test coverage, run::
   pip install coverage
   source run-coverage.sh
 
-To run tests in Python 2.6, 2.7 and 3.3 using tox, run::
+To run tests in Python 2.6, 2.7, or python3, using tox, run::
 
   pip install tox
   tox

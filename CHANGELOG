@@ -1,3 +1,7 @@
+Release 2.0.2 ( January 25, 2017 )
+  * Fix test following a bugfix from Exempi 2.4.0.
+  * Fix crash when there is no schema.
+
 Release 2.0.1 ( March 9, 2014 )
   * Fixed documentation code examples (issue #34)
   * Removed print statement.
