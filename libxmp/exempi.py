@@ -55,7 +55,7 @@ def _load_exempi():
             if os.path.exists('/opt/local/lib/libexempi.dylib'):
                 # MacPorts starndard location.
                 path = '/opt/local/lib/libexempi.dylib'
-            
+
     if path is None:
         raise ExempiLoadError('Exempi library not found.')
 
@@ -405,6 +405,13 @@ def files_get_new_xmp(xfptr):
     EXEMPI.xmp_files_get_new_xmp.restype = ctypes.c_void_p
     EXEMPI.xmp_files_get_new_xmp.argtypes = [ctypes.c_void_p]
     xmp_ptr = EXEMPI.xmp_files_get_new_xmp(xfptr)
+
+    ecode = get_error()
+    if ecode != 0:
+        error_msg = ERROR_MESSAGE[ecode]
+        msg = 'Exempi function failure ("{0}").'.format(error_msg)
+        raise XMPError(msg)
+
     return xmp_ptr
 
 
