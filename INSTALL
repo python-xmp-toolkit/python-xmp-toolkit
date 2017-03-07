@@ -39,11 +39,13 @@ systems package manager, e.g.::
 
     sudo apt-get install libexempi3  # (Ubuntu/Debian)
     brew install exempi  # (Homebrew on OS X)
+    port install exempi  # (MacPorts)
 
 Mac OS X
 --------
 Note Exempi requires boost (http://www.boost.org/) to compile, so on OS
-X you probably need to run configure with one of the following options::
+X (without Homebrew or MacPorts) you probably need to run configure
+with one of the following options::
 
   ./configure --with-boost=/usr/local # (for Homebrew)
   ./configure --with-darwinports
@@ -55,5 +57,4 @@ The library has not been tested on Windows, and nor has any serious effort
 been made to test it. Hence, developers wanting to use the library on Windows
 are encouraged to try it out and let us know if it works.
 
-The library ought to work on Windows, if Exempi can be compiled as a DLL using
-e.g. Cygwin.
+The library does work on recent versions of Cygwin.
