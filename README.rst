@@ -2,21 +2,27 @@
 Python XMP Toolkit
 ==================
 
-.. image:: https://travis-ci.org/python-xmp-toolkit/python-xmp-toolkit.png?branch=master
-    :target: https://travis-ci.org/python-xmp-toolkit/python-xmp-toolkit
-.. image:: https://coveralls.io/repos/python-xmp-toolkit/python-xmp-toolkit/badge.png?branch=master
-    :target: https://coveralls.io/r/python-xmp-toolkit/python-xmp-toolkit
-.. image:: https://pypip.in/v/python-xmp-toolkit/badge.png
-   :target: https://crate.io/packages/python-xmp-toolkit/
-.. image:: https://pypip.in/d/python-xmp-toolkit/badge.png
-   :target: https://crate.io/packages/python-xmp-toolkit/
+.. image:: https://img.shields.io/travis/python-xmp-toolkit/python-xmp-toolkit/master.svg
+   :alt: Build status badge
+   :target: https://travis-ci.org/python-xmp-toolkit/python-xmp-toolkit
+.. image:: https://img.shields.io/coveralls/python-xmp-toolkit/python-xmp-toolkit/master.svg
+   :alt: Coverage badge
+   :target: https://coveralls.io/r/python-xmp-toolkit/python-xmp-toolkit
+.. image:: https://img.shields.io/pypi/v/python-xmp-toolkit.svg
+   :alt: Version badge
+   :target: https://pypi.org/project/python-xmp-toolkit/
+.. image:: http://readthedocs.org/projects/python-xmp-toolkit/badge/
+   :alt: Documentation badge
+   :target: http://python-xmp-toolkit.readthedocs.io/
+
 
 Python XMP Toolkit is a library for working with XMP metadata, as well as
 reading/writing XMP metadata stored in many different file formats.
 
-Python XMP Toolkit is wrapping Exempi (using ctypes), a C/C++ XMP library
-based on Adobe XMP Toolkit, ensuring that future updates to the XMP standard
-are easily incorporated into the library with a minimum amount of work.
+Python XMP Toolkit is wrapping `Exempi <https://libopenraw.freedesktop.org/wiki/Exempi/>`_ 
+(using ctypes), a C/C++ XMP library based on Adobe XMP Toolkit, ensuring that future
+updates to the XMP standard are easily incorporated into the library with a minimum
+amount of work.
 
 Python XMP Toolkit has been developed by:
  * ESA/Hubble - European Space Agency
@@ -24,22 +30,20 @@ Python XMP Toolkit has been developed by:
  * CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 
 Documentation
-============
-Documentation is available at <http://python-xmp-toolkit.readthedocs.org> or can be build using Sphinx: ::
+=============
+Documentation is available at `python-xml-toolkit.readthedocs.org
+<https://python-xmp-toolkit.readthedocs.org>`_ or can be built using Sphinx: ::
 
     pip install Sphinx
     python setup.py build_sphinx
 
 Testing
 =======
-Running the tests are as simple as: ::
+Running the tests is as simple as: ::
 
     python setup.py test
 
-or (to also show test coverage) ::
+or (to also show test coverage): ::
 
     source run-coverage.sh
 
-.. image:: https://d2weczhvl823v0.cloudfront.net/python-xmp-toolkit/python-xmp-toolkit/trend.png
-   :alt: Bitdeli badge
-   :target: https://bitdeli.com/free
