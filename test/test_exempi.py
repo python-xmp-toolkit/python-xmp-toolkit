@@ -3,9 +3,6 @@
 Test suites for exempi routine wrappers.
 """
 
-# R0904:  Not too many methods in unittest.
-# pylint: disable=R0904
-
 import datetime
 import os
 import pkg_resources
@@ -440,30 +437,34 @@ class TestExempi(unittest.TestCase):
             self.assertEqual(actual_format, expected_format)
             exempi.files_free(xfptr)
 
-
-    @unittest.skip("Issue 26")
     def test_bad_formats(self):
-        """Verify check_file_format on PDF, Adobe Illustrator, XMP."""
-        # Issue 26
+        """
+        Verify check_file_format on PDF, Adobe Illustrator, XMP.
+
+        The library doesn't correctly identify these file formats, so just
+        lock down what the behavior actually is.
+
+        Issue 26
+        """
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.pdf")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_PDF)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_UNKNOWN)
         exempi.files_free(xfptr)
 
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.ai")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_ILLUSTRATOR)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_UNKNOWN)
         exempi.files_free(xfptr)
 
         filename = pkg_resources.resource_filename(__name__,
                                                    "samples/BlueSquare.xmp")
         xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
         fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_XML)
+        self.assertEqual(fmt, libxmp.consts.XMP_FT_UNKNOWN)
         exempi.files_free(xfptr)
 
 
@@ -508,11 +509,13 @@ class TestIteration(unittest.TestCase):
 
         return schemas, paths, props
 
-    @unittest.skip("Issue 27")
     def test_namespaces(self):
-        """Iterate through the namespaces."""
+        """
+        iter_namespaces is not currently supported
+        """
         options = XMP_ITERATOR_OPTIONS['iter_namespaces']
-        schemas, paths, props = self.collect_iteration(None, None, options)
+        with self.assertRaises(RuntimeError):
+            self.collect_iteration(None, None, options)
 
     def test_single_namespace_single_path_leaf_nodes(self):
         """Get all the leaf nodes from a single path, single namespace."""
@@ -587,11 +590,16 @@ class TestIteration(unittest.TestCase):
         self.assertEqual(props[5], "ottawa")
         self.assertEqual(props[6], "parliament of canada")
 
-    @unittest.skip("Issue 28.")
-    def test_no_namespace_single_prop_leaf_nodes(self):
-        """Get all the leaf nodes from a single property."""
-        options = XMP_ITERATOR_OPTIONS['iter_justleafnodes']
-        schemas, paths, props = self.collect_iteration(None, "rights", options)
+    def test_no_namespace_single_prop(self):
+        """
+        Do not allow iteration with null NS but non-null property.
+
+        Go thru each option, make sure we error out the the same way.
+        """
+        for key in XMP_ITERATOR_OPTIONS.keys():
+            options = XMP_ITERATOR_OPTIONS[key]
+            with self.assertRaises(RuntimeError):
+                self.collect_iteration(None, "rights", options)
 
     def test_single_namespace_leaf_nodes_omit_qualifiers(self):
         """Get all the leaf nodes (no qualifiers) from a single namespace."""
