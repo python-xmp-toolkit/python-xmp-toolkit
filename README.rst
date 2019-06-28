@@ -32,8 +32,7 @@ Python XMP Toolkit has been developed by:
 
 Documentation
 =============
-
-Documentation is available at `python-xml-toolkit.readthedocs.org
+Documentation is available at `python-xmp-toolkit.readthedocs.org
 <https://python-xmp-toolkit.readthedocs.org>`_ or can be built using Sphinx: ::
 
     pip install Sphinx
