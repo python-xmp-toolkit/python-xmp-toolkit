@@ -38,7 +38,9 @@ Versions below 2.2.0 will not work. Note, Exempi may also be available in your
 systems package manager, e.g.::
 
     sudo apt-get install libexempi3  # (Ubuntu/Debian)
+    sudo apk add exempi-dev # (Alpine, requires `exempi-dev` package version)    
     brew install exempi  # (Homebrew on OS X)
+
 
 Mac OS X
 --------
