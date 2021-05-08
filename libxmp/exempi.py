@@ -53,8 +53,11 @@ def _load_exempi():
     if path is None:
         if platform.system().startswith('Darwin'):
             if os.path.exists('/opt/local/lib/libexempi.dylib'):
-                # MacPorts starndard location.
+                # MacPorts standard location.
                 path = '/opt/local/lib/libexempi.dylib'
+            if os.path.exists('/opt/homebrew/lib/libexempi.dylib'):
+                # Homebrew standard location.
+                path = '/opt/homebrew/lib/libexempi.dylib'
             
     if path is None:
         raise ExempiLoadError('Exempi library not found.')
