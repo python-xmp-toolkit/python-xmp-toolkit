@@ -1696,6 +1696,7 @@ def check_error(success):
         Return value from library function indicating success or failure.
     """
 
+    success = success & 0xff
     # Unfortunately the success parameter does not seem to always be reliable
     # so we supplement it by explicitly checking the error code.
     ecode = EXEMPI.xmp_get_error()
