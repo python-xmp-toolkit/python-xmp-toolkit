@@ -46,10 +46,6 @@ except ImportError:
 
 # Install requirements.
 test_requires = []
-if sys.hexversion < 0x03030000:
-    test_requires.append('mock>=1.0.1')
-if sys.hexversion < 0x02070000:
-    test_requires.append('unittest2>=0.5.1')
 
 KWARGS = {
     'name': 'python-xmp-toolkit',
@@ -60,7 +56,7 @@ KWARGS = {
     'long_description': open('README.rst').read(),
     'download_url': 'https://pypi.python.org/pypi/python-xmp-toolkit',
     'license': 'New BSD License',
-    'install_requires': ['pytz'],
+    'install_requires': ['pytz', 'packaging'],
     'packages': find_packages(exclude=["*test*"]),
     'test_suite': 'test',
     'tests_require': test_requires,
@@ -71,7 +67,6 @@ KWARGS = {
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'Topic :: Multimedia',
         'Topic :: Software Development :: Libraries',

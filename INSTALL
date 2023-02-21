@@ -4,7 +4,7 @@ Installation
 Requirements
 ------------
 
- * Python 2.6, 2.7, 3.3, 3.4, 3.5, or 3.6
+ * Python 3 (3.7+) or pypy3
  * Exempi 2.2.0+
  * Linux or OS X (see notes below for Windows)
 
