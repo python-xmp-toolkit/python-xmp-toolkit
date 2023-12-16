@@ -8,16 +8,13 @@ Test suites for exempi routine wrappers.
 
 import datetime
 import os
-import pkg_resources
+import importlib.resources
 import platform
 import shutil
 import sys
 import tempfile
 
-if sys.hexversion >= 0x02070000:
-    import unittest
-else:
-    import unittest2 as unittest
+import unittest
 
 import pytz
 
@@ -48,10 +45,11 @@ class TestInit(unittest.TestCase):
     """
     def test_init(self):
         """TODO:  fill in the docstring"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         exempi.init()
         exempi.init()
@@ -100,21 +98,22 @@ class TestExempi(unittest.TestCase):
     def test_bgo(self):
         """Corresponds to test-bgo.cpp
         """
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/fdo18635.jpg")
-        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
-        xmp = exempi.files_get_new_xmp(xfptr)
-        exempi.free(xmp)
-        exempi.files_free(xfptr)
-        self.assertTrue(True)
+        traversable = importlib.resources.files(__package__) / "samples/fdo18635.jpg"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
+            xmp = exempi.files_get_new_xmp(xfptr)
+            exempi.free(xmp)
+            exempi.files_free(xfptr)
+            self.assertTrue(True)
 
     def test_write_new_property(self):
         """Corresponds to test-write-new-property.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         xmp = exempi.new_empty()
         self.assertFalse(exempi.get_error())
@@ -150,10 +149,11 @@ class TestExempi(unittest.TestCase):
 
     def test_3(self):
         """Corresponds to test3.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
         xmp = exempi.new_empty()
         exempi.parse(xmp, strbuffer)
 
@@ -181,10 +181,12 @@ class TestExempi(unittest.TestCase):
 
     def test_exempi_core(self):
         """According to test-exempi-core.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
+
         xmp = exempi.new_empty()
         exempi.parse(xmp, strbuffer)
         self.assertTrue(exempi.has_property(xmp, NS_TIFF, 'Make'))
@@ -291,44 +293,46 @@ class TestExempi(unittest.TestCase):
 
     def test_xmpfiles_write(self):
         """According to test-xmpfiles-write.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.jpg")
+        traversable = importlib.resources.files(__package__) / "samples/BlueSquare.jpg"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
 
-        fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
+            fmt = exempi.files_check_file_format(filename)
+            self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
-        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
-        xmp = exempi.files_get_new_xmp(xfptr)
-        exempi.files_free(xfptr)
-
-        with tempfile.NamedTemporaryFile(suffix=".jpg") as tfile:
-            shutil.copyfile(filename, tfile.name)
-
-            xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
-
-            exempi.set_property(xmp, NS_PHOTOSHOP, "ICCProfile", "foo", 0)
-            self.assertTrue(exempi.files_can_put_xmp(xfptr, xmp))
-            exempi.files_put_xmp(xfptr, xmp)
-            exempi.free(xmp)
-            exempi.files_close(xfptr, XMP_CLOSE_SAFEUPDATE)
-            exempi.files_free(xfptr)
-
-            xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_READ)
+            xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
             xmp = exempi.files_get_new_xmp(xfptr)
-            the_prop, _ = exempi.get_property(xmp, NS_PHOTOSHOP, "ICCProfile")
-            self.assertEqual("foo", the_prop)
-
-            exempi.free(xmp)
-            exempi.files_close(xfptr, XMP_CLOSE_NOOPTION)
             exempi.files_free(xfptr)
+
+            with tempfile.NamedTemporaryFile(suffix=".jpg") as tfile:
+                shutil.copyfile(filename, tfile.name)
+
+                xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
+
+                exempi.set_property(xmp, NS_PHOTOSHOP, "ICCProfile", "foo", 0)
+                self.assertTrue(exempi.files_can_put_xmp(xfptr, xmp))
+                exempi.files_put_xmp(xfptr, xmp)
+                exempi.free(xmp)
+                exempi.files_close(xfptr, XMP_CLOSE_SAFEUPDATE)
+                exempi.files_free(xfptr)
+
+                xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_READ)
+                xmp = exempi.files_get_new_xmp(xfptr)
+                the_prop, _ = exempi.get_property(xmp, NS_PHOTOSHOP, "ICCProfile")
+                self.assertEqual("foo", the_prop)
+
+                exempi.free(xmp)
+                exempi.files_close(xfptr, XMP_CLOSE_NOOPTION)
+                exempi.files_free(xfptr)
 
 
     def test_serialize(self):
         """Corresponds to test-serialize.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         self.assertFalse(exempi.get_error())
 
@@ -348,21 +352,21 @@ class TestExempi(unittest.TestCase):
 
     def test_tiff_leak(self):
         """Corresponds to test-tiff-leak.cpp"""
-        orig_file = pkg_resources.resource_filename(__name__,
-                                                    "samples/BlueSquare.tif")
+        traversable = importlib.resources.files(__package__) / "samples/BlueSquare.tif"
+        with importlib.resources.as_file(traversable) as path:
+            orig_file = str(path)
+            with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
+                shutil.copyfile(orig_file, tfile.name)
 
-        with tempfile.NamedTemporaryFile(suffix='.tif') as tfile:
-            shutil.copyfile(orig_file, tfile.name)
+                xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
 
-            xfptr = exempi.files_open_new(tfile.name, XMP_OPEN_FORUPDATE)
-
-            xmp = exempi.files_get_new_xmp(xfptr)
-            exempi.set_localized_text(xmp, NS_DC, "description", "en", "en-US",
-                                      "foo", 0)
-            exempi.files_put_xmp(xfptr, xmp)
-            exempi.files_close(xfptr, XMP_CLOSE_NOOPTION)
-            exempi.free(xmp)
-            exempi.files_free(xfptr)
+                xmp = exempi.files_get_new_xmp(xfptr)
+                exempi.set_localized_text(xmp, NS_DC, "description", "en", "en-US",
+                                          "foo", 0)
+                exempi.files_put_xmp(xfptr, xmp)
+                exempi.files_close(xfptr, XMP_CLOSE_NOOPTION)
+                exempi.free(xmp)
+                exempi.files_free(xfptr)
         self.assertTrue(True)
 
 
@@ -370,11 +374,11 @@ class TestExempi(unittest.TestCase):
         """
         TODO:  fill in the doc string
         """
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         xmp = exempi.new_empty()
         self.assertFalse(exempi.get_error())
@@ -400,23 +404,24 @@ class TestExempi(unittest.TestCase):
 
     def test_xmp_files(self):
         """Corresponds to test_xmp_files.cpp"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.jpg")
+        traversable = importlib.resources.files(__package__) / "samples/BlueSquare.jpg"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
 
-        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
-        fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
+            xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
+            fmt = exempi.files_check_file_format(filename)
+            self.assertEqual(fmt, libxmp.consts.XMP_FT_JPEG)
 
-        file_path, options, file_format, flags = exempi.files_get_file_info(xfptr)
-        self.assertEqual(options, XMP_OPEN_READ)
-        self.assertEqual(file_format, libxmp.consts.XMP_FT_JPEG)
-        self.assertEqual(flags, 0x27f)  # 0x27f?
-        self.assertEqual(filename, file_path)
+            file_path, options, file_format, flags = exempi.files_get_file_info(xfptr)
+            self.assertEqual(options, XMP_OPEN_READ)
+            self.assertEqual(file_format, libxmp.consts.XMP_FT_JPEG)
+            self.assertEqual(flags, 0x27f)  # 0x27f?
+            self.assertEqual(filename, file_path)
 
-        xmp = exempi.files_get_xmp(xfptr)
-        the_prop, _ = exempi.get_property(xmp, NS_PHOTOSHOP, "ICCProfile")
-        self.assertEqual(the_prop, "sRGB IEC61966-2.1")
-        exempi.files_free(xfptr)
+            xmp = exempi.files_get_xmp(xfptr)
+            the_prop, _ = exempi.get_property(xmp, NS_PHOTOSHOP, "ICCProfile")
+            self.assertEqual(the_prop, "sRGB IEC61966-2.1")
+            exempi.files_free(xfptr)
 
     def test_formats(self):
         """Verify that check_file_format function works as expected."""
@@ -434,37 +439,42 @@ class TestExempi(unittest.TestCase):
                   }
         for suffix, expected_format in pairs.items():
             relpath = os.path.join('samples', 'BlueSquare' + '.' + suffix)
-            filename = pkg_resources.resource_filename(__name__, relpath)
-            xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
-            actual_format = exempi.files_check_file_format(filename)
-            self.assertEqual(actual_format, expected_format)
-            exempi.files_free(xfptr)
+            traversable = importlib.resources.files(__package__) / relpath
+            with importlib.resources.as_file(traversable) as path:
+                filename = str(path)
+                xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
+                actual_format = exempi.files_check_file_format(filename)
+                self.assertEqual(actual_format, expected_format)
+                exempi.files_free(xfptr)
 
 
     @unittest.skip("Issue 26")
     def test_bad_formats(self):
         """Verify check_file_format on PDF, Adobe Illustrator, XMP."""
         # Issue 26
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.pdf")
-        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
-        fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_PDF)
-        exempi.files_free(xfptr)
+        traversable = importlib.resources.files(__package__) / "samples/BlueSquare.pdf"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
+            fmt = exempi.files_check_file_format(filename)
+            self.assertEqual(fmt, libxmp.consts.XMP_FT_PDF)
+            exempi.files_free(xfptr)
 
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.ai")
-        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
-        fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_ILLUSTRATOR)
-        exempi.files_free(xfptr)
+        traversable = importlib.resources.files(__package__) / "samples/BlueSquare.ai"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
+            fmt = exempi.files_check_file_format(filename)
+            self.assertEqual(fmt, libxmp.consts.XMP_FT_ILLUSTRATOR)
+            exempi.files_free(xfptr)
 
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/BlueSquare.xmp")
-        xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
-        fmt = exempi.files_check_file_format(filename)
-        self.assertEqual(fmt, libxmp.consts.XMP_FT_XML)
-        exempi.files_free(xfptr)
+        traversable = importlib.resources.files(__package__) / "samples/BlueSquare.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            xfptr = exempi.files_open_new(filename, XMP_OPEN_READ)
+            fmt = exempi.files_check_file_format(filename)
+            self.assertEqual(fmt, libxmp.consts.XMP_FT_XML)
+            exempi.files_free(xfptr)
 
 
 class TestIteration(unittest.TestCase):
@@ -476,10 +486,11 @@ class TestIteration(unittest.TestCase):
 
     def collect_iteration(self, schema, prop, options):
         """Run thru an iteration for a given configuration."""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
         xmp = exempi.new_empty()
         exempi.parse(xmp, strbuffer)
 
@@ -658,10 +669,11 @@ class TestIteration(unittest.TestCase):
         """Alter the iteration midstream."""
         options = XMP_ITERATOR_OPTIONS['iter_properties']
 
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
         xmp = exempi.new_empty()
         exempi.parse(xmp, strbuffer)
 

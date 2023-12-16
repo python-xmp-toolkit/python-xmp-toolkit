@@ -34,13 +34,10 @@
 
 import datetime
 import sys
-if sys.hexversion < 0x02070000:
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 import os
 import os.path
-import pkg_resources
+import importlib.resources
 import shutil
 import tempfile
 
@@ -237,21 +234,22 @@ class XMPMetaTestCase(unittest.TestCase):
 
 
     def test_does_property_exist(self):
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "fixtures/BlueSquare450.tif")
-        xmp = XMPFiles(file_path=filename)
-        xmp_data = xmp.get_xmp()
-        self.assertTrue( xmp_data.does_property_exist( "http://ns.adobe.com/photoshop/1.0/", 'Headline' ) )
+        traversable = importlib.resources.files(__package__) / "fixtures/BlueSquare450.tif"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            xmp = XMPFiles(file_path=filename)
+            xmp_data = xmp.get_xmp()
+            self.assertTrue( xmp_data.does_property_exist( "http://ns.adobe.com/photoshop/1.0/", 'Headline' ) )
 
 
     def test_write_new_property(self):
         """Corresponds to test-write-new-property.cpp"""
 
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         xmp = XMPMeta()
         xmp.parse_from_str(strbuffer, xmpmeta_wrap=False)
@@ -278,11 +276,11 @@ class XMPMetaTestCase(unittest.TestCase):
 
 
     def test_write_new_struct_in_array(self):
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         xmp = XMPMeta()
         xmp.parse_from_str(strbuffer)
@@ -311,10 +309,11 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_exempi_core(self):
         """Corresponds to test_exempi.TestExempi.test_exempi_core"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         xmp = XMPMeta()
         xmp.parse_from_str(strbuffer)
@@ -388,10 +387,11 @@ class XMPMetaTestCase(unittest.TestCase):
 
     def test_does_array_item_exist(self):
         """Tests XMPMeta method does_array_item_exist.  Issue #03"""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         xmp = XMPMeta()
         xmp.parse_from_str(strbuffer)
@@ -402,13 +402,13 @@ class XMPMetaTestCase(unittest.TestCase):
         self.assertTrue(xmp.does_array_item_exist(NS_DC, "creator", "foo"))
         self.assertFalse(xmp.does_array_item_exist(NS_DC, "creator", "blah"))
 
-    
     def test_count_array_items(self):
         """Tests XMPMeta method count_array_items."""
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         xmp = XMPMeta()
         xmp.parse_from_str(strbuffer)
@@ -421,10 +421,11 @@ class XMPMetaTestCase(unittest.TestCase):
     def test_skip(self):
         """Verify usage of XMPMeta skip method.
         """
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "samples/test1.xmp")
-        with open(filename, 'r') as fptr:
-            strbuffer = fptr.read()
+        traversable = importlib.resources.files(__package__) / "samples/test1.xmp"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            with open(filename, 'r') as fptr:
+                strbuffer = fptr.read()
 
         xmp = XMPMeta()
         xmp.parse_from_str(strbuffer)
@@ -473,9 +474,10 @@ class UtilsTestCase(unittest.TestCase):
         self.assertRaises( IOError, file_to_dict, "nonexistingfile.ext" )
 
     def test_file_to_dict_noxmp(self):
-        filename = pkg_resources.resource_filename(__name__,
-                                                   "fixtures/empty.txt")
-        self.assertEqual( file_to_dict(filename), {} )
+        traversable = importlib.resources.files(__package__) / "fixtures/empty.txt"
+        with importlib.resources.as_file(traversable) as path:
+            filename = str(path)
+            self.assertEqual( file_to_dict(filename), {} )
 
     def test_object_to_dict_noxmp(self):
         self.assertEqual( object_to_dict( [] ), {} )

@@ -33,7 +33,7 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
 import os
-import pkg_resources
+import importlib.resources
 import shutil
 
 import libxmp
@@ -73,7 +73,8 @@ def setup_sample_files(dirname):
     fmts = []
     for samplefile, fmt in samplefiles.items():
         relsrc = os.path.join('samples', samplefile)
-        full_source_file = pkg_resources.resource_filename(__name__, relsrc)
+        traversable = importlib.resources.files(__package__) / relsrc
+        full_source_file = traversable
         dest_file = os.path.join(dirname, samplefile)
         shutil.copyfile(full_source_file, dest_file)
         copied_samplefiles.append(dest_file)
