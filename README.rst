@@ -2,9 +2,9 @@
 Python XMP Toolkit
 ==================
 
-.. image:: https://img.shields.io/travis/python-xmp-toolkit/python-xmp-toolkit/master.svg?maxAge=3600
+.. image:: actions/workflows/python-package.yml/badge.svg
    :alt: Build status badge
-   :target: https://travis-ci.org/python-xmp-toolkit/python-xmp-toolkit
+   :target: actions
 .. image:: https://img.shields.io/coveralls/python-xmp-toolkit/python-xmp-toolkit/master.svg?maxAge=3600
    :alt: Coverage badge
    :target: https://coveralls.io/r/python-xmp-toolkit/python-xmp-toolkit
