@@ -129,11 +129,7 @@ class XMPMetaTestCase(unittest.TestCase):
         obj = xmp.serialize_to_str(use_compact_format=True,
                                    omit_packet_wrapper=True)
 
-        if sys.hexversion >= 0x03000000:
-            the_unicode_type = str
-        else:
-            the_unicode_type = unicode
-        self.assertTrue(isinstance(obj, the_unicode_type))
+        self.assertTrue(isinstance(obj, str))
 
         with self.assertRaises(XMPError):
             xmp.serialize_to_str(read_only_packet=True,
@@ -154,14 +150,9 @@ class XMPMetaTestCase(unittest.TestCase):
         """
         xmp = XMPMeta()
         xmp.parse_from_str(xmpcoverage.RDFCoverage, xmpmeta_wrap=True)
-        if sys.hexversion >= 0x03000000:
-            the_unicode_type = str
-        else:
-            the_unicode_type = unicode
-
         obj = xmp.serialize_to_unicode(use_compact_format=True,
                                        omit_packet_wrapper=False)
-        self.assertTrue(isinstance(obj, the_unicode_type ),
+        self.assertTrue(isinstance(obj, str),
                         "Incorrect string result type." )
 
         with self.assertRaises(XMPError):
@@ -186,11 +177,7 @@ class XMPMetaTestCase(unittest.TestCase):
                                        newlinechr='NEWLINE',
                                        tabchr = 'TAB',
                                        indent=6 )
-        if sys.hexversion >= 0x03000000:
-            the_unicode_type = str
-        else:
-            the_unicode_type = unicode
-        self.assertTrue(isinstance(obj, the_unicode_type),
+        self.assertTrue(isinstance(obj, str),
                         "Result is not the correct string" )
 
         with self.assertRaises(XMPError):
@@ -547,10 +534,7 @@ class UnicodeTestCase(unittest.TestCase):
         # Replace 'Simple2 value' with 'stürm'
         # ü has code point 252, so takes 5+1=6 bytes to encode.
         expectedValue = u'stürm'
-        if sys.hexversion < 0x03000000:
-            rdf = unicode(rdf[0:272]) + expectedValue + unicode(rdf[285:])
-        else:
-            rdf = rdf[0:272] + expectedValue + rdf[285:]
+        rdf = rdf[0:272] + expectedValue + rdf[285:]
 
         xmp.parse_from_str(rdf, xmpmeta_wrap=True )
 
@@ -571,12 +555,7 @@ class UnicodeTestCase(unittest.TestCase):
         # This is 'Shiva' in Devanagari
         # शिव has code points [2358, 2367, 2357]
         expectedValue = u'शिव'
-        if sys.hexversion < 0x03000000:
-            rdf = unicode(rdf[0:272]) + expectedValue + unicode(rdf[285:])
-            #rdf = rdf[0:272] + expectedValue.encode('utf-8') + rdf[285:]
-            #rdf = unicode(rdf)
-        else:
-            rdf = rdf[0:272] + expectedValue + rdf[285:]
+        rdf = rdf[0:272] + expectedValue + rdf[285:]
 
         xmp.parse_from_str(rdf, xmpmeta_wrap=True )
 
@@ -608,17 +587,6 @@ class UnicodeTestCase(unittest.TestCase):
         """Should be a str in both 2.x and 3.x"""
         xmp = XMPMeta()
         self.assertTrue(isinstance(repr(xmp), str))
-
-    def test_xmpmeta_unicode_27(self):
-        """In 2.7, unicode(xmp) should return a unicode object."""
-        xmp = XMPMeta()
-        rdf = xmpcoverage.RDFCoverage
-        xmp.parse_from_str(rdf)
-        if sys.hexversion < 0x03000000:
-            self.assertTrue(isinstance(unicode(xmp), unicode))
-        else:
-            # It's a no-op in 3.x.
-            self.assertTrue(True)
 
 def suite():
     suite = unittest.TestSuite()
