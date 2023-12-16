@@ -41,13 +41,16 @@ jobs:
     - name: Install exempi deps
       run: |
         sudo apt install -y libboost-test-dev
+    - name: Get number of CPU cores
+      uses: SimenB/github-actions-cpu-cores@v1
+      id: cpu-cores
     - name: Install latest exempi
       run: |
         git clone https://gitlab.freedesktop.org/libopenraw/exempi
         cd exempi
         ./autogen.sh
         ./configure
-        make
+        make -j ${{ steps.cpu-cores.outputs.count }}
         sudo make install
         cd ..
     - name: Test with pytest
