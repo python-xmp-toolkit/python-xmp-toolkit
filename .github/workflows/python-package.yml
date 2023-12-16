@@ -38,6 +38,15 @@ jobs:
     - name: Install
       run: |
         python -m pip install -e .
+    - name: Install latest exempi
+      run: |
+        git clone https://gitlab.freedesktop.org/libopenraw/exempi
+        cd exempi
+        ./autogen.sh
+        ./configure
+        make
+        make install
+        cd ..
     - name: Test with pytest
       run: |
         pytest
