@@ -53,6 +53,7 @@ jobs:
         make -j ${{ steps.cpu-cores.outputs.count }}
         sudo make install
         cd ..
+        ls -lA /usr/local/lib
     - name: Test with pytest
       run: |
         pytest
