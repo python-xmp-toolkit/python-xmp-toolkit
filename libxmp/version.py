@@ -36,9 +36,7 @@
 Version information for libxmp.
 """
 
-from packaging.version import Version
-
 # Do not change the format of this next line!  Doing so risks breaking
 # setup.py
-VERSION = "2.0.1"
-VERSION_TUPLE = Version(VERSION).release
+VERSION_TUPLE = (2, 0, 1)
+VERSION = ".".join(str(x) for x in VERSION_TUPLE)

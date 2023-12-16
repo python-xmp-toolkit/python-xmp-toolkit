@@ -56,7 +56,7 @@ KWARGS = {
     'long_description': open('README.rst').read(),
     'download_url': 'https://pypi.python.org/pypi/python-xmp-toolkit',
     'license': 'New BSD License',
-    'install_requires': ['pytz', 'packaging'],
+    'install_requires': ['pytz'],
     'packages': find_packages(exclude=["*test*"]),
     'test_suite': 'test',
     'tests_require': test_requires,
