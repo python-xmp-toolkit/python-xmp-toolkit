@@ -85,18 +85,7 @@ class XMPFiles(object):
             return "XMPFiles()"
 
         msg = "XMPFiles(file_path='{0}')"
-        if sys.hexversion < 0x03000000 and isinstance(self._file_path,
-                                                      unicode):
-            # Unicode filenames can cause trouble in python2 because __repr__
-            # must return byte strings, not unicode. Get around this by
-            # turning the unicode filename into escaped ASCII.  This means that
-            # in this case, the result cannot be used to recreate the object
-            # with the same value.
-            msg = msg.format(repr(self._file_path))
-        else:
-            # Python3 does not suffer from this problem.
-            msg = msg.format(self._file_path)
-
+        msg = msg.format(self._file_path)
         return msg
 
     def __del__(self):
