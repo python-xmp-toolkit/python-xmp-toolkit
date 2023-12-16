@@ -93,5 +93,5 @@ def remove_temp_samples():
     global sampledir
     if os.path.exists( sampledir ):
         if not os.path.isdir( sampledir):
-            raise StandardError('Cannot remove .tempsamples - it is not a directory. Please manually remove it.')
+            raise RuntimeError('Cannot remove .tempsamples - it is not a directory. Please manually remove it.')
         shutil.rmtree( sampledir )
