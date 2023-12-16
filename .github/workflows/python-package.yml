@@ -40,7 +40,7 @@ jobs:
         python -m pip install -e .
     - name: Install exempi deps
       run: |
-        apt install -y libboost-test-dev
+        sudo apt install -y libboost-test-dev
     - name: Install latest exempi
       run: |
         git clone https://gitlab.freedesktop.org/libopenraw/exempi
@@ -48,7 +48,7 @@ jobs:
         ./autogen.sh
         ./configure
         make
-        make install
+        sudo make install
         cd ..
     - name: Test with pytest
       run: |
