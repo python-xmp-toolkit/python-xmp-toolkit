@@ -24,7 +24,7 @@ Python XMP Toolkit has been developed by:
  * CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 
 Documentation
-============
+=============
 Documentation is available at <http://python-xmp-toolkit.readthedocs.org> or can be build using Sphinx: ::
 
     pip install Sphinx

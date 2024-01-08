@@ -58,6 +58,7 @@ KWARGS = {
     'author_email': 'lars@hankat.dk',
     'url': 'https://github.com/python-xmp-toolkit/python-xmp-toolkit',
     'long_description': open('README.rst').read(),
+    'long_description_content_type': 'text/x-rst',
     'download_url': 'https://pypi.python.org/pypi/python-xmp-toolkit',
     'license': 'New BSD License',
     'install_requires': ['pytz'],
