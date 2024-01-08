@@ -88,6 +88,7 @@ ERROR_MESSAGE = {    0: "unknown error",
                    -13: "std exception",
                    -14: "unknown exception",
                    -15: "no memory",
+                   -16: "progress abort",
                   -101: "bad schema",
                   -102: "bad XPath",
                   -103: "bad options",
@@ -98,6 +99,14 @@ ERROR_MESSAGE = {    0: "unknown error",
                   -108: "bad file format",
                   -109: "no file handler",
                   -110: "too large for JPEG",
+                  -111: "no file",
+                  -112: "file permission error",
+                  -113: "disk space",
+                  -114: "read error",
+                  -115: "write error",
+                  -116: "bad block format",
+                  -117: "file path not a file",
+                  -118: "rejected file extension",
                   -201: "bad XML",
                   -202: "bad RDF",
                   -203: "bad XMP",
@@ -1701,6 +1710,9 @@ def check_error(success):
     # so we supplement it by explicitly checking the error code.
     ecode = EXEMPI.xmp_get_error()
     if not success or ecode != 0:
-        error_msg = ERROR_MESSAGE[ecode]
+        if ecode in ERROR_MESSAGE:
+            error_msg = ERROR_MESSAGE[ecode]
+        else:
+            error_msg = "Unexpected error code " + str(ecode)
         msg = 'Exempi function failure ("{0}").'.format(error_msg)
         raise XMPError(msg)
