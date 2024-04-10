@@ -22,7 +22,7 @@ http://sphinx.pocoo.org/). To make the documentation run the following command
 in the root directory::
 
   pip install sphinx
-  python setup.py build_sphinx
+  sphinx-build -M html docs/ docs/_build/
 
 Packaging a Distribution
 ------------------------
