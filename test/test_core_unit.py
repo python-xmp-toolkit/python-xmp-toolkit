@@ -590,17 +590,6 @@ class UnicodeTestCase(unittest.TestCase):
         xmp = XMPMeta()
         self.assertTrue(isinstance(repr(xmp), str))
 
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(XMPMetaTestCase))
-    suite.addTest(unittest.makeSuite(UtilsTestCase))
-    return suite
-
-def test( verbose=2 ):
-    all_tests = suite()
-    runner = unittest.TextTestRunner(verbosity=verbose)
-    result = runner.run(all_tests)
-    return result, runner
 
 if __name__ == "__main__":
     #test()

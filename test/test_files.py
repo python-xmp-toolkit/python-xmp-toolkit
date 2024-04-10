@@ -381,16 +381,6 @@ class XMPFilesTestCase(unittest.TestCase):
 
                 self.assertEqual(prop, "foo")
 
-def suite():
-    the_suite = unittest.TestSuite()
-    the_suite.addTest(unittest.makeSuite(XMPFilesTestCase))
-    return the_suite
-
-def test( verbose=2 ):
-    all_tests = suite()
-    runner = unittest.TextTestRunner(verbosity=verbose)
-    result = runner.run(all_tests)
-    return result, runner
 
 if __name__ == "__main__":
     unittest.main()
