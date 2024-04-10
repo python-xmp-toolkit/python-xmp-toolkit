@@ -38,5 +38,4 @@ Version information for libxmp.
 
 # Do not change the format of this next line!  Doing so risks breaking
 # setup.py
-VERSION_TUPLE = (2, 0, 1)
-VERSION = ".".join(str(x) for x in VERSION_TUPLE)
+VERSION = "2.0.3"

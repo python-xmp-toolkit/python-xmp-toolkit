@@ -22,7 +22,7 @@ http://sphinx.pocoo.org/). To make the documentation run the following command
 in the root directory::
 
   pip install sphinx
-  python setup.py build_sphinx
+  sphinx-build -M html docs/ docs/_build/
 
 Packaging a Distribution
 ------------------------
@@ -37,17 +37,12 @@ Running Tests
 -------------
 Tests are run by issuing the command::
 
-  python setup.py test
+  python -m pytest
 
 For test coverage, run::
 
-  pip install coverage
-  source run-coverage.sh
-
-To run tests in Python 2.6, 2.7, or python3, using tox, run::
-
-  pip install tox
-  tox
+  pip install pytest-cov
+  python -m pytest --cov
 
 Distribution Configuration
 --------------------------

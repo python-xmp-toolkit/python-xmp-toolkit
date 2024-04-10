@@ -29,21 +29,23 @@ Python XMP Toolkit has been developed by:
  * ESO - European Southern Observatory
  * CRS4 - Centre for Advanced Studies, Research and Development in Sardinia
 
+
 Documentation
 =============
+
 Documentation is available at `python-xml-toolkit.readthedocs.org
 <https://python-xmp-toolkit.readthedocs.org>`_ or can be built using Sphinx: ::
 
     pip install Sphinx
     python setup.py build_sphinx
 
+
 Testing
 =======
-Running the tests is as simple as: ::
 
-    python setup.py test
+Running the tests is as simple as:
 
-or (to also show test coverage): ::
+.. code:: sh
 
-    source run-coverage.sh
+    python -m pytest
 
