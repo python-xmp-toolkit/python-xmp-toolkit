@@ -1,9 +1,7 @@
 [project]
 name = "python-xmp-toolkit"
 
-dynamic = ["version"]
-
-description = "Python XMP Toolkit for working with metadata."
+dynamic = ["version", "description"]
 
 readme = "README.rst"
 
@@ -36,17 +34,22 @@ dependencies = [
     "pytz"
 ]
 
+
 [project.urls]
 Homepage = "https://github.com/python-xmp-toolkit/python-xmp-toolkit"
 Download = "https://pypi.python.org/pypi/python-xmp-toolkit"
 
 [project.optional-dependencies]
-test = []
-
+test = [
+    "pytest >=2.7.3",
+    "pytest-cov",
+]
 
 [build-system]
-requires = ["setuptools >= 61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
-[tool.setuptools.dynamic]
-version = {attr = "libxmp.version.VERSION"}
+[tool.flit.module]
+name = "libxmp"
+
+
