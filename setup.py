@@ -39,46 +39,17 @@ import os
 import re
 import sys
 
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from distutils.core import setup, find_packages
+from setuptools import setup, find_packages
 
 # Install requirements.
 test_requires = []
 
 KWARGS = {
-    'name': 'python-xmp-toolkit',
-    'description': 'Python XMP Toolkit for working with metadata.',
-    'author': 'Lars Holm Nielsen, John Evans, Federico Caboni & Amit Kapadia',
-    'author_email': 'lars@hankat.dk',
-    'url': 'https://github.com/python-xmp-toolkit/python-xmp-toolkit',
-    'long_description': open('README.rst').read(),
-    'download_url': 'https://pypi.python.org/pypi/python-xmp-toolkit',
-    'license': 'New BSD License',
-    'install_requires': ['pytz'],
-    'packages': find_packages(exclude=["*test*"]),
-    'test_suite': 'test',
-    'tests_require': test_requires,
-    'classifiers': [
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: MacOS :: MacOS X',
-        'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Topic :: Multimedia',
-        'Topic :: Software Development :: Libraries',
-        'Topic :: Utilities',
-    ],
 }
 
-# Get the version string.  Cannot do this by importing libxmp!
-version_file = os.path.join('libxmp', 'version.py')
-with open(version_file, 'rt') as fptr:
-    contents = fptr.read()
-    match = re.search('VERSION\s*=\s*"(?P<version>\d*.\d*.\d*.*)"\n', contents)
-    KWARGS['version'] = match.group('version')
+setup(
+ packages=find_packages(exclude=["*test*"]),
+ test_suite="test",
+ tests_require=test_requires,
+)
 
-setup(**KWARGS)
