@@ -52,23 +52,6 @@ from . import exempi as _cexempi
 __all__ = ['XMPMeta','XMPIterator']
 
 
-def _remove_bom(xstr):
-    """Remove BOM (byte order marker) from a string."""
-    # Python 2.7 cannot encode from ascii to utf-8 (or utf-8 to ascii) when an
-    # XMP packet contains the XMP packet wrapper with the BOM in place.  Just
-    # get rid of it if we find it.
-    regex = re.compile(r"""\s*<\?xpacket\s*
-                           begin=\"(?P<bom>.*)\"\s*
-                           id=\"W5M0MpCehiHzreSzNTczkc9d\"\?>""",
-                           re.UNICODE | re.VERBOSE)
-    match = regex.match(xstr)
-    if match is not None:
-        # Ok we matched up to the BOM.  Get rid of it.
-        bom_start, bom_end = match.span('bom')
-        xstr = xstr[0:bom_start] + xstr[bom_end:]
-
-    return xstr
-
 def _remove_trailing_whitespace(xstr):
     """Remove trailing white space.
     
@@ -86,12 +69,6 @@ def _remove_trailing_whitespace(xstr):
         xstr = xstr[0:ws_start] + '\n' + xstr[ws_end:]
 
     return xstr
-
-def _force_rdf_to_utf8(xstr):
-    """Force RDF to unicode on 2.7, removing BOM in the process."""
-
-    xstr = _remove_bom(xstr)
-    return xstr.decode('utf-8')
 
 
 class XMPMeta(object):
@@ -153,12 +130,7 @@ class XMPMeta(object):
         """
         xstr = self.serialize_to_str()
         xstr = _remove_trailing_whitespace(xstr)
-        if sys.hexversion < 0x03000000:
-            # The BOM is not important, just remove it.
-            xstr = _remove_bom(xstr)
-            return xstr.encode('UTF-8', 'replace')
-        else: 
-            return xstr
+        return xstr
 
     def __eq__(self, other):
         """ Checks if two XMPMeta objects are equal."""
@@ -636,8 +608,6 @@ class XMPMeta(object):
             string, it will by default be assumed to be UTF-8 encoded.
         :raises: IOError if operation fails.
         """
-        if sys.hexversion < 0x03000000 and isinstance(xmp_packet_str, str):
-            xmp_packet_str = _force_rdf_to_utf8(xmp_packet_str)
         if xmpmeta_wrap:
             fmt = u"<x:xmpmeta xmlns:x='adobe:ns:meta/'>{0}</x:xmpmeta>"
             xmp_packet_str = fmt.format(xmp_packet_str)
