@@ -69,7 +69,27 @@ def _load_exempi():
 
     return EXEMPI
 
-EXEMPI = _load_exempi()
+
+class LazyExempi:
+    """Wrapper for ctypes library making it loaded on actual first use.
+    """
+    def __init__(self):
+        self._exempi = None
+
+    def __getattr__(self, attr):
+        if self._exempi is None:
+            self._exempi = _load_exempi()
+            init()
+        return getattr(self._exempi, attr)
+
+    def __setattr__(self, attr, value):
+        if attr == "_exempi":
+            self.__dict__[attr] = value
+        else:
+            return setattr(self._exempi, attr, value)
+
+
+EXEMPI = LazyExempi()
 
 # Error codes defined by libexempi.  See "xmperrors.h"
 ERROR_MESSAGE = {    0: "unknown error",

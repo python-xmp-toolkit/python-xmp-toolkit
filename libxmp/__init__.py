@@ -57,4 +57,3 @@ __all__ = ['XMPMeta', 'XMPFiles', 'XMPError', 'ExempiLoadError', 'files',
            'core']
 
 from . import exempi
-exempi.init()
