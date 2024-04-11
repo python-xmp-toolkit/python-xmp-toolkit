@@ -1,3 +1,0 @@
-include AUTHORS CHANGELOG INSTALL README.rst LICENSE
-recursive-include test *.py *.tif *.xmp *.ai  *.avi  *.eps  *.gif  *.indd  *.jpg  *.mov  *.mp3  *.pdf  *.png  *.psd  *.wav *.txt
-include .coveragerc run-coverage.sh

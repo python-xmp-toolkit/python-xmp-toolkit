@@ -11,7 +11,7 @@ Overview of Source Distribution
 
  * ``docs/`` -- Source code for documentation.
  * ``libxmp/`` -- Source files for XMP Toolkit
- * ``setup.py`` -- Distutils configuration file.
+ * ``pyproject.toml`` -- Packaging configuration file.
  * ``MANIFEST.in`` -- Template for MANIFEST file used by Distutils.
  * ``test`` -- Tests
 
@@ -22,16 +22,15 @@ http://sphinx.pocoo.org/). To make the documentation run the following command
 in the root directory::
 
   pip install sphinx
-  sphinx-build -M html docs/ docs/_build/
+  sphinx-build docs/ docs/_build/
 
-Packaging a Distribution
+Publishing a release
 ------------------------
-To package a distribution run::
+To publish a release run::
 
-  python setup.py sdist
+  flit publish
 
-This will prepare the documentation and use distutils to package together a
-distribution that will be placed in ``dist/``.
+For further details see `Flit <https://flit.pypa.io/en/stable/cmdline.html#flit-publish>`_
 
 Running Tests
 -------------
@@ -46,7 +45,7 @@ For test coverage, run::
 
 Distribution Configuration
 --------------------------
-The file ``setup.py`` specify how the distribution is packed together. Most
+The file ``pyproject.toml`` specifies how the distribution is packed together. Most
 important to note is that version in formation is read from ``libxmp.version``
 file, and that the file ``MANIFEST.in`` specifies which other files to include
 in the distribution besides the Python source.
@@ -54,5 +53,5 @@ in the distribution besides the Python source.
 References for Developers
 -------------------------
  * `ctypes <http://docs.python.org/lib/module-ctypes.html>`_
- * `Sphinx <http://sphinx.pocoo.org/contents.html>`_
- * `Distutils <http://docs.python.org/dist/dist.html>`_
+ * `Sphinx <https://www.sphinx-doc.org/en/master/>`_
+ * `Flit <https://flit.pypa.io/en/stable/>`_

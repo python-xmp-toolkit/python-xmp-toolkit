@@ -53,3 +53,9 @@ build-backend = "flit_core.buildapi"
 name = "libxmp"
 
 
+[tool.flit.sdist]
+include = [
+    "test/*", ".coveragerc",
+    "AUTHORS", "CHANGELOG",
+    "INSTALL"
+]
