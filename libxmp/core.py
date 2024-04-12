@@ -96,7 +96,10 @@ class XMPMeta(object):
         Ensures memory is deallocated when destroying object.
         """
         if self.xmpptr is not None:
-            _cexempi.free(self.xmpptr)
+            try:
+                _cexempi.free(self.xmpptr)
+            except AttributeError:
+                pass
 
         if self.iterator is not None:
             del self.iterator
@@ -797,7 +800,10 @@ class XMPIterator(object):
         self.prop_name = prop_name
 
     def __del__(self):
-        _cexempi.iterator_free(self.xmpiteratorptr)
+        try:
+            _cexempi.iterator_free(self.xmpiteratorptr)
+        except AttributeError:
+            pass
 
     def __iter__(self):
         return self

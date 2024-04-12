@@ -92,7 +92,10 @@ class XMPFiles(object):
         """
         Free up the memory associated with the XMP file instance.
         """
-        _cexempi.files_free( self.xmpfileptr )
+        try:
+            _cexempi.files_free( self.xmpfileptr )
+        except AttributeError:
+            pass
 
 
     def open_file(self, file_path, **kwargs ):
