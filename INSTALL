@@ -15,9 +15,6 @@ The installation is::
 
   pip install python-xmp-toolkit
 
-Note, in case you haven't installed Exempi you will get an
-:exc:`ExempiLoadError` exception once you try to load :mod:`libxmp`.
-
 Exempi
 ------
 Python XMP Toolkit requires Exempi 2.2.0 or higher which can be downloaded from
