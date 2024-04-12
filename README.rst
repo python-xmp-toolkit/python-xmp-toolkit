@@ -36,7 +36,7 @@ Documentation is available at `python-xmp-toolkit.readthedocs.org
 <https://python-xmp-toolkit.readthedocs.org>`_ or can be built using Sphinx: ::
 
     pip install Sphinx
-    python setup.py build_sphinx
+    sphinx-build docs/ docs/_build/
 
 
 Testing
