@@ -11,11 +11,7 @@ Requirements
 
 Python XMP Toolkit
 ----------------------
-The short version of installation is::
-
-  python setup.py install
-
-or if you use pip::
+The installation is::
 
   pip install python-xmp-toolkit
 
