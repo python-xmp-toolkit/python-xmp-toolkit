@@ -1,3 +1,15 @@
+Release 2.1.0 ( November 26, 2025 )
+  * Add support for python 3.14
+  * Make exempi a run-time dependency
+  * Add missing error codes
+  * Remove tox
+  * Use flit for build
+  * Remove travis
+  * Remove packaging dependency requirement
+  * Remove support for python <= 3.6 (All python2 code removed)
+  * fix exempi returns char-size bool, not int
+  * homebrew path fixup
+
 Release 2.0.2 ( January 25, 2017 )
   * Fix test following a bugfix from Exempi 2.4.0.
   * Fix crash when there is no schema.
