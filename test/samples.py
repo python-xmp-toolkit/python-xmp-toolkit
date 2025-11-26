@@ -83,14 +83,12 @@ for k,v in samplefiles.items():
 samplefiles = files
 
 def make_temp_samples():
-    global sampledir
     if os.path.exists(sampledir):
         remove_temp_samples()
 
     shutil.copytree('samples', sampledir)
 
 def remove_temp_samples():
-    global sampledir
     if os.path.exists( sampledir ):
         if not os.path.isdir( sampledir):
             raise RuntimeError('Cannot remove .tempsamples - it is not a directory. Please manually remove it.')
